@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Staff {
+public abstract class Staff {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +37,8 @@ public class Staff {
 
     @Column(nullable = false)
     private int sueldo;
+
+    @OneToOne(mappedBy = "staff", fetch = FetchType.LAZY)
+    private Usuario usuario;
 
 }
