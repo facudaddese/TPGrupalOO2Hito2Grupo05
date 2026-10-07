@@ -14,7 +14,7 @@ public class Costo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "costo_superficie")
     private double costoSuperficie;
@@ -27,4 +27,7 @@ public class Costo {
 
     @Column(name = "sueldo_base")
     private double sueldoBase;
+
+    @Column(name = "antiguedad_cajero")
+    private int anioAntiguedadCajero;
 }

@@ -1,9 +1,6 @@
 package com.unla.grupo5.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +12,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Cajero extends Staff{
-    @Column(nullable = false)
-    private String turno;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_turno_cajero")
+    private TurnoCajero turnoTrabajo;
+
 }
