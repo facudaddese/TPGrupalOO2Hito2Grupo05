@@ -1,4 +1,4 @@
-package com.unla.grupo5.entidades;
+package com.unla.grupo5.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

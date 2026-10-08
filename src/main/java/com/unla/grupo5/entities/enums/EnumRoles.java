@@ -1,12 +1,12 @@
-package com.unla.grupo5.entidades.enums;
+package com.unla.grupo5.entities.enums;
 
-public enum EnumTurnos {
+public enum EnumRoles {
 
-    MANIANA(0), NOCHE(1);
+    ADMIN(0), RESPONSABLE(1), EMPLEADO(2);
 
     private final int numero;
 
-    EnumTurnos(int numero){
+    EnumRoles(int numero){
         this.numero = numero;
     }
 
