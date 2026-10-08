@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Epicentro Gourmet</title>
+</head>
+<body>
+<h1>Epicentro Gourmet</h1>
+<ul>
+    <li th:each="f : ${festivales}"
+        th:text="${f.nombre} + ' - ' + ${f.temporada} + ' (' + ${f.fechaInicio} + ' a ' + ${f.fechaFin} + ')'"></li>
+</ul>
+</body>
+</html>

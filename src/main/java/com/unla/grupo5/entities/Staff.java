@@ -36,9 +36,18 @@ public abstract class Staff {
     private LocalDate fechaIngreso;
 
     @Column(nullable = false)
-    private int sueldo;
+    private double sueldo;
 
+    @Column(nullable = false)
+    private boolean activo = true;
+
+    // Muchos empleados en una sola unidad de venta
+    @ManyToOne(fetch = FetchType.LAZY)
+    // Clave foranea
+    @JoinColumn(name = "idUnidadVenta")
+    private UnidadDeVenta unidadDeVenta;
+
+    // Un empleado tiene un usuario
     @OneToOne(mappedBy = "staff", fetch = FetchType.LAZY)
     private Usuario usuario;
-
 }
