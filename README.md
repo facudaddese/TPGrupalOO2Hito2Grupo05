@@ -10,3 +10,5 @@
  - Facundo D'Addese ([facudaddese](https://github.com/facudaddese))
 
 ## Casos de uso realizados
+
+- ABM empleados (Facundo D'Addese)
