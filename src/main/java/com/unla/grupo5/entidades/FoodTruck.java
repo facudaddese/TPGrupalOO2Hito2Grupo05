@@ -1,4 +1,4 @@
-package com.unla.grupo5.entities;
+package com.unla.grupo5.entidades;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,6 +1,6 @@
-package com.unla.grupo5.entities;
+package com.unla.grupo5.entidades;
 
-import com.unla.grupo5.entities.enums.EnumRoles;
+import com.unla.grupo5.entidades.enums.EnumRoles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
