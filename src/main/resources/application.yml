@@ -3,12 +3,13 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:${DB_PORT:3306}/epicentro_gourmet?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: ${DB_PASSWORD:}
+    url: ${DB_URL}
+    username: ${USERNAME}
+    password: ${PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -16,6 +17,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+
+  sql:
+    init:
+      mode: always
 
   mail:
     host: smtp.gmail.com
