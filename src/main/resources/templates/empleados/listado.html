@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Empleados</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-5">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Listado de Empleados</h2>
+    <a th:href="@{/empleados/nuevo}" class="btn btn-primary">Nuevo Empleado</a>
+</div>
+
+<div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>DNI</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="emp : ${empleados}">
+        <td th:text="${emp.id}"></td>
+        <td th:text="${emp.nombre}"></td>
+        <td th:text="${emp.apellido}"></td>
+        <td th:text="${emp.dni}"></td>
+        <td>
+            <a th:href="@{/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">Editar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "unidadDeVenta")
+@Table(name = "unidad_de_venta")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
@@ -19,37 +19,31 @@ public class UnidadDeVenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
-    @Column(name = "nombreComercial", nullable = false)
+    @Column(name = "nombre_comercial", nullable = false)
     private String nombreComercial;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idStaffResponsable", nullable = true)
+    @JoinColumn(name = "id_staff_responsable", nullable = true)
     private Staff responsable;
 
     @Column(name = "superficie", nullable = false)
-    private int superficie;
+    private Integer superficie;
 
     @Column(name = "codigo", nullable = false)
     private String codigo;
-
-    @Column(name = "activo", nullable = false)
-    private boolean activo = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_festival", nullable = false)
     private Festival festival;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUnidadVenta")
+    @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Plato> lstPlatos = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUnidadVenta")
+    @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Staff> lstStaff = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUnidadDeVenta")
+    @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Pedido> lstPedidos = new HashSet<>();
 }

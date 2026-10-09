@@ -14,9 +14,9 @@ import lombok.Setter;
 public class PuestoDesarmable extends UnidadDeVenta{
 
     @Column(name = "cantidad_carpas")
-    private int cantidadCarpas;
+    private Integer cantidadCarpas;
 
     @Column(name = "tiempo_montaje")
-    private float tiempoMontaje;
+    private double tiempoMontaje;
 
 }

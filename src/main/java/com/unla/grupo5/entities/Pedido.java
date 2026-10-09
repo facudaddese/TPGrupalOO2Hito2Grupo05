@@ -15,23 +15,24 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idPedido")
-    private int idPedido;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "fecha_transaccion", nullable = false)
-    private LocalDate fechaTransaccion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUnidadDeVenta", nullable = false)
-    private UnidadDeVenta unidadDeVenta;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idFestival", nullable = false)
-    private Festival festival;
+    @Column(name = "fecha", nullable = false)
+    private LocalDate fecha;
 
     @OneToMany(mappedBy = "pedido", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("idItemPedido ASC")
+    @OrderBy("id ASC")
     private Set<ItemPedido> listaItems = new HashSet<>();
+
+    @Column(name = "total", nullable = false)
+    private double total;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_unidad_de_venta", nullable = false)
+    private UnidadDeVenta unidadDeVenta;
+
 }

@@ -11,10 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cajero extends Staff{
+public class Cajero extends Staff {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_turno_cajero")
-    private TurnoCajero turnoTrabajo;
-
+    @Column(name = "turno_trabajo", length = 100)
+    private String turnoTrabajo;
 }

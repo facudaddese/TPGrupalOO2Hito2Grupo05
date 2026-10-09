@@ -27,7 +27,7 @@ public abstract class Staff {
     private String apellido;
 
     @Column(nullable = false, unique = true)
-    private int dni;
+    private Long dni;
 
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;

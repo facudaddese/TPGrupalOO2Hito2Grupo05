@@ -11,10 +11,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cocinero extends Staff{
+public class Cocinero extends Staff {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_categoria_cocinero")
-    private CategoriaCocinero categoria;
-
+    @Column(name = "categoria", length = 100)
+    private String categoria;
 }

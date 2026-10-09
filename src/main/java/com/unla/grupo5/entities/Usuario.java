@@ -32,6 +32,8 @@ public class Usuario {
     @JoinColumn(name = "id_staff")
     private Staff staff;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
-    private Set<Rol> lstRoles = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rol")
+    private Rol rol;
+
 }

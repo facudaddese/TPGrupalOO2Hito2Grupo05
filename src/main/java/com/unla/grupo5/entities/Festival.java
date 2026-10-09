@@ -15,21 +15,22 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class Festival {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
-    @Column(name = "nombre")
+    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "temporada")
+    @Column(name = "temporada", length = 50)
     private String temporada;
 
-    @Column(name = "fecha_inicio")
+    @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(name = "fecha_fin")
+    @Column(name = "fecha_fin", nullable = false)
     private LocalDate fechaFin;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
