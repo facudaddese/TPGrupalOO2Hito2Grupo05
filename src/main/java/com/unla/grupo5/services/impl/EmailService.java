@@ -1,13 +1,12 @@
 package com.unla.grupo5.services.impl;
 
-import com.unla.grupo5.services.IEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailService implements IEmailService {
+public class EmailService implements com.unla.grupo5.services.EmailService {
 
     @Autowired
     private JavaMailSender mailSender;

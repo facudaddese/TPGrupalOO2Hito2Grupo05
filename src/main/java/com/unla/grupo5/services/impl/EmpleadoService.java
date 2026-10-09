@@ -3,18 +3,19 @@ package com.unla.grupo5.services.impl;
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
 import com.unla.grupo5.entities.*;
 import com.unla.grupo5.repositories.*;
-import com.unla.grupo5.services.IEmailService;
-import com.unla.grupo5.services.IEmpleadoService;
+import com.unla.grupo5.services.EmailService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.unla.grupo5.entities.enums.EnumRoles;
 
-import java.util.UUID;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
-public class EmpleadoService implements IEmpleadoService {
+public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService {
 
     @Autowired
     private StaffRepository staffRepository;
@@ -26,12 +27,6 @@ public class EmpleadoService implements IEmpleadoService {
     private CajeroRepository cajeroRepository;
 
     @Autowired
-    private CategoriaCocineroRepository categoriaCocineroRepository;
-
-    @Autowired
-    private TurnoCajeroRepository turnoCajeroRepository;
-
-    @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
 
     @Autowired
@@ -41,7 +36,7 @@ public class EmpleadoService implements IEmpleadoService {
     private RolRepository rolRepository;
 
     @Autowired
-    private IEmailService emailService;
+    private EmailService emailService;
 
     private void validarDatosEmpleado(EmpleadoRequestDTO dto) {
         int edad = Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears();
@@ -68,20 +63,12 @@ public class EmpleadoService implements IEmpleadoService {
 
         if ("COCINERO".equalsIgnoreCase(dto.getTipoEmpleado())) {
             Cocinero cocinero = new Cocinero();
-            if (dto.getIdCategoriaCocinero() != null) {
-                CategoriaCocinero cat = categoriaCocineroRepository.findById(dto.getIdCategoriaCocinero())
-                        .orElseThrow(() -> new IllegalArgumentException("La categoría de cocinero no existe."));
-                cocinero.setCategoria(cat);
-            }
+            cocinero.setCategoria(dto.getCategoriaCocinero());
             empleado = cocinero;
 
         } else if ("CAJERO".equalsIgnoreCase(dto.getTipoEmpleado())) {
             Cajero cajero = new Cajero();
-            if (dto.getIdTurnoCajero() != null) {
-                TurnoCajero turno = turnoCajeroRepository.findById(dto.getIdTurnoCajero())
-                        .orElseThrow(() -> new IllegalArgumentException("El turno de cajero no existe."));
-                cajero.setTurnoTrabajo(turno);
-            }
+            cajero.setTurnoTrabajo(dto.getTurnoCajero());
             empleado = cajero;
 
         } else {
@@ -93,7 +80,7 @@ public class EmpleadoService implements IEmpleadoService {
         empleado.setDni(dto.getDni());
         empleado.setFechaNacimiento(dto.getFechaNacimiento());
         empleado.setFechaIngreso(dto.getFechaIngreso());
-        empleado.setSueldo(100000.0);
+        empleado.setSueldo(dto.getSueldo());
         empleado.setActivo(true);
         empleado.setUnidadDeVenta(unidad);
 
@@ -108,10 +95,15 @@ public class EmpleadoService implements IEmpleadoService {
         usuario.setStaff(empleadoGuardado);
         usuarioRepository.save(usuario);
 
-        Rol rol = new Rol();
-        rol.setRol(EnumRoles.EMPLEADO);
-        rol.setUsuario(usuario);
-        rolRepository.save(rol);
+        Rol rol = rolRepository.findByRol("ROLE_EMPLEADO")
+                .orElseGet(() -> {
+                    Rol r = new Rol();
+                    r.setRol("ROLE_EMPLEADO");
+                    return rolRepository.save(r);
+                });
+
+        usuario.setRol(rol);
+        usuarioRepository.save(usuario);
 
         try {
             emailService.enviarCredencialesEmpleado(dto.getEmail(), usuario.getNombreUsuario(), passwordGenerada);
@@ -120,5 +112,49 @@ public class EmpleadoService implements IEmpleadoService {
         }
 
         return empleadoGuardado;
+    }
+
+    @Override
+    public Staff buscarPorId(Long id) {
+        return staffRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("El empleado no existe con el ID: " + id));
+    }
+
+    @Override
+    public List<Staff> traerTodos() {
+        return staffRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto) {
+        Staff empleado = buscarPorId(id);
+
+        if (!Objects.equals(empleado.getDni(), dto.getDni())) {
+            if (staffRepository.findByDni(dto.getDni()).isPresent()) {
+                throw new IllegalArgumentException("Ya existe otro empleado registrado con el DNI " + dto.getDni());
+            }
+        }
+
+        empleado.setNombre(dto.getNombre());
+        empleado.setApellido(dto.getApellido());
+        empleado.setDni(dto.getDni());
+        empleado.setFechaNacimiento(dto.getFechaNacimiento());
+        empleado.setFechaIngreso(dto.getFechaIngreso());
+        if (dto.getSueldo() != null) empleado.setSueldo(dto.getSueldo());
+
+        if (dto.getIdUnidadVenta() != null) {
+            UnidadDeVenta unidad = unidadDeVentaRepository.findById(dto.getIdUnidadVenta())
+                    .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
+            empleado.setUnidadDeVenta(unidad);
+        }
+
+        if (empleado instanceof Cocinero && dto.getCategoriaCocinero() != null) {
+            ((Cocinero) empleado).setCategoria(dto.getCategoriaCocinero());
+        } else if (empleado instanceof Cajero && dto.getTurnoCajero() != null) {
+            ((Cajero) empleado).setTurnoTrabajo(dto.getTurnoCajero());
+        }
+
+        return staffRepository.save(empleado);
     }
 }

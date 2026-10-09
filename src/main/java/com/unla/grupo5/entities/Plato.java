@@ -5,33 +5,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "plato")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Plato {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPlato;
+    @Column(name = "id")
+    private Long id;
 
     @Column(nullable = false, length = 100)
     private String nombre;
 
     @Column(nullable = false)
-    private Long precio;
+    private double precio;
 
     @Column(name = "costo_produccion", nullable = false)
-    private Long costoProduccion;
+    private double costoProduccion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUnidadDeVenta", nullable = false)
+    @JoinColumn(name = "id_unidad_de_venta", nullable = false)
     private UnidadDeVenta unidadDeVenta;
-
-    @OneToMany(mappedBy = "plato", fetch = FetchType.LAZY)
-    private Set<ItemPedido> listaItems = new HashSet<>();
-
 }
