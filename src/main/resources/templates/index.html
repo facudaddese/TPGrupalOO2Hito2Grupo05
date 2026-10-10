@@ -1,14 +1,103 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
+
     <title>Epicentro Gourmet</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/estilos.css}">
 </head>
+
 <body>
-<h1>Epicentro Gourmet</h1>
-<ul>
-    <li th:each="f : ${festivales}"
-        th:text="${f.nombre} + ' - ' + ${f.temporada} + ' (' + ${f.fechaInicio} + ' a ' + ${f.fechaFin} + ')'"></li>
-</ul>
+
+<header class="navbar">
+
+    <h1>Epicentro Gourmet</h1>
+
+    <div class="navbar-actions">
+
+        <a sec:authorize="!isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/login}">
+
+            Iniciar sesión
+
+        </a>
+
+        <a sec:authorize="isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/logout}">
+
+            Cerrar sesión
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Festivales</h2>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                Conocé los festivales disponibles en Epicentro Gourmet.
+            </p>
+
+            <ul class="festival-list">
+
+                <li class="festival-item"
+                    th:each="f : ${festivales}">
+
+                    <h3 class="festival-nombre"
+                        th:text="${f.nombre}">
+                        Nombre del festival
+                    </h3>
+
+                    <p class="festival-info">
+                        <strong>Temporada:</strong>
+
+                        <span th:text="${f.temporada}">
+                            Temporada
+                        </span>
+                    </p>
+
+                    <p class="festival-info">
+
+                        <strong>Fecha:</strong>
+
+                        <span th:text="${f.fechaInicio}">
+                            01/01/2026
+                        </span>
+
+                        a
+
+                        <span th:text="${f.fechaFin}">
+                            10/01/2026
+                        </span>
+
+                    </p>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</main>
+
 </body>
 </html>

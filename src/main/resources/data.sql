@@ -20,8 +20,52 @@ IGNORE INTO cocinero (id_staff, categoria) VALUES (1, 'CHEF');
 INSERT
 IGNORE INTO cajero (id_staff, turno_trabajo) VALUES (2, 'NOCHE');
 
-INSERT
-IGNORE INTO rol (id, rol) VALUES (1, 'ROLE_EMPLEADO');
+-- ROLES
+INSERT INTO `Rol` (`rol`)
+SELECT 'ADMIN'
+    WHERE NOT EXISTS (
+    SELECT 1 FROM `Rol` WHERE `rol` = 'ADMIN'
+);
+INSERT INTO `Rol` (`rol`)
+SELECT 'RESPONSABLE'
+    WHERE NOT EXISTS (
+    SELECT 1 FROM `Rol` WHERE `rol` = 'RESPONSABLE'
+);
+INSERT INTO `Rol` (`rol`)
+SELECT 'EMPLEADO'
+    WHERE NOT EXISTS (
+    SELECT 1 FROM `Rol` WHERE `rol` = 'EMPLEADO'
+);
+
+-- ============================================
+-- USUARIO ADMIN
+-- usuario: admin
+-- contraseña: admin123
+-- ============================================
+
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
+SELECT'admin@gmail.com','$2y$10$wA6BQOeiHqer/VwuER2rse.nFrN4A7q/0gALCT4QmxTqWrMvOiNDe',true,NULL,
+(SELECT id FROM `Rol` WHERE `rol` = 'ADMIN' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'admin@gmail.com');
+
+-- ============================================
+-- USUARIO RESPONSABLE
+-- usuario: responsable
+-- contraseña: responsable123
+-- ============================================
+
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
+SELECT'responsable@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable@gmail.com');
+
+-- ============================================
+-- USUARIO EMPLEADO
+-- usuario: empleado
+-- contraseña: empleado123
+-- ============================================
+
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
+SELECT'empleado@gmail.com','$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',true,NULL,
+(SELECT id FROM `Rol` WHERE `rol` = 'EMPLEADO' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado@gmail.com');
 
 INSERT
 IGNORE INTO usuario (id, nombre_usuario, password_usuario, usuario_activo, id_staff, id_rol) VALUES
