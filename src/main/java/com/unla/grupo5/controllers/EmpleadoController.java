@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/empleados")
+@RequestMapping("/responsable/empleados")
 public class EmpleadoController {
 
     @Autowired
