@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${USERNAME}
-    password: ${PASSWORD}
+    url: ${DB_URL:jdbc:mysql://localhost:${DB_PORT:3306}/epicentro_gourmet?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:${PASSWORD:root}}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
