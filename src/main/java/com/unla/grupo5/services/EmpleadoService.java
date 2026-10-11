@@ -13,4 +13,7 @@ public interface EmpleadoService {
     Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto);
 
     List<Staff> traerTodos();
+
+    double calcularHaberes(Long idEmpleado, Long idFestival);
+
 }
