@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Iniciar sesión | Epicentro Gourmet</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/estilos.css}">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <h1>Epicentro Gourmet</h1>
+
+    <div class="navbar-actions">
+
+        <a class="btn btn-light"
+           th:href="@{/}">
+            Volver al inicio
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="login-container">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2>Iniciar sesión</h2>
+        </div>
+
+        <div class="card-body">
+
+
+            <!-- ERROR DE LOGIN -->
+
+            <div class="alert alert-error"
+                 th:if="${error}">
+
+                Usuario o contraseña incorrectos.
+
+            </div>
+
+
+            <!-- LOGOUT EXITOSO -->
+
+            <div class="alert alert-success"
+                 th:if="${logout}">
+
+                Sesión cerrada correctamente.
+
+            </div>
+
+
+            <form th:action="@{/loginprocess}"
+                  method="post">
+
+
+                <div class="form-group">
+
+                    <label for="username">
+                        Usuario
+                    </label>
+
+                    <input
+                            id="username"
+                            class="form-control"
+                            type="text"
+                            name="username"
+                            placeholder="Ingrese su usuario"
+                            required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Contraseña
+                    </label>
+
+                    <input
+                            id="password"
+                            class="form-control"
+                            type="password"
+                            name="password"
+                            placeholder="Ingrese su contraseña"
+                            required>
+
+                </div>
+
+
+                <button
+                        type="submit"
+                        class="btn btn-primary login-button">
+
+                    Iniciar sesión
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +38,12 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
     @Autowired
     private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public EmpleadoService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private void validarDatosEmpleado(EmpleadoRequestDTO dto) {
         int edad = Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears();
@@ -90,15 +97,15 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(dto.getEmail());
-        usuario.setPassword(passwordGenerada);
+        usuario.setPassword(passwordEncoder.encode(passwordGenerada));
         usuario.setActivo(true);
         usuario.setStaff(empleadoGuardado);
         usuarioRepository.save(usuario);
 
-        Rol rol = rolRepository.findByRol("ROLE_EMPLEADO")
+        Rol rol = rolRepository.findByRol("EMPLEADO")
                 .orElseGet(() -> {
                     Rol r = new Rol();
-                    r.setRol("ROLE_EMPLEADO");
+                    r.setRol("EMPLEADO");
                     return rolRepository.save(r);
                 });
 

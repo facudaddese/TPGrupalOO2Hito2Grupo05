@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/empleados")
+@RequestMapping("/responsable/empleados")
 public class EmpleadoController {
 
     @Autowired
@@ -55,7 +55,7 @@ public class EmpleadoController {
         try {
             empleadoService.registrarEmpleado(dto);
             redirect.addFlashAttribute("mensajeExito", "Empleado registrado correctamente. Se han enviado las credenciales por e-mail.");
-            return "redirect:/empleados";
+            return "redirect:/responsable/empleados";
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
             cargarAtributosFormulario(model);
@@ -123,7 +123,7 @@ public class EmpleadoController {
         try {
             empleadoService.modificarEmpleado(id, dto);
             redirectAttributes.addFlashAttribute("mensajeExito", "Empleado modificado correctamente.");
-            return "redirect:/empleados";
+            return "redirect:/responsable/empleados";
         } catch (Exception e) {
             model.addAttribute("mensajeError", e.getMessage());
             model.addAttribute("empleadoId", id);
