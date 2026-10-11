@@ -25,8 +25,8 @@ public class UnidadDeVenta {
     private String nombreComercial;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_staff_responsable", nullable = true)
-    private Staff responsable;
+    @JoinColumn(name = "id_usuario_responsable", nullable = true)
+    private Usuario responsable;
 
     @Column(name = "superficie", nullable = false)
     private Integer superficie;
