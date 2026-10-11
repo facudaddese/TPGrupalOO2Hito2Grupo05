@@ -6,9 +6,17 @@
 </head>
 <body>
 <h1>Epicentro Gourmet</h1>
+<h2>Festivales</h2>
 <ul>
-    <li th:each="f : ${festivales}"
-        th:text="${f.nombre} + ' - ' + ${f.temporada} + ' (' + ${f.fechaInicio} + ' a ' + ${f.fechaFin} + ')'"></li>
+    <li th:each="f : ${festivales}">
+        <span th:text="${f.nombre} + ' - ' + ${f.temporada} + ' (' + ${f.fechaInicio} + ' a ' + ${f.fechaFin} + ')'"></span>
+        |
+        <a th:href="@{/unidades-venta(idFestival=${f.id})}">Ver unidades</a>
+    </li>
 </ul>
+<p>
+    <a th:href="@{/unidades-venta}">Unidades de venta</a> |
+    <a th:href="@{/empleados/nuevo}">Alta de empleado</a>
+</p>
 </body>
 </html>
