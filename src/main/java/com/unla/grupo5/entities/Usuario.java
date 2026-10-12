@@ -6,10 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Entity
 @Table(name = "Usuario")
 @Getter
@@ -22,7 +18,7 @@ public class Usuario {
     private Long id;
 
     @Column(name = "nombre_usuario", unique = true, nullable = false)
-    private String nombreUsuario;
+    private String nombreUsuario; //email
 
     @Column(name = "password_usuario", nullable = false)
     private String password;
@@ -38,6 +34,10 @@ public class Usuario {
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
+    // Muchos usuarios pertenecen a una sola unidad de venta
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_unidad_venta")
+    private UnidadDeVenta unidadDeVenta;
     public Usuario(String nombreUsuario, String password, boolean activo) {
         this.nombreUsuario = nombreUsuario;
         this.password = password;

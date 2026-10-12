@@ -24,7 +24,8 @@ public class UnidadDeVenta {
     @Column(name = "nombre_comercial", nullable = false)
     private String nombreComercial;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // Un solo usuario es el responsable de la unidad
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_responsable", nullable = true)
     private Usuario responsable;
 

@@ -12,3 +12,4 @@
 ## Casos de uso realizados
 
 - ABM empleados (Facundo D'Addese)
+- Registro de Unidad de Venta con su responsable (Daira Mazza)
