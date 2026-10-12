@@ -1,6 +1,7 @@
 package com.unla.grupo5.repositories;
 
 import com.unla.grupo5.entities.UnidadDeVenta;
+import com.unla.grupo5.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,6 @@ public interface UnidadDeVentaRepository extends JpaRepository<UnidadDeVenta, Lo
 
     // Igual que la anterior pero ignorando la propia unidad (para la modificación)
     boolean existsByCodigoAndFestivalIdAndIdNot(String codigo, Long idFestival, Long id);
+}
+    Optional<UnidadDeVenta> findByResponsable(Usuario responsable);
 }

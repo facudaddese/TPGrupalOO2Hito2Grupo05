@@ -6,10 +6,12 @@ import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,7 +38,16 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     private RolRepository rolRepository;
 
     @Autowired
+    private FestivalRepository festivalRepository;
+
+    @Autowired
     private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public EmpleadoService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private void validarDatosEmpleado(EmpleadoRequestDTO dto) {
         int edad = Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears();
@@ -90,15 +101,15 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(dto.getEmail());
-        usuario.setPassword(passwordGenerada);
+        usuario.setPassword(passwordEncoder.encode(passwordGenerada));
         usuario.setActivo(true);
         usuario.setStaff(empleadoGuardado);
         usuarioRepository.save(usuario);
 
-        Rol rol = rolRepository.findByRol("ROLE_EMPLEADO")
+        Rol rol = rolRepository.findByRol("EMPLEADO")
                 .orElseGet(() -> {
                     Rol r = new Rol();
-                    r.setRol("ROLE_EMPLEADO");
+                    r.setRol("EMPLEADO");
                     return rolRepository.save(r);
                 });
 
@@ -156,5 +167,70 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         }
 
         return staffRepository.save(empleado);
+    }
+
+    private double calcularFactorDuracion(long dias) {
+        double factor;
+
+        if (dias <= 15) {
+            factor = 0.5;
+        } else if (dias <= 30) {
+            factor = 1.0;
+        } else {
+            factor = ((dias / 15) + 1) * 0.5;
+        }
+        return factor;
+    }
+
+    private double obtenerPlusCocinero(Cocinero cocinero, Costo costo) {
+        double plus;
+
+        switch (cocinero.getCategoria().toUpperCase()) {
+
+            case "COCINERO":
+                plus = costo.getPlusCocinero();
+                break;
+            case "AYUDANTE":
+                plus = costo.getPlusAyudante();
+                break;
+            case "LAVAPLATOS":
+                plus = costo.getPlusLavaplatos();
+                break;
+            default:
+                throw new IllegalArgumentException("Categoría de cocina no válida.");
+        }
+        return plus;
+    }
+
+    @Override
+    public double calcularHaberes(Long idEmpleado, Long idFestival){
+        Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() ->
+                        new IllegalArgumentException("Empleado no encontrado."));
+
+        Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
+                        new IllegalArgumentException("Festival no encontrado."));
+
+        Costo costo = festival.getCosto();
+
+        long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(),festival.getFechaFin()) + 1;
+        double factor = calcularFactorDuracion(diasFestival);
+
+        double sueldoCalculado;
+
+        if (empleado instanceof Cocinero cocinero) {
+            double plus = obtenerPlusCocinero(cocinero, costo);
+            sueldoCalculado = (costo.getSueldoBase() + plus) * factor;
+
+        } else if (empleado instanceof Cajero cajero) {
+            int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), festival.getFechaInicio()).getYears();
+            double antiguedad = aniosAntiguedad * costo.getAntiguedadCajero();
+
+            sueldoCalculado = (costo.getSueldoBase() + antiguedad) * factor;
+
+        } else {
+            throw new IllegalArgumentException("Tipo de empleado no válido para liquidación.");
+        }
+
+        return sueldoCalculado;
     }
 }

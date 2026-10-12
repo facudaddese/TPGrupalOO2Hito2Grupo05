@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Liquidación de Haberes</title>
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                Liquidación de Haberes
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                    th:action="@{/responsable/empleados/haberes/calcular}"
+                    method="post">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Festival
+                    </label>
+
+                    <select
+                            name="idFestival"
+                            class="form-select"
+                            required>
+
+                        <option value="">
+                            -- Seleccionar Festival --
+                        </option>
+
+                        <option
+                                th:each="festival : ${festivales}"
+                                th:value="${festival.id}"
+                                th:text="${festival.nombre}">
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button
+                        type="submit"
+                        class="btn btn-primary">
+
+                    Calcular haberes
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm mt-4"
+         th:if="${haberes != null}">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+
+                Empleados de
+                <span th:text="${unidad.nombreComercial}">
+                </span>
+
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-striped">
+
+                <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Tipo</th>
+                    <th>Sueldo calculado</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="h : ${haberes}">
+
+                    <td th:text="${h.nombreCompleto}">
+                    </td>
+
+                    <td th:text="${h.tipoEmpleado}">
+                    </td>
+
+                    <td th:text="'$ ' + ${h.sueldoCalculado}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
