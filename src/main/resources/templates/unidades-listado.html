@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Unidades de Venta - Epicentro Gourmet</title>
+
+    <!-- Ruta absoluta con / para que cargue correctamente desde cualquier subruta -->
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <h1>Epicentro Gourmet</h1>
+
+    <div class="navbar-actions">
+
+        <a sec:authorize="!isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/login}">
+            Iniciar sesión
+        </a>
+
+        <a sec:authorize="isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/logout}">
+            Cerrar sesión
+        </a>
+
+    </div>
+
+</header>
+
+<main class="container">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h2 th:text="${festival != null} ? 'Unidades de Venta - ' + ${festival.nombre} : 'Unidades de Venta'">
+                Unidades de Venta
+            </h2>
+        </div>
+
+        <div class="card-body">
+
+            <p th:if="${festival != null}">
+                Conocé las unidades de venta disponibles para el festival
+                <strong th:text="${festival.nombre}">Nombre Festival</strong>.
+            </p>
+
+            <!-- Listado de Unidades de Venta con el mismo formato que la lista de festivales -->
+            <ul class="festival-list" th:if="${unidades != null and !#lists.isEmpty(unidades)}">
+
+                <li class="festival-item" th:each="u : ${unidades}">
+
+                    <h3 class="festival-nombre">
+                        Unidad de Venta #<span th:text="${u.id}">1</span>
+                    </h3>
+
+
+                    <p class="festival-info">
+                        <strong>Nombre comercial:</strong>
+                        <span th:text="${u.nombreComercial}">Nombre de la UDV</span>
+                    </p>
+
+                </li>
+
+            </ul>
+
+            <!-- Mensaje en caso de no tener unidades cargadas -->
+            <div th:if="${unidades == null or #lists.isEmpty(unidades)}" style="margin: 20px 0;">
+                <p class="festival-info">
+                    No hay unidades de venta registradas para este festival.
+                </p>
+            </div>
+
+            <!-- Botón Volver -->
+            <div style="margin-top: 20px;">
+                <a class="btn btn-light" th:href="@{/}">
+                    ← Volver a Festivales
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

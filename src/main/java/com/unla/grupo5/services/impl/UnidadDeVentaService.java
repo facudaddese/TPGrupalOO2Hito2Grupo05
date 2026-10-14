@@ -161,8 +161,11 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     @Override
     @Transactional(readOnly = true)
     public UnidadDeVenta getUdVByUser(String nombreUsuario) {
-        Usuario usuario = usuarioRepository.findByNombreUsuario(nombreUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe: " + nombreUsuario));
+        Usuario usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
+
+        if (usuario == null){
+            throw new IllegalArgumentException("El usuario no existe: " + nombreUsuario);
+        }
 
         UnidadDeVenta unidad = usuario.getUnidadDeVenta();
         if (unidad == null) {
