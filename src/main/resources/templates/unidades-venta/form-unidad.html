@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Unidad de Venta - Epicentro Gourmet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Registrar Unidad de Venta</h4>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${mensajeError}" class="alert alert-danger" role="alert">
+                <span th:text="${mensajeError}"></span>
+            </div>
+
+            <form th:action="@{/unidades-venta/guardar}" th:object="${unidadDTO}" method="post">
+
+                <h5 class="mb-3">Datos de la unidad</h5>
+
+                <div class="mb-3">
+                    <label class="form-label">Festival</label>
+                    <select th:field="*{idFestival}" class="form-select" th:errorclass="is-invalid">
+                        <option value="">-- Seleccionar Festival --</option>
+                        <option th:each="f : ${festivales}" th:value="${f.id}"
+                                th:text="${f.nombre} + ' - ' + ${f.temporada}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:errors="*{idFestival}"></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre comercial</label>
+                        <input type="text" th:field="*{nombreComercial}" class="form-control"
+                               th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{nombreComercial}"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Código</label>
+                        <input type="text" th:field="*{codigo}" class="form-control" th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{codigo}"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Superficie (m²)</label>
+                        <input type="number" th:field="*{superficie}" class="form-control"
+                               th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{superficie}"></div>
+                    </div>
+                </div>
+
+                <hr>
+                <h5 class="mb-3">Usuario del responsable</h5>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">E-mail usuario</label>
+                        <input type="email" th:field="*{email}" class="form-control"
+                               th:errorclass="is-invalid" autocomplete="off"/>
+                        <div class="invalid-feedback" th:errors="*{email}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" th:field="*{password}" class="form-control"
+                               th:errorclass="is-invalid" autocomplete="new-password"/>
+                        <div class="invalid-feedback" th:errors="*{password}"></div>
+                        <div class="form-text">Las credenciales se envían por e-mail.</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Rol</label>
+                    <select th:field="*{rol}" class="form-select" th:errorclass="is-invalid">
+                        <option value="RESPONSABLE">Responsable</option>
+                        <option value="ADMINISTRADOR">Administrador</option>
+                        <option value="EMPLEADO">Empleado</option>
+                    </select>
+                    <div class="invalid-feedback" th:errors="*{rol}"></div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Registrar Unidad de Venta</button>
+                    <a th:href="@{/unidades-venta(idFestival=${unidadDTO.idFestival})}"
+                       class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

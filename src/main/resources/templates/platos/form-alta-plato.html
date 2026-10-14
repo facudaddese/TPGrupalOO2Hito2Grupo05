@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Plato - Epicentro Gourmet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Alta de Plato</h4>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${mensajeError}" class="alert alert-danger" role="alert">
+                <span th:text="${mensajeError}"></span>
+            </div>
+
+            <form th:action="@{/responsable/platos/guardar}" th:object="${platoDTO}" method="post">
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" th:field="*{nombre}" class="form-control" th:errorclass="is-invalid"/>
+                    <div class="invalid-feedback" th:errors="*{nombre}"></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Precio</label>
+                        <input type="number" step="0.01" min="0" th:field="*{precio}" class="form-control"
+                               th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{precio}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Costo de producción</label>
+                        <input type="number" step="0.01" min="0" th:field="*{costoProduccion}" class="form-control"
+                               th:errorclass="is-invalid"/>
+                        <div class="invalid-feedback" th:errors="*{costoProduccion}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Unidad de venta</label>
+                    <input type="text" class="form-control" th:value="${nombreUnidad}" disabled/>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Registrar plato</button>
+                    <a th:href="@{/responsable/platos}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

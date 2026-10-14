@@ -13,6 +13,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Usuario findByNombreUsuario(String nombreUsuario);
 
+    boolean existsByNombreUsuario(String nombreUsuario);
+
     @Query("SELECT u FROM Usuario u JOIN FETCH u.rol WHERE u.nombreUsuario = (:nombreUsuario)")
     public abstract Usuario findByUsuarioAndFetchRol(@Param("nombreUsuario") String nombreUsuario);
 }
