@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Epicentro Gourmet</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
 
@@ -11,29 +13,27 @@
     <h1>Epicentro Gourmet</h1>
 
     <div class="navbar-actions">
-
-        <a sec:authorize="!isAuthenticated()"
-           class="btn btn-light"
-           th:href="@{/login}">
-
-            Iniciar sesión
-
-        </a>
-
-        <a sec:authorize="isAuthenticated()"
-           class="btn btn-light"
-           th:href="@{/logout}">
-
-            Cerrar sesión
-
-        </a>
-
+        <a class="btn btn-light" th:href="@{/logout}">Cerrar sesión</a>
     </div>
 
 </header>
 
 
 <main class="container">
+
+    <!-- Responsable: gestión de su unidad -->
+    <div class="card" sec:authorize="hasRole('RESPONSABLE')">
+
+        <div class="card-header">
+            <h2>Mi unidad</h2>
+        </div>
+
+        <div class="card-body">
+            <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
+            <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
+        </div>
+
+    </div>
 
     <div class="card">
 
@@ -43,42 +43,29 @@
 
         <div class="card-body">
 
-            <p>
-                Conocé los festivales disponibles en Epicentro Gourmet.
-            </p>
-
             <ul class="festival-list">
 
                 <li class="festival-item"
                     th:each="f : ${festivales}">
 
-                    <h3 class="festival-nombre"
-                        th:text="${f.nombre}">
-                        Nombre del festival
+                    <h3 class="festival-nombre">
+                        <!-- El admin entra al festival para ver sus unidades de venta -->
+                        <a sec:authorize="hasRole('ADMIN')"
+                           th:href="@{/unidades-venta(idFestival=${f.id})}"
+                           th:text="${f.nombre}">Nombre del festival</a>
+                        <span sec:authorize="!hasRole('ADMIN')" th:text="${f.nombre}">Nombre del festival</span>
                     </h3>
 
                     <p class="festival-info">
                         <strong>Temporada:</strong>
-
-                        <span th:text="${f.temporada}">
-                            Temporada
-                        </span>
+                        <span th:text="${f.temporada}">Temporada</span>
                     </p>
 
                     <p class="festival-info">
-
                         <strong>Fecha:</strong>
-
-                        <span th:text="${f.fechaInicio}">
-                            01/01/2026
-                        </span>
-
+                        <span th:text="${f.fechaInicio}">01/01/2026</span>
                         a
-
-                        <span th:text="${f.fechaFin}">
-                            10/01/2026
-                        </span>
-
+                        <span th:text="${f.fechaFin}">10/01/2026</span>
                     </p>
 
                 </li>

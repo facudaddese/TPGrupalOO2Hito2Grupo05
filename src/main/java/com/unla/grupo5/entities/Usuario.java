@@ -36,4 +36,9 @@ public class Usuario {
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
+    // Muchos usuarios pertenecen a una sola unidad de venta
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_unidad_venta")
+    private UnidadDeVenta unidadDeVenta;
+
 }
