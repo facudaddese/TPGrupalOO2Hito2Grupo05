@@ -96,21 +96,33 @@ INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_s
 SELECT'empleado@gmail.com','$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',true,1,
 (SELECT id FROM `Rol` WHERE `rol` = 'EMPLEADO' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado@gmail.com');
 
--- =========================================================
--- ASIGNAR RESPONSABLE A LA UDV
--- =========================================================
--- MODIFICADO:
--- Antes hacíamos:
--- id_staff_responsable = 2
---
--- Ahora usamos id_usuario_responsable y buscamos
--- el Usuario RESPONSABLE.
+INSERT
+IGNORE INTO usuario (id, nombre_usuario, password_usuario, usuario_activo, id_staff, id_rol) VALUES
+(1, 'juan.perez@epicentro.com', '123456', true, 1, 1),
+(2, 'maria.gomez@epicentro.com', '123456', true, 2, 1);
 
-UPDATE unidad_de_venta
-SET id_usuario_responsable = (
-    SELECT id
-    FROM Usuario
-    WHERE nombre_usuario = 'responsable@gmail.com'
-    LIMIT 1
-    )
-WHERE id = 1;
+-- ============================================
+-- RESPONSABLES DE LAS UNIDADES DE VENTA
+-- usuario: responsable1@gmail.com -> unidad FT-001 (FoodTruck Gourmet Central)
+-- usuario: responsable2@gmail.com -> unidad PD-001 (Puesto Criollo 1)
+-- contraseña de ambos: responsable123
+-- ============================================
+
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`,`id_unidad_venta`)
+SELECT'responsable1@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1),
+(SELECT id FROM `unidad_de_venta` WHERE `codigo` = 'FT-001' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com');
+
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`,`id_unidad_venta`)
+SELECT'responsable2@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1),
+(SELECT id FROM `unidad_de_venta` WHERE `codigo` = 'PD-001' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable2@gmail.com');
+
+-- Cada usuario queda como responsable de su unidad
+UPDATE `unidad_de_venta`
+SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com' LIMIT 1)
+WHERE `codigo` = 'FT-001' AND `id_usuario_responsable` IS NULL;
+
+UPDATE `unidad_de_venta`
+SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` = 'responsable2@gmail.com' LIMIT 1)
+WHERE `codigo` = 'PD-001' AND `id_usuario_responsable` IS NULL;
