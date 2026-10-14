@@ -1,6 +1,7 @@
 package com.unla.grupo5.repositories;
 
 import com.unla.grupo5.entities.Staff;
+import com.unla.grupo5.entities.UnidadDeVenta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,6 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     List<Staff> findByActivoTrue();
 
     List<Staff> findByUnidadDeVentaIdAndActivoTrue(Long idUnidadVenta);
+
+    List<Staff> findByUnidadDeVentaAndActivoTrue(UnidadDeVenta unidadDeVenta);
 }

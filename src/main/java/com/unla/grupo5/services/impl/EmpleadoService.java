@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +36,9 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
     @Autowired
     private RolRepository rolRepository;
+
+    @Autowired
+    private FestivalRepository festivalRepository;
 
     @Autowired
     private EmailService emailService;
@@ -163,5 +167,70 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         }
 
         return staffRepository.save(empleado);
+    }
+
+    private double calcularFactorDuracion(long dias) {
+        double factor;
+
+        if (dias <= 15) {
+            factor = 0.5;
+        } else if (dias <= 30) {
+            factor = 1.0;
+        } else {
+            factor = ((dias / 15) + 1) * 0.5;
+        }
+        return factor;
+    }
+
+    private double obtenerPlusCocinero(Cocinero cocinero, Costo costo) {
+        double plus;
+
+        switch (cocinero.getCategoria().toUpperCase()) {
+
+            case "COCINERO":
+                plus = costo.getPlusCocinero();
+                break;
+            case "AYUDANTE":
+                plus = costo.getPlusAyudante();
+                break;
+            case "LAVAPLATOS":
+                plus = costo.getPlusLavaplatos();
+                break;
+            default:
+                throw new IllegalArgumentException("Categoría de cocina no válida.");
+        }
+        return plus;
+    }
+
+    @Override
+    public double calcularHaberes(Long idEmpleado, Long idFestival){
+        Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() ->
+                        new IllegalArgumentException("Empleado no encontrado."));
+
+        Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
+                        new IllegalArgumentException("Festival no encontrado."));
+
+        Costo costo = festival.getCosto();
+
+        long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(),festival.getFechaFin()) + 1;
+        double factor = calcularFactorDuracion(diasFestival);
+
+        double sueldoCalculado;
+
+        if (empleado instanceof Cocinero cocinero) {
+            double plus = obtenerPlusCocinero(cocinero, costo);
+            sueldoCalculado = (costo.getSueldoBase() + plus) * factor;
+
+        } else if (empleado instanceof Cajero cajero) {
+            int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), festival.getFechaInicio()).getYears();
+            double antiguedad = aniosAntiguedad * costo.getAntiguedadCajero();
+
+            sueldoCalculado = (costo.getSueldoBase() + antiguedad) * factor;
+
+        } else {
+            throw new IllegalArgumentException("Tipo de empleado no válido para liquidación.");
+        }
+
+        return sueldoCalculado;
     }
 }

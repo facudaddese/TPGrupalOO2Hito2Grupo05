@@ -20,7 +20,7 @@ public class Usuario {
     private Long id;
 
     @Column(name = "nombre_usuario", unique = true, nullable = false)
-    private String nombreUsuario;
+    private String nombreUsuario; //email
 
     @Column(name = "password_usuario", nullable = false)
     private String password;
