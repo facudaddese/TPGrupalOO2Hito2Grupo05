@@ -14,3 +14,5 @@
 - ABM empleados (Facundo D'Addese)
 - Registro de Unidad de Venta con su responsable (Daira Mazza)
 - Alta de plato en Unidad de venta (Daira Mazza)
+- Consultar festivales (Lautaro Gonzalez)
+- Ver unidades de venta asociadas a un festival (Lautaro Gonzalez)
