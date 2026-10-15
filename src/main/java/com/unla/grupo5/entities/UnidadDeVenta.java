@@ -47,4 +47,12 @@ public class UnidadDeVenta {
 
     @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Pedido> lstPedidos = new HashSet<>();
+
+    public double getRecaudacionTotal(){
+        if(lstPedidos == null || lstPedidos.isEmpty()){
+            return 0.0;
+        }
+        return lstPedidos.stream().mapToDouble(Pedido::getTotal).sum();
+    }
+
 }

@@ -17,4 +17,6 @@ public interface UnidadDeVentaService {
 
     // Unidad de venta a la que pertenece el usuario (el responsable) logueado
     UnidadDeVenta getUdVByUser(String nombreUsuario);
+
+    List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden);
 }
