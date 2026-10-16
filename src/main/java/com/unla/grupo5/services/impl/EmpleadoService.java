@@ -1,7 +1,9 @@
 package com.unla.grupo5.services.impl;
 
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
+import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.*;
+import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import jakarta.transaction.Transactional;
@@ -183,54 +185,61 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     }
 
     private double obtenerPlusCocinero(Cocinero cocinero, Costo costo) {
+
         double plus;
+        String categoria = cocinero.getCategoria().toUpperCase();
 
-        switch (cocinero.getCategoria().toUpperCase()) {
+        if (categoria.equals("COCINERO")) {
+            plus = costo.getPlusCocinero();
 
-            case "COCINERO":
-                plus = costo.getPlusCocinero();
-                break;
-            case "AYUDANTE":
-                plus = costo.getPlusAyudante();
-                break;
-            case "LAVAPLATOS":
-                plus = costo.getPlusLavaplatos();
-                break;
-            default:
-                throw new IllegalArgumentException("Categoría de cocina no válida.");
+        } else if (categoria.equals("AYUDANTE")) {
+            plus = costo.getPlusAyudante();
+
+        } else {
+            plus = costo.getPlusLavaplatos();
         }
+
         return plus;
     }
 
     @Override
-    public double calcularHaberes(Long idEmpleado, Long idFestival){
-        Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() ->
-                        new IllegalArgumentException("Empleado no encontrado."));
+    public LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival) {
 
-        Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
-                        new IllegalArgumentException("Festival no encontrado."));
+        Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() -> new RecursoNoEncontradoException("Empleado", idEmpleado));
+        Festival festival = festivalRepository.findById(idFestival).orElseThrow(() -> new RecursoNoEncontradoException("Festival", idFestival));
 
         Costo costo = festival.getCosto();
 
-        long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(),festival.getFechaFin()) + 1;
+        long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
+
         double factor = calcularFactorDuracion(diasFestival);
 
-        double sueldoCalculado;
+        double sueldoBase = costo.getSueldoBase();
+        double montoAdicional = 0;
+        double sueldoCalculado = 0;
+        String tipoEmpleado = null;
+        String conceptoAdicional = null;
 
         if (empleado instanceof Cocinero cocinero) {
+
             double plus = obtenerPlusCocinero(cocinero, costo);
-            sueldoCalculado = (costo.getSueldoBase() + plus) * factor;
+            tipoEmpleado = "Cocinero";
+            conceptoAdicional = "Plus " + cocinero.getCategoria();
+            montoAdicional = plus;
+            sueldoCalculado = (sueldoBase + montoAdicional) * factor;
 
         } else if (empleado instanceof Cajero cajero) {
+
             int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), festival.getFechaInicio()).getYears();
-            double antiguedad = aniosAntiguedad * costo.getAntiguedadCajero();
 
-            sueldoCalculado = (costo.getSueldoBase() + antiguedad) * factor;
-
-        } else {
-            throw new IllegalArgumentException("Tipo de empleado no válido para liquidación.");
+            montoAdicional = aniosAntiguedad * costo.getAntiguedadCajero();
+            tipoEmpleado = "Cajero";
+            conceptoAdicional = "Antigüedad: " + aniosAntiguedad + " años";
+            sueldoCalculado = (sueldoBase + montoAdicional) * factor;
         }
 
-        return sueldoCalculado;
+        LiquidacionHaberesDTO liquidacion = new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado);
+
+        return liquidacion;
     }
 }
