@@ -4,12 +4,10 @@
 
 <head>
     <meta charset="UTF-8">
-
     <title>Liquidación de Haberes</title>
 
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
 <body class="bg-light">
@@ -26,93 +24,101 @@
 
         <div class="card-body">
 
-            <form
-                    th:action="@{/responsable/empleados/haberes/calcular}"
-                    method="post">
+            <div th:if="${mensajeError}"
+                 class="alert alert-danger"
+                 th:text="${mensajeError}">
+            </div>
 
-                <div class="mb-3">
+            <div th:if="${mensajeError == null}">
 
-                    <label class="form-label">
-                        Festival
-                    </label>
+                <div class="mb-4">
 
-                    <select
-                            name="idFestival"
-                            class="form-select"
-                            required>
+                    <h5>
+                        Festival:
+                        <span th:text="${festival.nombre}"></span>
+                    </h5>
 
-                        <option value="">
-                            -- Seleccionar Festival --
-                        </option>
+                    <p class="mb-1">
+                        <strong>Unidad de Venta:</strong>
+                        <span th:text="${unidad.nombreComercial}"></span>
+                    </p>
 
-                        <option
-                                th:each="festival : ${festivales}"
-                                th:value="${festival.id}"
-                                th:text="${festival.nombre}">
-                        </option>
-
-                    </select>
+                    <p class="mb-0">
+                        <strong>Duración:</strong>
+                        <span th:text="${diasFestival}"></span> días
+                    </p>
 
                 </div>
 
-                <button
-                        type="submit"
-                        class="btn btn-primary">
+                <table class="table table-striped table-bordered">
 
-                    Calcular haberes
+                    <thead class="table-dark">
 
-                </button>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Tipo</th>
+                        <th>Sueldo Base</th>
+                        <th>Adicional</th>
+                        <th>Factor</th>
+                        <th>Cálculo</th>
+                        <th>Total</th>
+                    </tr>
 
-            </form>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="h : ${haberes}">
+
+                        <td th:text="${h.nombreCompleto}"></td>
+
+                        <td th:text="${h.tipoEmpleado}"></td>
+
+                        <td th:text="${'$ ' + h.sueldoBase}"></td>
+
+                        <td>
+                            <span th:text="${h.plus}"></span>
+                            <br>
+                            <strong th:text="${'$ ' + h.montoAdicional}"></strong>
+                        </td>
+
+                        <td th:text="${h.factorDuracion}"></td>
+
+                        <td>
+                            (
+                            <span th:text="${'$' + h.sueldoBase}"></span>
+                            +
+                            <span th:text="${'$' + h.montoAdicional}"></span>
+                            )
+                            ×
+                            <span th:text="${h.factorDuracion}"></span>
+                        </td>
+
+                        <td>
+                            <strong th:text="${'$ ' + h.sueldoCalculado}"></strong>
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+                <div th:if="${#lists.isEmpty(haberes)}"
+                     class="alert alert-info">
+
+                    No hay empleados activos en esta Unidad de Venta.
+
+                </div>
 
         </div>
 
-    </div>
+            <a th:href="@{/responsable/empleados}"
+               class="btn btn-secondary">
 
+                Volver al listado
 
-    <div class="card shadow-sm mt-4"
-         th:if="${haberes != null}">
-
-        <div class="card-header">
-            <h5 class="mb-0">
-
-                Empleados de
-                <span th:text="${unidad.nombreComercial}">
-                </span>
-
-            </h5>
-        </div>
-
-        <div class="card-body">
-
-            <table class="table table-striped">
-
-                <thead>
-                <tr>
-                    <th>Empleado</th>
-                    <th>Tipo</th>
-                    <th>Sueldo calculado</th>
-                </tr>
-                </thead>
-
-                <tbody>
-
-                <tr th:each="h : ${haberes}">
-
-                    <td th:text="${h.nombreCompleto}">
-                    </td>
-
-                    <td th:text="${h.tipoEmpleado}">
-                    </td>
-
-                    <td th:text="'$ ' + ${h.sueldoCalculado}">
-                    </td>
-
-                </tr>
-
-                </tbody>
-
-            </table>
+            </a>
 
         </div>
 
