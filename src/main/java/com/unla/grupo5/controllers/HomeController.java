@@ -35,7 +35,7 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/festivales/{id}/unidades")
+    @GetMapping("/admin/festivales/{id}/unidades")
     public String verUnidadesDeVenta(@PathVariable("id") Long id, @RequestParam(name = "orden", defaultValue = "desc") String orden, Model model){
         Festival festival = festivalRepository.findById(id).orElse(null);
 

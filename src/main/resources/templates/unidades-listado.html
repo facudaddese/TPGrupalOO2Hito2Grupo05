@@ -55,12 +55,12 @@
             <div style="margin: 15px 0; display: flex; gap: 10px; align-items: center;">
                 <strong>Ordenar por recaudación:</strong>
                 <a class="btn btn-light"
-                    th:href="@{/festivales/{id}/unidades(id=${festival.id}, orden='desc')}"
+                    th:href="@{/admin/festivales/{id}/unidades(id=${festival.id}, orden='desc')}"
                     th:style="${ordenActual == 'desc' or ordenActual == null} ? 'font-weight: bold; border: 1px solid #000;' : ''">
                     ↓ Mayor a menor (Desc)
                 </a>
                 <a class="btn btn-light"
-                   th:href="@{/festivales/{id}/unidades(id=${festival.id}, orden='asc')}"
+                   th:href="@{/admin/festivales/{id}/unidades(id=${festival.id}, orden='asc')}"
                    th:style="${ordenActual == 'asc'} ? 'font-weight: bold; border: 1px solid #000;' : ''">
                     ↑ Menor a mayor (Asc)
                 </a>

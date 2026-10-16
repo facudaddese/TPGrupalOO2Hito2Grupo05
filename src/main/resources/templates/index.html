@@ -68,9 +68,9 @@
                         <span th:text="${f.fechaFin}">10/01/2026</span>
                     </p>
 
-                    <div style="margin-top: 15px;">
+                    <div style="margin-top: 15px;" sec:authorize="hasRole('ADMIN')">
                         <a class="btn btn-light"
-                           th:href="@{/festivales/{id}/unidades(id=${f.id})}">
+                           th:href="@{/admin/festivales/{id}/unidades(id=${f.id})}">
                             Ver Unidades de Venta
                         </a>
                     </div>
