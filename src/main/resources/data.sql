@@ -40,6 +40,13 @@ IGNORE INTO unidad_de_venta (id, nombre_comercial, codigo, superficie, id_festiv
 (2, 'Puesto Criollo 1', 'PD-001', 10, 1);
 
 INSERT
+IGNORE INTO pedido (id, fecha, total, id_unidad_de_venta) VALUES
+(1, '2026-12-05', 45000.50, 1),
+(2, '2026-12-10', 32000.00, 1),
+(3, '2026-12-15', 18500.00, 2),
+(4, '2026-12-20', 95000.00, 2);
+
+INSERT
 IGNORE INTO staff (id, dni, nombre, apellido, fecha_nacimiento, fecha_ingreso, sueldo, activo, id_unidad_venta) VALUES
 (1, 35123456, 'Juan', 'Pérez', '1990-05-15', '2023-01-10', 850000.00, true, 1),
 (2, 38987654, 'María', 'Gómez', '1995-08-20', '2023-03-01', 920000.00, true, 1);

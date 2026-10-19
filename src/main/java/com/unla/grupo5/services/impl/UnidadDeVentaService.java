@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -174,5 +175,20 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         // Se fuerza la carga dentro de la transacción (la relación es LAZY)
         unidad.getNombreComercial();
         return unidad;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden){
+        List<UnidadDeVenta> unidades = unidadDeVentaRepository.findByFestivalIdWithPedidos(idFestival);
+
+        if("asc".equalsIgnoreCase(orden)){
+            unidades.sort(Comparator.comparingDouble(UnidadDeVenta::getRecaudacionTotal));
+        }else{
+            unidades.sort(Comparator.comparingDouble(UnidadDeVenta::getRecaudacionTotal).reversed());
+        }
+
+        return unidades;
+
     }
 }
