@@ -3,10 +3,9 @@ package com.unla.grupo5.controllers;
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
 import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.*;
-import com.unla.grupo5.repositories.FestivalRepository;
-import com.unla.grupo5.repositories.StaffRepository;
-import com.unla.grupo5.repositories.UnidadDeVentaRepository;
-import com.unla.grupo5.repositories.UsuarioRepository;
+import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
+import com.unla.grupo5.exceptions.UnidadDeVentaNoAsignadaException;
+import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmpleadoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -146,40 +146,37 @@ public class EmpleadoController {
     }
 
     @GetMapping("/haberes")
-    public String mostrarCalculoHaberes(Model model) {
-        model.addAttribute("festivales", festivalRepository.findAll());
-        return "empleados/calculo-haberes";
-    }
+    public String mostrarCalculoHaberes(Model model, Authentication authentication) {
 
-    @PostMapping("/haberes/calcular")
-    public String calcularHaberes(@RequestParam Long idFestival, Model model, Authentication authentication) {
+        try {
+            String nombreUsuario = authentication.getName();
+            Usuario responsable = usuarioRepository.findByNombreUsuario(nombreUsuario);
+            UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable).orElseThrow(UnidadDeVentaNoAsignadaException::new);
 
-        String nombreUsuario = authentication.getName();
+            Festival festival = unidad.getFestival();
 
-        Usuario responsable = usuarioRepository.findByNombreUsuario(nombreUsuario);
+            List<Staff> empleados = staffRepository.findByUnidadDeVentaAndActivoTrue(unidad);
 
-        UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable).orElseThrow(() ->
-                                new IllegalArgumentException("No posee una Unidad de Venta asignada."));
+            List<LiquidacionHaberesDTO> haberes = new ArrayList<>();
 
-        List<Staff> empleados = staffRepository.findByUnidadDeVentaAndActivoTrue(unidad);
+            for (Staff empleado : empleados) {
+                LiquidacionHaberesDTO liquidacion = empleadoService.calcularHaberes(empleado.getId(), festival.getId());
+                haberes.add(liquidacion);
+            }
 
-        List<LiquidacionHaberesDTO> haberes = new ArrayList<>();
+            long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
 
-        for (Staff empleado : empleados) {
-            double sueldo =
-                    empleadoService.calcularHaberes(empleado.getId(), idFestival);
+            model.addAttribute("diasFestival", diasFestival);
+            model.addAttribute("haberes", haberes);
+            model.addAttribute("unidad", unidad);
+            model.addAttribute("festival", festival);
 
-            String tipo = empleado instanceof Cocinero
-                            ? "Cocinero"
-                            : "Cajero";
+        } catch (UnidadDeVentaNoAsignadaException e) {
+            model.addAttribute("mensajeError", e.getMessage());
 
-            haberes.add(new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre()+ " " + empleado.getApellido(), tipo, sueldo));
+        } catch (RecursoNoEncontradoException e) {
+            model.addAttribute("mensajeError", e.getMessage());
         }
-
-        model.addAttribute("haberes", haberes);
-        model.addAttribute("unidad", unidad);
-        model.addAttribute("festivales", festivalRepository.findAll());
-        model.addAttribute("festivalSeleccionado", idFestival);
 
         return "empleados/calculo-haberes";
     }

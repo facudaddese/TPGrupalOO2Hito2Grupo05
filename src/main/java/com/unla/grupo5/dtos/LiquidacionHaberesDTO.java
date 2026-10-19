@@ -9,8 +9,20 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LiquidacionHaberesDTO {
     private Long idEmpleado;
+
     private String nombreCompleto;
+
     private String tipoEmpleado;
+
+    private double sueldoBase;
+
+    private String plus;
+
+    private double montoAdicional;
+
+    private double factorDuracion;
+
     private double sueldoCalculado;
+
 
 }

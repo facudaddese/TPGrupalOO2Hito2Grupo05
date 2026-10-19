@@ -115,15 +115,13 @@ IGNORE INTO usuario (id, nombre_usuario, password_usuario, usuario_activo, id_st
 -- contraseña de ambos: responsable123
 -- ============================================
 
-INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`,`id_unidad_venta`)
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'responsable1@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
-(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1),
-(SELECT id FROM `unidad_de_venta` WHERE `codigo` = 'FT-001' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com');
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1);
 
-INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`,`id_unidad_venta`)
+INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'responsable2@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
-(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1),
-(SELECT id FROM `unidad_de_venta` WHERE `codigo` = 'PD-001' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable2@gmail.com');
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1);
 
 -- Cada usuario queda como responsable de su unidad
 UPDATE `unidad_de_venta`
