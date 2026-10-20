@@ -171,6 +171,14 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return staffRepository.save(empleado);
     }
 
+    @Override
+    @Transactional
+    public void darDeBajaEmpleado(Long id) {
+        Staff empleado = buscarPorId(id);
+        empleado.setActivo(false);
+        staffRepository.save(empleado);
+    }
+
     private double calcularFactorDuracion(long dias) {
         double factor;
 
@@ -185,16 +193,13 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     }
 
     private double obtenerPlusCocinero(Cocinero cocinero, Costo costo) {
-
         double plus;
         String categoria = cocinero.getCategoria().toUpperCase();
 
         if (categoria.equals("COCINERO")) {
             plus = costo.getPlusCocinero();
-
         } else if (categoria.equals("AYUDANTE")) {
             plus = costo.getPlusAyudante();
-
         } else {
             plus = costo.getPlusLavaplatos();
         }
@@ -204,7 +209,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
     @Override
     public LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival) {
-
         Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() -> new RecursoNoEncontradoException("Empleado", idEmpleado));
         Festival festival = festivalRepository.findById(idFestival).orElseThrow(() -> new RecursoNoEncontradoException("Festival", idFestival));
 
@@ -221,7 +225,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         String conceptoAdicional = null;
 
         if (empleado instanceof Cocinero cocinero) {
-
             double plus = obtenerPlusCocinero(cocinero, costo);
             tipoEmpleado = "Cocinero";
             conceptoAdicional = "Plus " + cocinero.getCategoria();
@@ -229,7 +232,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             sueldoCalculado = (sueldoBase + montoAdicional) * factor;
 
         } else if (empleado instanceof Cajero cajero) {
-
             int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), festival.getFechaInicio()).getYears();
 
             montoAdicional = aniosAntiguedad * costo.getAntiguedadCajero();
@@ -238,8 +240,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             sueldoCalculado = (sueldoBase + montoAdicional) * factor;
         }
 
-        LiquidacionHaberesDTO liquidacion = new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado);
-
-        return liquidacion;
+        return new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado);
     }
 }

@@ -145,6 +145,18 @@ public class EmpleadoController {
         }
     }
 
+    // Baja lógica de empleado
+    @PostMapping("/baja/{id}")
+    public String darDeBajaEmpleado(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            empleadoService.darDeBajaEmpleado(id);
+            redirectAttributes.addFlashAttribute("mensajeExito", "Empleado dado de baja correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error al dar de baja al empleado: " + e.getMessage());
+        }
+        return "redirect:/responsable/empleados";
+    }
+
     @GetMapping("/haberes")
     public String mostrarCalculoHaberes(Model model, Authentication authentication) {
 

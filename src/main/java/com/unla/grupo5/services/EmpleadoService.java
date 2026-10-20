@@ -17,4 +17,5 @@ public interface EmpleadoService {
 
     LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival);
 
+    void darDeBajaEmpleado(Long id);
 }

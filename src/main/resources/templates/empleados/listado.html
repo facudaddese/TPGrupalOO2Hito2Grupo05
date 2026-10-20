@@ -10,20 +10,22 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Listado de Empleados</h2>
     <div class="d-flex gap-2">
-    <a th:href="@{/responsable/empleados/nuevo}" class="btn btn-primary">Nuevo Empleado</a>
-    <a th:href="@{/responsable/empleados/haberes}" class="btn btn-primary">Calcular haberes</a>
+        <a th:href="@{/responsable/empleados/nuevo}" class="btn btn-primary">Nuevo Empleado</a>
+        <a th:href="@{/responsable/empleados/haberes}" class="btn btn-primary">Calcular haberes</a>
     </div>
 </div>
 
 <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+<div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
 
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered align-middle">
     <thead class="table-dark">
     <tr>
         <th>ID</th>
         <th>Nombre</th>
         <th>Apellido</th>
         <th>DNI</th>
+        <th>Estado</th>
         <th>Acciones</th>
     </tr>
     </thead>
@@ -34,7 +36,22 @@
         <td th:text="${emp.apellido}"></td>
         <td th:text="${emp.dni}"></td>
         <td>
-            <a th:href="@{/responsable/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">Editar</a>
+            <span th:if="${emp.activo}" class="badge bg-success">Activo</span>
+            <span th:unless="${emp.activo}" class="badge bg-secondary">Inactivo</span>
+        </td>
+        <td>
+            <div class="d-flex gap-1">
+                <a th:href="@{/responsable/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">Editar</a>
+
+                <form th:action="@{/responsable/empleados/baja/{id}(id=${emp.id})}" method="post" style="display:inline;">
+                    <button type="submit"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Estás seguro de que querés dar de baja a este empleado?');"
+                            th:disabled="${!emp.activo}">
+                        Dar de baja
+                    </button>
+                </form>
+            </div>
         </td>
     </tr>
     </tbody>
