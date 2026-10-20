@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Unidades de Venta - Epicentro Gourmet</title>
+
+    <!-- Ruta absoluta con / para que cargue correctamente desde cualquier subruta -->
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <h1>Epicentro Gourmet</h1>
+
+    <div class="navbar-actions">
+
+        <a sec:authorize="!isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/login}">
+            Iniciar sesión
+        </a>
+
+        <a sec:authorize="isAuthenticated()"
+           class="btn btn-light"
+           th:href="@{/logout}">
+            Cerrar sesión
+        </a>
+
+    </div>
+
+</header>
+
+<main class="container">
+
+    <div class="card">
+
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 th:text="${festival != null} ? 'Unidades de Venta - ' + ${festival.nombre} : 'Unidades de Venta'">
+                Unidades de Venta
+            </h2>
+        </div>
+
+        <div class="card-body">
+
+            <p th:if="${festival != null}">
+                Conocé las unidades de venta disponibles para el festival
+                <strong th:text="${festival.nombre}">Nombre Festival</strong>.
+            </p>
+
+            <div style="margin: 15px 0; display: flex; gap: 10px; align-items: center;">
+                <strong>Ordenar por recaudación:</strong>
+                <a class="btn btn-light"
+                    th:href="@{/admin/festivales/{id}/unidades(id=${festival.id}, orden='desc')}"
+                    th:style="${ordenActual == 'desc' or ordenActual == null} ? 'font-weight: bold; border: 1px solid #000;' : ''">
+                    ↓ Mayor a menor (Desc)
+                </a>
+                <a class="btn btn-light"
+                   th:href="@{/admin/festivales/{id}/unidades(id=${festival.id}, orden='asc')}"
+                   th:style="${ordenActual == 'asc'} ? 'font-weight: bold; border: 1px solid #000;' : ''">
+                    ↑ Menor a mayor (Asc)
+                </a>
+            </div>
+
+            <!-- Listado de Unidades de Venta con el mismo formato que la lista de festivales -->
+            <ul class="festival-list" th:if="${unidades != null and !#lists.isEmpty(unidades)}">
+
+                <li class="festival-item" th:each="u : ${unidades}">
+
+                    <h3 class="festival-nombre" th:text="${u.nombreComercial}">
+                        Nombre Comercial
+                    </h3>
+
+
+                    <p class="festival-info">
+                        <strong>Código:</strong>
+                        <span th:text="${u.codigo}">Código</span>
+                    </p>
+
+                    <p class="festival-info">
+                        <strong>Recaudación Total:</strong>
+                        $<span th:text="${#numbers.formatDecimal(u.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                    </p>
+
+                </li>
+
+            </ul>
+
+            <!-- Mensaje en caso de no tener unidades cargadas -->
+            <div th:if="${unidades == null or #lists.isEmpty(unidades)}" style="margin: 20px 0;">
+                <p class="festival-info">
+                    No hay unidades de venta registradas para este festival.
+                </p>
+            </div>
+
+            <!-- Botón Volver -->
+            <div style="margin-top: 20px;">
+                <a class="btn btn-light" th:href="@{/}">
+                    ← Volver a Festivales
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

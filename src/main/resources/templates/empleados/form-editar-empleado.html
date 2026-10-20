@@ -18,7 +18,7 @@
                 <span th:text="${mensajeError}"></span>
             </div>
 
-            <form th:action="@{/empleados/editar/{id}(id=${empleadoId})}" th:object="${empleadoDTO}" method="post">
+            <form th:action="@{/responsable/empleados/editar/{id}(id=${empleadoId})}" th:object="${empleadoDTO}" method="post">
 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a th:href="@{/empleados}" class="btn btn-secondary btn-lg">Cancelar</a>
+                    <a th:href="@{/responsable/empleados}" class="btn btn-secondary btn-lg">Cancelar</a>
                     <button type="submit" class="btn btn-warning btn-lg">Guardar Cambios</button>
                 </div>
 

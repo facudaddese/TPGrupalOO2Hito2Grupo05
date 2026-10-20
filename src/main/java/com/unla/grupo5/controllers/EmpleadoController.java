@@ -1,23 +1,27 @@
 package com.unla.grupo5.controllers;
 
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
-import com.unla.grupo5.entities.Cajero;
-import com.unla.grupo5.entities.Cocinero;
-import com.unla.grupo5.entities.Staff;
-import com.unla.grupo5.repositories.UnidadDeVentaRepository;
+import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
+import com.unla.grupo5.entities.*;
+import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
+import com.unla.grupo5.exceptions.UnidadDeVentaNoAsignadaException;
+import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmpleadoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/empleados")
+@RequestMapping("/responsable/empleados")
 public class EmpleadoController {
 
     @Autowired
@@ -25,6 +29,15 @@ public class EmpleadoController {
 
     @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
+
+    @Autowired
+    private FestivalRepository festivalRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private StaffRepository staffRepository;
 
     private void cargarAtributosFormulario(Model model) {
         model.addAttribute("unidadesVenta", unidadDeVentaRepository.findAll());
@@ -55,7 +68,7 @@ public class EmpleadoController {
         try {
             empleadoService.registrarEmpleado(dto);
             redirect.addFlashAttribute("mensajeExito", "Empleado registrado correctamente. Se han enviado las credenciales por e-mail.");
-            return "redirect:/empleados";
+            return "redirect:/responsable/empleados";
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
             cargarAtributosFormulario(model);
@@ -123,12 +136,48 @@ public class EmpleadoController {
         try {
             empleadoService.modificarEmpleado(id, dto);
             redirectAttributes.addFlashAttribute("mensajeExito", "Empleado modificado correctamente.");
-            return "redirect:/empleados";
+            return "redirect:/responsable/empleados";
         } catch (Exception e) {
             model.addAttribute("mensajeError", e.getMessage());
             model.addAttribute("empleadoId", id);
             cargarAtributosFormulario(model);
             return "empleados/form-editar-empleado";
         }
+    }
+
+    @GetMapping("/haberes")
+    public String mostrarCalculoHaberes(Model model, Authentication authentication) {
+
+        try {
+            String nombreUsuario = authentication.getName();
+            Usuario responsable = usuarioRepository.findByNombreUsuario(nombreUsuario);
+            UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable).orElseThrow(UnidadDeVentaNoAsignadaException::new);
+
+            Festival festival = unidad.getFestival();
+
+            List<Staff> empleados = staffRepository.findByUnidadDeVentaAndActivoTrue(unidad);
+
+            List<LiquidacionHaberesDTO> haberes = new ArrayList<>();
+
+            for (Staff empleado : empleados) {
+                LiquidacionHaberesDTO liquidacion = empleadoService.calcularHaberes(empleado.getId(), festival.getId());
+                haberes.add(liquidacion);
+            }
+
+            long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
+
+            model.addAttribute("diasFestival", diasFestival);
+            model.addAttribute("haberes", haberes);
+            model.addAttribute("unidad", unidad);
+            model.addAttribute("festival", festival);
+
+        } catch (UnidadDeVentaNoAsignadaException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+
+        } catch (RecursoNoEncontradoException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+        }
+
+        return "empleados/calculo-haberes";
     }
 }
