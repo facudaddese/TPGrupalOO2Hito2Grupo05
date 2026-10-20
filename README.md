@@ -12,6 +12,7 @@
 ## Casos de uso realizados
 
 - ABM empleados (Facundo D'Addese)
+- Vista básica con liquidación de sueldo (Facundo D'Addese)
 - Registro de Unidad de Venta con su responsable (Daira Mazza)
 - Alta de plato en Unidad de venta (Daira Mazza)
 - Consultar festivales (Lautaro Gonzalez)
