@@ -1,15 +1,21 @@
 package com.unla.grupo5.services.impl;
 
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
+import com.unla.grupo5.dtos.LiquidacionDTO;
+import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.*;
+import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,7 +42,16 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     private RolRepository rolRepository;
 
     @Autowired
+    private FestivalRepository festivalRepository;
+
+    @Autowired
     private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public EmpleadoService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private void validarDatosEmpleado(EmpleadoRequestDTO dto) {
         int edad = Period.between(dto.getFechaNacimiento(), LocalDate.now()).getYears();
@@ -90,7 +105,7 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(dto.getEmail());
-        usuario.setPassword(passwordGenerada);
+        usuario.setPassword(passwordEncoder.encode(passwordGenerada));
         usuario.setActivo(true);
         usuario.setStaff(empleadoGuardado);
         usuarioRepository.save(usuario);
@@ -156,5 +171,114 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         }
 
         return staffRepository.save(empleado);
+    }
+
+    @Override
+    public List<LiquidacionDTO> calcularLiquidaciones() {
+        List<Staff> empleados = staffRepository.findAll();
+        List<LiquidacionDTO> liquidaciones = new ArrayList<>();
+
+        for (Staff emp : empleados) {
+            if (emp.isActivo()) {
+                double sueldoBase = emp.getSueldo();
+                double plus = 0.0;
+                String rolDetalle = "Empleado General";
+
+                if (emp instanceof Cocinero cocinero) {
+                    rolDetalle = "Cocinero (" + cocinero.getCategoria() + ")";
+                    if ("CHEF".equalsIgnoreCase(cocinero.getCategoria())) {
+                        plus = sueldoBase * 0.15;
+                    } else {
+                        plus = sueldoBase * 0.10;
+                    }
+                } else if (emp instanceof Cajero cajero) {
+                    rolDetalle = "Cajero (" + cajero.getTurnoTrabajo() + ")";
+                    if ("NOCHE".equalsIgnoreCase(cajero.getTurnoTrabajo())) {
+                        plus = sueldoBase * 0.10;
+                    }
+                }
+
+                double totalLiquido = sueldoBase + plus;
+
+                LiquidacionDTO dto = new LiquidacionDTO(
+                        emp.getId(),
+                        emp.getNombre() + " " + emp.getApellido(),
+                        emp.getDni(),
+                        rolDetalle,
+                        emp.getFechaIngreso(),
+                        sueldoBase,
+                        plus,
+                        totalLiquido
+                );
+
+                liquidaciones.add(dto);
+            }
+        }
+
+        return liquidaciones;
+    }
+
+    private double calcularFactorDuracion(long dias) {
+        double factor;
+
+        if (dias <= 15) {
+            factor = 0.5;
+        } else if (dias <= 30) {
+            factor = 1.0;
+        } else {
+            factor = ((dias / 15) + 1) * 0.5;
+        }
+        return factor;
+    }
+
+    private double obtenerPlusCocinero(Cocinero cocinero, Costo costo) {
+        double plus;
+        String categoria = cocinero.getCategoria().toUpperCase();
+
+        if (categoria.equals("COCINERO")) {
+            plus = costo.getPlusCocinero();
+        } else if (categoria.equals("AYUDANTE")) {
+            plus = costo.getPlusAyudante();
+        } else {
+            plus = costo.getPlusLavaplatos();
+        }
+
+        return plus;
+    }
+
+    @Override
+    public LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival) {
+        Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() -> new RecursoNoEncontradoException("Empleado", idEmpleado));
+        Festival festival = festivalRepository.findById(idFestival).orElseThrow(() -> new RecursoNoEncontradoException("Festival", idFestival));
+
+        Costo costo = festival.getCosto();
+
+        long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
+
+        double factor = calcularFactorDuracion(diasFestival);
+
+        double sueldoBase = costo.getSueldoBase();
+        double montoAdicional = 0;
+        double sueldoCalculado = 0;
+        String tipoEmpleado = null;
+        String conceptoAdicional = null;
+
+        if (empleado instanceof Cocinero cocinero) {
+            double plus = obtenerPlusCocinero(cocinero, costo);
+            tipoEmpleado = "Cocinero";
+            conceptoAdicional = "Plus " + cocinero.getCategoria();
+            montoAdicional = plus;
+            sueldoCalculado = (sueldoBase + montoAdicional) * factor;
+
+        } else if (empleado instanceof Cajero cajero) {
+            int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), festival.getFechaInicio()).getYears();
+
+            montoAdicional = aniosAntiguedad * costo.getAntiguedadCajero();
+            tipoEmpleado = "Cajero";
+            conceptoAdicional = "Antigüedad: " + aniosAntiguedad + " años";
+            sueldoCalculado = (sueldoBase + montoAdicional) * factor;
+        }
+
+        return new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado);
     }
 }
