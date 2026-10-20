@@ -174,6 +174,14 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     }
 
     @Override
+    @Transactional
+    public void darDeBajaEmpleado(Long id) {
+        Staff empleado = buscarPorId(id);
+        empleado.setActivo(false);
+        staffRepository.save(empleado);
+    }
+
+    @Override
     public List<LiquidacionDTO> calcularLiquidaciones() {
         List<Staff> empleados = staffRepository.findAll();
         List<LiquidacionDTO> liquidaciones = new ArrayList<>();
