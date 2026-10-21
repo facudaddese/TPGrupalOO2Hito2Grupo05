@@ -117,11 +117,11 @@ IGNORE INTO usuario (id, nombre_usuario, password_usuario, usuario_activo, id_st
 
 INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'responsable1@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
-(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1);
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario`WHERE `nombre_usuario` = 'responsable1@gmail.com');
 
 INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'responsable2@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ.HJZQxDDqla',true,NULL,
-(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1);
+(SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario`WHERE `nombre_usuario` = 'responsable2@gmail.com');
 
 -- Cada usuario queda como responsable de su unidad
 UPDATE `unidad_de_venta`
