@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Mis Sueldos</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div th:if="${mensajeError}"
+         class="alert alert-danger"
+         th:text="${mensajeError}">
+    </div>
+
+    <div class="card shadow-sm" th:if="${mensajeError == null}">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-0">
+                Sueldos por Festival
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${mensajeError}"
+                 class="alert alert-danger"
+                 th:text="${mensajeError}">
+            </div>
+
+            <div th:if="${mensajeError == null}">
+
+                <h5 th:text="${empleado.nombre + ' ' + empleado.apellido}">
+                </h5>
+
+                <hr>
+
+                <p>
+                    <strong>Festival:</strong>
+
+                    <span th:text="${festival.nombre}">
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Unidad de Venta:</strong>
+
+                    <span th:text="${unidad.nombreComercial}">
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Tipo:</strong>
+
+                    <span th:text="${liquidacion.tipoEmpleado}">
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Sueldo Base:</strong>
+
+                    $ <span th:text="${liquidacion.sueldoBase}">
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Adicional:</strong>
+
+                    <span th:text="${liquidacion.plus}">
+                    </span>
+
+                    -
+                    $ <span th:text="${liquidacion.montoAdicional}">
+                    </span>
+                </p>
+
+                <hr>
+
+                <h4>
+                    Total recibido:
+                    $ <span th:text="${liquidacion.sueldoCalculado}">
+                    </span>
+                </h4>
+
+            </div>
+
+            <a th:href="@{/}"
+               class="btn btn-secondary mt-3">
+                Volver
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
