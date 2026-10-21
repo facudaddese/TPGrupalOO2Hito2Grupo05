@@ -16,8 +16,6 @@ public interface EmpleadoService {
 
     List<Staff> traerTodos();
 
-    List<LiquidacionDTO> calcularLiquidaciones();
-
     LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival);
 
     void darDeBajaEmpleado(Long id);

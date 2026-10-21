@@ -181,51 +181,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         staffRepository.save(empleado);
     }
 
-    @Override
-    public List<LiquidacionDTO> calcularLiquidaciones() {
-        List<Staff> empleados = staffRepository.findAll();
-        List<LiquidacionDTO> liquidaciones = new ArrayList<>();
-
-        for (Staff emp : empleados) {
-            if (emp.isActivo()) {
-                double sueldoBase = emp.getSueldo();
-                double plus = 0.0;
-                String rolDetalle = "Empleado General";
-
-                if (emp instanceof Cocinero cocinero) {
-                    rolDetalle = "Cocinero (" + cocinero.getCategoria() + ")";
-                    if ("CHEF".equalsIgnoreCase(cocinero.getCategoria())) {
-                        plus = sueldoBase * 0.15;
-                    } else {
-                        plus = sueldoBase * 0.10;
-                    }
-                } else if (emp instanceof Cajero cajero) {
-                    rolDetalle = "Cajero (" + cajero.getTurnoTrabajo() + ")";
-                    if ("NOCHE".equalsIgnoreCase(cajero.getTurnoTrabajo())) {
-                        plus = sueldoBase * 0.10;
-                    }
-                }
-
-                double totalLiquido = sueldoBase + plus;
-
-                LiquidacionDTO dto = new LiquidacionDTO(
-                        emp.getId(),
-                        emp.getNombre() + " " + emp.getApellido(),
-                        emp.getDni(),
-                        rolDetalle,
-                        emp.getFechaIngreso(),
-                        sueldoBase,
-                        plus,
-                        totalLiquido
-                );
-
-                liquidaciones.add(dto);
-            }
-        }
-
-        return liquidaciones;
-    }
-
     private double calcularFactorDuracion(long dias) {
         double factor;
 
