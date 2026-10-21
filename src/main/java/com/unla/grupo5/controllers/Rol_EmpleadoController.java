@@ -1,10 +1,9 @@
 package com.unla.grupo5.controllers;
 
 import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
-import com.unla.grupo5.entities.Festival;
-import com.unla.grupo5.entities.Staff;
-import com.unla.grupo5.entities.UnidadDeVenta;
-import com.unla.grupo5.entities.Usuario;
+import com.unla.grupo5.entities.*;
+import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
+import com.unla.grupo5.repositories.StaffRepository;
 import com.unla.grupo5.repositories.UsuarioRepository;
 import com.unla.grupo5.services.EmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,40 +23,31 @@ public class Rol_EmpleadoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private StaffRepository staffRepository;
+
     @GetMapping("/sueldos")
-    public String consultarSueldos(
-            Model model,
-            Authentication authentication) {
+    public String consultarSueldos(Model model, Authentication authentication) {
 
-        String nombreUsuario = authentication.getName();
+        try{
+            String nombreUsuario = authentication.getName();
 
-        Usuario usuario =
-                usuarioRepository.findByNombreUsuario(nombreUsuario);
+            Staff empleado = staffRepository.findByUsuarioNombreUsuario(nombreUsuario).orElseThrow(() ->
+                             new RecursoNoEncontradoException("Empleado"));
 
-        Staff empleado = usuario.getStaff();
+            UnidadDeVenta unidad = empleado.getUnidadDeVenta();
+            Festival festival = unidad.getFestival();
 
-        if (empleado == null) {
-            model.addAttribute(
-                    "mensajeError",
-                    "El usuario no tiene un empleado asociado."
-            );
+            LiquidacionHaberesDTO liquidacion = empleadoService.calcularHaberes(empleado.getId(), festival.getId());
 
-            return "empleados/mis-sueldos";
+            model.addAttribute("empleado", empleado);
+            model.addAttribute("unidad", unidad);
+            model.addAttribute("festival", festival);
+            model.addAttribute("liquidacion", liquidacion);
+
+        } catch (RecursoNoEncontradoException e) {
+            model.addAttribute("mensajeError", e.getMessage());
         }
-
-        UnidadDeVenta unidad = empleado.getUnidadDeVenta();
-        Festival festival = unidad.getFestival();
-
-        LiquidacionHaberesDTO liquidacion =
-                empleadoService.calcularHaberes(
-                        empleado.getId(),
-                        festival.getId()
-                );
-
-        model.addAttribute("empleado", empleado);
-        model.addAttribute("unidad", unidad);
-        model.addAttribute("festival", festival);
-        model.addAttribute("liquidacion", liquidacion);
 
         return "rol_empleado/mis-sueldos";
     }

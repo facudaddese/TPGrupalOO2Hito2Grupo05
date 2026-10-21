@@ -15,7 +15,12 @@
 
 <div class="container mt-5">
 
-    <div class="card shadow-sm">
+    <div th:if="${mensajeError}"
+         class="alert alert-danger"
+         th:text="${mensajeError}">
+    </div>
+
+    <div class="card shadow-sm" th:if="${mensajeError == null}">
 
         <div class="card-header bg-primary text-white">
 
