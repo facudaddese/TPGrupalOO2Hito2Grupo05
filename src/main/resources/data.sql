@@ -94,8 +94,7 @@ SELECT'responsable@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ
 (SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable@gmail.com');
 
 -- ============================================
--- USUARIO EMPLEADO
--- usuario: empleado
+-- USUARIO EMPLEADO COCINERO
 -- contraseña: empleado123
 -- ============================================
 
@@ -103,10 +102,18 @@ INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_s
 SELECT'empleado@gmail.com','$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',true,1,
 (SELECT id FROM `Rol` WHERE `rol` = 'EMPLEADO' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado@gmail.com');
 
+-- ============================================
+-- USUARIO EMPLEADO CAJERO
+-- contraseña: empleado123
+-- ============================================
 INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'empleado1@gmail.com','$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',true,2,
       (SELECT id FROM `Rol` WHERE `rol` = 'EMPLEADO' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado1@gmail.com');
 
+-- ============================================
+-- USUARIO EMPLEADO SIN STAFF ASOCIADO PARA PRUEBA DE ERRORES
+-- contraseña: empleado123
+-- ============================================
 INSERT INTO `Usuario`(`nombre_usuario`,`password_usuario`,`usuario_activo`,`id_staff`,`id_rol`)
 SELECT'empleado2@gmail.com','$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',true,null,
       (SELECT id FROM `Rol` WHERE `rol` = 'EMPLEADO' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado2@gmail.com');
