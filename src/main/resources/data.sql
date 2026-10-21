@@ -94,7 +94,8 @@ SELECT'responsable@gmail.com','$2y$10$/S2or68JWDgaBPWrF1SJP.aJ2KKyVv4vn5uX9hIEGZ
 (SELECT id FROM `Rol` WHERE `rol` = 'RESPONSABLE' LIMIT 1) WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'responsable@gmail.com');
 
 -- ============================================
--- USUARIO EMPLEADO COCINERO
+-- USUARIO EMPLEADO
+-- usuario: empleado
 -- contraseña: empleado123
 -- ============================================
 
