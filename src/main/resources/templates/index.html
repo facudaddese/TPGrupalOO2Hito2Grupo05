@@ -21,6 +21,14 @@
 
 <main class="container">
 
+    <div style="margin-top: 15px;" sec:authorize="hasRole('EMPLEADO')">
+        <a
+                th:href="@{/empleado/sueldos}"
+                class="btn btn-primary">
+            Consultar mi sueldo
+        </a>
+    </div>
+
     <!-- Responsable: gestión de su unidad -->
     <div class="card" sec:authorize="hasRole('RESPONSABLE')">
 
@@ -35,13 +43,15 @@
 
     </div>
 
-    <div class="card">
+    <div class="card" sec:authorize="!hasRole('EMPLEADO')">
 
-        <div class="card-header">
+
+        <div class="card-header" >
             <h2>Festivales</h2>
         </div>
 
         <div class="card-body">
+
 
             <ul class="festival-list">
 
@@ -73,7 +83,10 @@
                            th:href="@{/admin/festivales/{id}/unidades(id=${f.id})}">
                             Ver Unidades de Venta
                         </a>
+
                     </div>
+
+
 
                 </li>
 

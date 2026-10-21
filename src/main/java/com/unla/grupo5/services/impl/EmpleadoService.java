@@ -1,7 +1,6 @@
 package com.unla.grupo5.services.impl;
 
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
-import com.unla.grupo5.dtos.LiquidacionDTO;
 import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.*;
 import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
