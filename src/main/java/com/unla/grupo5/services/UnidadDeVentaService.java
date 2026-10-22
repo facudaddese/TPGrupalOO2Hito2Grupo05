@@ -1,5 +1,6 @@
 package com.unla.grupo5.services;
 
+import com.unla.grupo5.dtos.ReporteVentaDTO;
 import com.unla.grupo5.dtos.UnidadDeVentaModificarDTO;
 import com.unla.grupo5.dtos.UnidadDeVentaRequestDTO;
 import com.unla.grupo5.entities.UnidadDeVenta;
@@ -19,4 +20,6 @@ public interface UnidadDeVentaService {
     UnidadDeVenta getUdVByUser(String nombreUsuario);
 
     List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden);
+
+    ReporteVentaDTO generarReporteRecaudacion(Long idFestival, String nombreUsuario);
 }

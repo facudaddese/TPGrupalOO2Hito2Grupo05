@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Recaudación - Epicentro Gourmet</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<header class="navbar">
+    <h1>Epicentro Gourmet</h1>
+    <div class="navbar-actions" style="display: flex; gap: 10px; align-items: center;">
+        <a class="btn btn-light" th:href="@{/}">Volver al Inicio</a>
+
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="btn btn-light">Cerrar sesión</button>
+        </form>
+    </div>
+</header>
+
+<main class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Reporte de Recaudación por Festival</h2>
+        </div>
+
+        <div class="card-body">
+            <p th:if="${unidad != null}">
+                Unidad de Venta: <strong th:text="${unidad.nombreComercial}">Mi Unidad</strong>
+                (<span th:text="${unidad.codigo}">Código</span>)
+            </p>
+
+            <div th:if="${mensajeError}" class="alet alert-error" th:text="${mensajeError}"></div>
+
+            <form th:action="@{/responsable/reportes/recaudacion/generar}" method="post" style="margin-bottom: 25px;">
+                <div class="form-group">
+                    <label for="idFestival">Seleccione un Festival:</label>
+                    <select id="idFestival" name="idFestival" class="form-control" required style="max-width: 400px;">
+                        <option value="">-- Seleccionar Festival</option>
+                        <option th:each="f : ${festivales}"
+                                th:value="${f.id}"
+                                th:text="|${f.nombre} (${f.temporada})|"
+                                th:selected="${f.id == festivalSeleccionado}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                    Generar Reporte
+                </button>
+            </form>
+
+            <!-- Si la UDV NO participó de este festival -->
+            <div th:if="${reporte != null and !reporte.participo}"
+                 style="margin-top: 20px; padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 4px;">
+                <strong>Aviso:</strong> La unidad de venta no participó de este festival.
+            </div>
+
+            <!-- Si la UDV SÍ participó de este festival -->
+            <div th:if="${reporte != null and reporte.participo}" class="card" style="border: 1px solid #dedede; margin-top: 20px;">
+                <div class="card-header" style="background-color: #f0f4f9; color: #333;">
+                    <h3 style="margin: 0;">Resumen del Reporte</h3>
+                </div>
+                <div class="card-body">
+                    <p class="festival-info">
+                        <strong>Festival:</strong> <span th:text="${reporte.nombreFestival}">Nombre Festival</span>
+                    </p>
+                    <p class="festival-info">
+                        <strong>Unidad de Venta:</strong> <span th:text="${reporte.nombreUnidadVenta}">Unidad</span> (<span th:text="${reporte.codigoUnidadVenta}">Código</span>)
+                    </p>
+                    <p class="festival-info">
+                        <strong>Cantidad de Pedidos:</strong> <span th:text="${reporte.cantidadPedido}">0</span>
+                    </p>
+                    <p class="festival-info" style="font-size: 18px; margin-top: 15px;">
+                        <strong>Recaudación Total:</strong>
+                        <span style="color: #237a36; font-weight: bold;">
+                            $<span th:text="${#numbers.formatDecimal(reporte.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

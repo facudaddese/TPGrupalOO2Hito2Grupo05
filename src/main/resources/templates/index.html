@@ -30,13 +30,8 @@
     </div>
 
     <!-- Responsable: gestión de su unidad -->
-    <!-- Responsable: gestión de su unidad -->
+
     <div class="card" sec:authorize="hasRole('RESPONSABLE')">
-
-
-
-            <!-- Responsable: gestión de su unidad -->
-            <div class="card" sec:authorize="hasRole('RESPONSABLE')">
 
                 <div class="card-header">
                     <h2>
@@ -57,12 +52,9 @@
                         <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
                         <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
                         <a class="btn btn-primary" th:href="@{/responsable/pedidos}">Pedidos</a>
+                        <a class="btn btn-primary" th:href="@{/responsable/reportes/recaudacion}">Reporte Recaudación</a>
                     </div>
                 </div>
-
-            </div>
-
-
     </div>
     <div class="card" sec:authorize="!hasRole('EMPLEADO')">
 

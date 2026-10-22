@@ -1,8 +1,13 @@
 package com.unla.grupo5.services.impl;
 
+import com.unla.grupo5.dtos.ReporteVentaDTO;
+import com.unla.grupo5.entities.Festival;
 import com.unla.grupo5.entities.Rol;
+import com.unla.grupo5.entities.UnidadDeVenta;
 import com.unla.grupo5.entities.Usuario;
+import com.unla.grupo5.repositories.FestivalRepository;
 import com.unla.grupo5.repositories.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

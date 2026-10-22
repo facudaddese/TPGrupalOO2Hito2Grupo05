@@ -16,6 +16,9 @@ public interface UnidadDeVentaRepository extends JpaRepository<UnidadDeVenta, Lo
     @Query("SELECT DISTINCT u FROM UnidadDeVenta u LEFT JOIN FETCH u.lstPedidos WHERE u.festival.id = :idFestival")
     List<UnidadDeVenta> findByFestivalIdWithPedidos(@Param("idFestival") Long idFestival);
 
+    @Query("SELECT DISTINCT u FROM UnidadDeVenta u LEFT JOIN FETCH u.lstPedidos WHERE u.id = :idUnidad")
+    Optional<UnidadDeVenta> findByIdWithPedidos(@Param("idUnidad") Long idUnidad);
+
     List<UnidadDeVenta> findByFestivalId(Long idFestival);
 
     boolean existsByCodigoAndFestivalId(String codigo, Long idFestival);

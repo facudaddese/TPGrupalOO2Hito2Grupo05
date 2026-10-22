@@ -1,5 +1,6 @@
 package com.unla.grupo5.services.impl;
 
+import com.unla.grupo5.dtos.ReporteVentaDTO;
 import com.unla.grupo5.dtos.UnidadDeVentaModificarDTO;
 import com.unla.grupo5.dtos.UnidadDeVentaRequestDTO;
 import com.unla.grupo5.entities.Festival;
@@ -190,5 +191,41 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
 
         return unidades;
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReporteVentaDTO generarReporteRecaudacion(Long idFestival, String nombreUsuario){
+        //Verificamos la existencia del festival
+        Festival festival = festivalRepository.findById(idFestival)
+                .orElseThrow(() -> new IllegalArgumentException("El festival seleccionado no existe."));
+
+        //Obtenemos la UDV asociada al usuario
+        UnidadDeVenta unidad = getUdVByUser(nombreUsuario);
+
+        double recaudacion = 0.0;
+        int cantidadPedidos = 0;
+
+        boolean participo = unidad.getFestival() != null && unidad.getFestival().getId().equals(idFestival);
+
+        //Verificamos que ld UDV pertenezca al festival y si es asi obtenemos su recaudacion y pedidos
+        if (participo) {
+            UnidadDeVenta unidadConPedidos = unidadDeVentaRepository.findByIdWithPedidos(unidad.getId())
+                    .orElse(unidad);
+            recaudacion = unidadConPedidos.getRecaudacionTotal();
+            cantidadPedidos = unidadConPedidos.getLstPedidos() != null ? unidadConPedidos.getLstPedidos().size() : 0;
+        }
+
+        //Retornamos el DTO
+        return new ReporteVentaDTO(
+                festival.getId(),
+                festival.getNombre(),
+                unidad.getId(),
+                unidad.getNombreComercial(),
+                unidad.getCodigo(),
+                recaudacion,
+                cantidadPedidos,
+                participo
+        );
     }
 }
