@@ -18,6 +18,9 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     List<Staff> findByActivoTrue();
 
+    // Todos los empleados de una unidad de venta (activos y dados de baja)
+    List<Staff> findByUnidadDeVentaId(Long idUnidadVenta);
+
     List<Staff> findByUnidadDeVentaIdAndActivoTrue(Long idUnidadVenta);
 
     List<Staff> findByUnidadDeVentaAndActivoTrue(UnidadDeVenta unidadDeVenta);

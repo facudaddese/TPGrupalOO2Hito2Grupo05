@@ -139,6 +139,12 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return staffRepository.findAll();
     }
 
+    // Empleados de una unidad de venta (los del responsable logueado)
+    @Override
+    public List<Staff> traerPorUnidad(Long idUnidadVenta) {
+        return staffRepository.findByUnidadDeVentaId(idUnidadVenta);
+    }
+
     @Override
     @Transactional
     public Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto) {

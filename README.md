@@ -9,12 +9,138 @@
  - Lautaro Gonzalez ([lautarogonzalez1405](https://github.com/lautarogonzalez1405))
  - Facundo D'Addese ([facudaddese](https://github.com/facudaddese))
 
-## Casos de uso realizados
+---
 
-- ABM empleados (Facundo D'Addese)
-- Filtrar / listar empleados activos (Facundo D'Addese)
-- Cerrar caja (Facundo D'Addese)
-- Registro de Unidad de Venta con su responsable (Daira Mazza)
-- Alta de plato en Unidad de venta (Daira Mazza)
-- Consultar festivales (Lautaro Gonzalez)
-- Ver unidades de venta asociadas a un festival (Lautaro Gonzalez)
+## Tecnologías utilizadas
+
+- Java
+- Spring Boot
+- Maven
+- MySQL
+- Spring Data JPA
+- Spring Security
+- Thymeleaf
+- Git / GitHub
+
+---
+
+## Diagrama de clases
+
+El siguiente diagrama representa el modelo de dominio utilizado para el desarrollo de la aplicación.
+
+[Ver diagrama de clases completo](https://drive.google.com/file/d/1j4faJcw5gdOJ7YDLjNtQepBoVyPtJ_gL/view?usp=sharing)
+
+[Diagrama de clases]<img width="998" height="700" alt="image" src="https://github.com/user-attachments/assets/a695f503-1c0d-44fc-b4c4-65df6ca25490" />
+
+
+> El diagrama puede sufrir modificaciones durante el desarrollo del Hito 2.
+
+---
+
+## Casos de uso
+
+El listado completo de casos de uso, dependencias, estado y distribución de tareas se encuentra documentado en la siguiente planilla:
+
+[Ver planilla de Casos de Uso](https://drive.google.com/file/d/1Ak1v6w2vNtKnWrkb6Q2C7bsf9jNrcL3i/view?usp=sharing)
+
+### Casos de uso implementados
+
+| ID | Caso de uso | Responsable | Pull Request |
+|---|---|---|---|
+| CU01 | Iniciar sesión | Malena Lescano | [PR](LINK_PR) |
+| CU02 | Registrar Responsable con Unidad de Venta | Daira Mazza | [PR](LINK_PR) |
+| CU03 | Consultar festivales | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU04 | Ver unidades de venta de un festival | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU05 | Generar ranking de unidades por recaudación | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU06 | Obtener unidades con mayor canon | Daira Mazza | [PR](LINK_PR) |
+| CU07 | Dar de alta un empleado | Facundo D'Addese | [PR](LINK_PR) |
+| CU08 | Modificar empleado | Facundo D'Addese | [PR](LINK_PR) |
+| CU09 | Dar de baja lógica a un empleado | Facundo D'Addese | [PR](LINK_PR) |
+| CU10 | Reactivar empleado eliminado | Facundo D'Addese | [PR](LINK_PR) |
+| CU11 | Filtrar / listar empleados activos | Facundo D'Addese | [PR](LINK_PR) |
+| CU12 | Dar de alta un plato | Daira Mazza | [PR](LINK_PR) |
+| CU13 | Calcular canon de una unidad | Daira Mazza | [PR](LINK_PR) |
+| CU14 | Liquidar haberes | Malena Lescano | [PR](LINK_PR) |
+| CU15 | Generar reporte de recaudación | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU16 | Calcular rentabilidad neta | Malena Lescano | [PR](LINK_PR) |
+| CU17 | Calcular rentabilidad neta entre dos fechas | Malena Lescano | [PR](LINK_PR) |
+| CU18 | Obtener plato estrella | Daira Mazza | [PR](LINK_PR) |
+| CU19 | Consultar historial de trabajo | Daira Mazza | [PR](LINK_PR) |
+| CU20 | Consultar sueldo recibido por festival | Malena Lescano | [PR](LINK_PR) |
+| CU21 | Descargar recibo de sueldo en PDF | Malena Lescano | [PR](LINK_PR) |
+| CU22 | Consultar festival y unidad de trabajo actual | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU23 | Cerrar caja | Facundo D'Addese | [PR](LINK_PR) |
+| CU24 | Alta Pedido | Daira Mazza | [PR](LINK_PR) |
+
+> Los responsables y links a Pull Requests se actualizarán a medida que avance el desarrollo.
+
+## Datos de prueba
+
+Para probar los distintos casos de uso se incluye un script con datos iniciales.
+
+El script contiene datos correspondientes a:
+
+- Festivales.
+- Usuarios con distintos roles.
+- Unidades de venta.
+- Responsables.
+- Empleados.
+- Costos.
+
+Ubicación:
+
+```text
+src/main/resources/data.sql
+```
+---
+## Ejecución del proyecto
+Requisitos previos
+Para ejecutar la aplicación es necesario tener instalado:
+- Java
+- MySQL
+- Mave
+
+## Base de datos
+
+Crear una base de datos MySQL para la aplicación. Ejemplo:
+```text
+CREATE DATABASE epicentro_gourmet;
+```
+
+## Variables de entorno
+La aplicación utiliza variables de entorno para la configuración de la base de datos y otros servicios. Ejemplo:
+```text
+DB_URL=jdbc:mysql://localhost:3306/epicentro_gourmet
+DB_USERNAME=root
+DB_PASSWORD=contraseña
+```
+Para el envío de e-mails:
+```text
+MAIL_USERNAME=correo
+MAIL_PASSWORD=contraseña
+```
+> No subir contraseñas ni credenciales reales al repositorio.
+
+## Ejecutar la aplicación
+Clonar el repositorio:
+```text
+git clone https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05.git
+```
+Ingresar al proyecto:
+```text
+cd TPGrupalOO2Hito2Grupo05
+```
+Instalar dependencias y compilar:
+```text
+mvn clean install
+```
+Ejecutar Spring Boot:
+```text
+mvn spring-boot:run
+```
+Una vez iniciada la aplicación, acceder desde:
+```text
+http://localhost:8080
+```
+
+
