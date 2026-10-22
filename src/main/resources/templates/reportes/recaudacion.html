@@ -10,9 +10,12 @@
 <body>
 <header class="navbar">
     <h1>Epicentro Gourmet</h1>
-    <div class="navbar-actions">
-        <a class="btn btn-light" th:ref="@{/}">Volver al Inicio</a>
-        <a class="btn btn-light" th:ref="@{/logout}">Cerrar sesión</a>
+    <div class="navbar-actions" style="display: flex; gap: 10px; align-items: center;">
+        <a class="btn btn-light" th:href="@{/}">Volver al Inicio</a>
+
+        <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="btn btn-light">Cerrar sesión</button>
+        </form>
     </div>
 </header>
 
@@ -46,7 +49,15 @@
                     Generar Reporte
                 </button>
             </form>
-            <div th:if="${reporte != null}" class="card" style="border: 1px solid #dedede; margin-top: 20px;">
+
+            <!-- Si la UDV NO participó de este festival -->
+            <div th:if="${reporte != null and !reporte.participo}"
+                 style="margin-top: 20px; padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 4px;">
+                <strong>Aviso:</strong> La unidad de venta no participó de este festival.
+            </div>
+
+            <!-- Si la UDV SÍ participó de este festival -->
+            <div th:if="${reporte != null and reporte.participo}" class="card" style="border: 1px solid #dedede; margin-top: 20px;">
                 <div class="card-header" style="background-color: #f0f4f9; color: #333;">
                     <h3 style="margin: 0;">Resumen del Reporte</h3>
                 </div>
@@ -67,10 +78,6 @@
                         </span>
                     </p>
                 </div>
-            </div>
-
-            <div style="margin-top: 25px;">
-                    <a class="btn btn-light" th:href="@{/}">← Volver al Inicio</a>
             </div>
         </div>
     </div>

@@ -17,4 +17,5 @@ public class ReporteVentaDTO {
     private String codigoUnidadVenta;
     private double recaudacionTotal;
     private int cantidadPedido;
+    private boolean participo;
 }

@@ -206,8 +206,10 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         double recaudacion = 0.0;
         int cantidadPedidos = 0;
 
+        boolean participo = unidad.getFestival() != null && unidad.getFestival().getId().equals(idFestival);
+
         //Verificamos que ld UDV pertenezca al festival y si es asi obtenemos su recaudacion y pedidos
-        if (unidad.getFestival() != null && unidad.getFestival().getId().equals(idFestival)) {
+        if (participo) {
             UnidadDeVenta unidadConPedidos = unidadDeVentaRepository.findByIdWithPedidos(unidad.getId())
                     .orElse(unidad);
             recaudacion = unidadConPedidos.getRecaudacionTotal();
@@ -222,7 +224,8 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                 unidad.getNombreComercial(),
                 unidad.getCodigo(),
                 recaudacion,
-                cantidadPedidos
+                cantidadPedidos,
+                participo
         );
     }
 }
