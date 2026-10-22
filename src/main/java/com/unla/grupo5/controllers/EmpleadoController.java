@@ -7,6 +7,7 @@ import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.exceptions.UnidadDeVentaNoAsignadaException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmpleadoService;
+import com.unla.grupo5.services.UnidadDeVentaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,9 @@ public class EmpleadoController {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private UnidadDeVentaService unidadDeVentaService;
 
     private void cargarAtributosFormulario(Model model) {
         model.addAttribute("unidadesVenta", unidadDeVentaRepository.findAll());
@@ -76,10 +81,18 @@ public class EmpleadoController {
         }
     }
 
-    // Lista de empleados
+    // Lista de empleados de la unidad del responsable logueado
     @GetMapping
-    public String listarEmpleados(Model model) {
-        model.addAttribute("empleados", empleadoService.traerTodos());
+    public String listarEmpleados(Principal principal, Model model) {
+        try {
+            UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+            model.addAttribute("empleados", empleadoService.traerPorUnidad(unidad.getId()));
+            model.addAttribute("nombreUnidad", unidad.getNombreComercial());
+        } catch (IllegalArgumentException e) {
+            // El responsable no tiene unidad asignada
+            model.addAttribute("empleados", List.of());
+            model.addAttribute("mensajeError", e.getMessage());
+        }
         return "empleados/listado";
     }
 
