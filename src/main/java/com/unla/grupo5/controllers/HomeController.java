@@ -11,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @Controller
@@ -30,8 +30,30 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("festivales", festivalRepository.findAll());
+    public String home(Model model, Authentication authentication) {
+
+        boolean esResponsable = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_RESPONSABLE"));
+
+        if (esResponsable) {
+            try {
+                // Unidad de venta asignada al responsable logueado
+                UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(authentication.getName());
+                model.addAttribute("unidad", unidad);
+
+                // Solo se muestra el festival al que pertenece su unidad
+                Festival festival = festivalRepository.findById(unidad.getFestival().getId()).orElse(null);
+                model.addAttribute("festivales", festival == null ? List.of() : List.of(festival));
+
+            } catch (IllegalArgumentException e) {
+                // El responsable todavía no tiene unidad asignada
+                model.addAttribute("mensajeError", e.getMessage());
+                model.addAttribute("festivales", List.of());
+            }
+        } else {
+            model.addAttribute("festivales", festivalRepository.findAll());
+        }
+
         return "index";
     }
 
