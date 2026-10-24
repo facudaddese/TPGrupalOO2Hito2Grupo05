@@ -185,8 +185,13 @@ public class EmpleadoController {
             List<LiquidacionHaberesDTO> haberes = new ArrayList<>();
 
             for (Staff empleado : empleados) {
-                LiquidacionHaberesDTO liquidacion = empleadoService.calcularHaberes(empleado.getId(), festival.getId());
-                haberes.add(liquidacion);
+                List<LiquidacionHaberesDTO> liquidaciones =
+                        empleadoService.calcularHaberesMensuales(
+                                empleado.getId(),
+                                festival.getId()
+                        );
+
+                haberes.addAll(liquidaciones);
             }
 
             long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
