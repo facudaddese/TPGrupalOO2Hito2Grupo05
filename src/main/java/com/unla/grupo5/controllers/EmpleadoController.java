@@ -194,6 +194,8 @@ public class EmpleadoController {
                 haberes.addAll(liquidaciones);
             }
 
+            haberes = empleadoService.filtrarMesesCerrados(haberes);
+
             long diasFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
 
             model.addAttribute("diasFestival", diasFestival);

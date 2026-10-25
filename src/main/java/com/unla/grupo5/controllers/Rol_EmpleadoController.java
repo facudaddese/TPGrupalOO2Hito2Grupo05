@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -37,6 +38,7 @@ public class Rol_EmpleadoController {
 
     @GetMapping("/sueldos")
     public String consultarSueldos(Model model, Authentication authentication) {
+        LocalDate fechaActual = LocalDate.now();
 
         try{
             String nombreUsuario = authentication.getName();
@@ -47,11 +49,8 @@ public class Rol_EmpleadoController {
             UnidadDeVenta unidad = empleado.getUnidadDeVenta();
             Festival festival = unidad.getFestival();
 
-            List<LiquidacionHaberesDTO> liquidaciones =
-                    empleadoService.calcularHaberesMensuales(
-                            empleado.getId(),
-                            festival.getId()
-                    );
+            List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesMensuales(empleado.getId(), festival.getId());
+            liquidaciones = empleadoService.filtrarMesesCerrados(liquidaciones);
 
             model.addAttribute("empleado", empleado);
             model.addAttribute("unidad", unidad);
@@ -85,17 +84,18 @@ public class Rol_EmpleadoController {
 
             YearMonth mesSolicitado = YearMonth.parse(periodo);
 
-            List<LiquidacionHaberesDTO> liquidaciones =
-                    empleadoService.calcularHaberesMensuales(
-                            empleado.getId(),
-                            festival.getId()
-                    );
+            List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesMensuales(empleado.getId(), festival.getId());
 
             LiquidacionHaberesDTO liquidacion = liquidaciones.stream()
-                    .filter(l -> YearMonth.from(l.getPeriodoInicio())
-                            .equals(mesSolicitado))
+                    .filter(l -> YearMonth.from(l.getPeriodoInicio()).equals(mesSolicitado))
                     .findFirst()
                     .orElse(null);
+
+
+            if (!YearMonth.from(liquidacion.getPeriodoInicio())
+                    .isBefore(YearMonth.now())) {
+                return ResponseEntity.notFound().build();
+            }
 
             if (liquidacion == null) {
                 return ResponseEntity.notFound().build();

@@ -290,4 +290,15 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return liquidaciones;
     }
 
+    public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones) {
+
+        YearMonth mesActual = YearMonth.now();
+
+        return liquidaciones.stream()
+                .filter(l -> YearMonth
+                        .from(l.getPeriodoInicio())
+                        .isBefore(mesActual))
+                .toList();
+    }
+
 }
