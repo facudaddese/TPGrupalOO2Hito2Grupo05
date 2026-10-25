@@ -29,7 +29,7 @@ VALUES
 
 INSERT
 IGNORE INTO festival (id, nombre, temporada, fecha_inicio, fecha_fin, id_costo) VALUES
-(1, 'Festival de Comida Criolla', 'Verano', '2026-12-01', '2026-12-31',1),
+(1, 'Festival de Comida Criolla', 'Verano', '2026-10-01', '2026-11-5',1),
 (2, 'Festival Gourmet Internacional', 'Primavera', '2026-09-15', '2026-10-15',2),
 (3, 'Festival de Comida Saludable', 'Otoño', '2026-03-01', '2026-04-30',3),
 (4, 'Street Food Festival', 'Verano', '2026-01-10', '2026-02-28',4);

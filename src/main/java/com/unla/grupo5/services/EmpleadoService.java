@@ -17,7 +17,10 @@ public interface EmpleadoService {
 
     List<Staff> traerPorUnidad(Long idUnidadVenta);
 
-    LiquidacionHaberesDTO calcularHaberes(Long idEmpleado, Long idFestival);
+    public List<LiquidacionHaberesDTO> calcularHaberesMensuales(Long idEmpleado, Long idFestival);
 
     void darDeBajaEmpleado(Long id);
+
+    public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones);
+
 }
