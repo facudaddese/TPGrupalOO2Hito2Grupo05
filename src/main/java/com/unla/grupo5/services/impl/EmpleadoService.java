@@ -214,10 +214,10 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     public List<LiquidacionHaberesDTO> calcularHaberesMensuales(Long idEmpleado, Long idFestival) {
 
         Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() ->
-                        new RecursoNoEncontradoException("Especializacion del empleado", idEmpleado));
+                new RecursoNoEncontradoException("Especializacion del empleado", idEmpleado));
 
         Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
-                        new RecursoNoEncontradoException("Festival", idFestival));
+                new RecursoNoEncontradoException("Festival", idFestival));
 
         Costo costo = festival.getCosto();
 
@@ -282,7 +282,7 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
             liquidaciones.add(new LiquidacionHaberesDTO(
                     empleado.getId(),
-                    empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado,inicioPeriodo, finPeriodo, dias));
+                    empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado, inicioPeriodo, finPeriodo, dias));
 
             mesActual = mesActual.plusMonths(1);
         }
@@ -299,6 +299,15 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
                         .from(l.getPeriodoInicio())
                         .isBefore(mesActual))
                 .toList();
+    }
+
+    @Override
+    public void reactivarEmpleado(Long id) {
+        Staff empleado = staffRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Empleado no encontrado con ID: " + id));
+
+        empleado.setActivo(true);
+        staffRepository.save(empleado);
     }
 
 }

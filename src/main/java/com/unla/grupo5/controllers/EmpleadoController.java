@@ -170,6 +170,17 @@ public class EmpleadoController {
         return "redirect:/responsable/empleados";
     }
 
+    @PostMapping("/reactivar/{id}")
+    public String reactivarEmpleado(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            empleadoService.reactivarEmpleado(id);
+            redirectAttributes.addFlashAttribute("mensajeExito", "Empleado reactivado correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error al reactivar al empleado: " + e.getMessage());
+        }
+        return "redirect:/responsable/empleados";
+    }
+
     @GetMapping("/haberes")
     public String mostrarCalculoHaberes(Model model, Authentication authentication) {
 
