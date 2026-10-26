@@ -23,4 +23,5 @@ public interface EmpleadoService {
 
     public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones);
 
+    void reactivarEmpleado(Long id);
 }

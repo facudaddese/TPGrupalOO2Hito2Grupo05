@@ -43,14 +43,26 @@
         </td>
         <td>
             <div class="d-flex gap-1">
-                <a th:href="@{/responsable/empleados/editar/{id}(id=${emp.id})}" class="btn btn-warning btn-sm">Editar</a>
+                <a th:href="@{/responsable/empleados/editar/{id}(id=${emp.id})}"
+                   class="btn btn-warning btn-sm">Editar</a>
 
-                <form th:action="@{/responsable/empleados/baja/{id}(id=${emp.id})}" method="post" style="display:inline;">
+                <form th:if="${emp.activo}"
+                      th:action="@{/responsable/empleados/baja/{id}(id=${emp.id})}"
+                      method="post" style="display:inline;">
                     <button type="submit"
                             class="btn btn-danger btn-sm"
-                            onclick="return confirm('¿Estás seguro de que querés dar de baja a este empleado?');"
-                            th:disabled="${!emp.activo}">
+                            onclick="return confirm('¿Estás seguro de que querés dar de baja a este empleado?');">
                         Dar de baja
+                    </button>
+                </form>
+
+                <form th:unless="${emp.activo}"
+                      th:action="@{/responsable/empleados/reactivar/{id}(id=${emp.id})}"
+                      method="post" style="display:inline;">
+                    <button type="submit"
+                            class="btn btn-success btn-sm"
+                            onclick="return confirm('¿Estás seguro de que querés reactivar a este empleado?');">
+                        Reactivar
                     </button>
                 </form>
             </div>
