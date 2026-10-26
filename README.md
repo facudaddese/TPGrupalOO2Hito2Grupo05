@@ -57,7 +57,7 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU08 | Modificar empleado | Facundo D'Addese | [PR](LINK_PR) |
 | CU09 | Dar de baja lógica a un empleado | Facundo D'Addese | [PR](LINK_PR) |
 | CU10 | Reactivar empleado eliminado | Facundo D'Addese | [PR](LINK_PR) |
-| CU11 | Filtrar / listar empleados activos | Facundo D'Addese | [PR](LINK_PR) |
+| CU11 | Filtrar / listar empleados activos | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/25a4f92f72d414176bd21bff8f0ef1c511017322) |
 | CU12 | Dar de alta un plato | Daira Mazza | [PR](LINK_PR) |
 | CU13 | Calcular canon de una unidad | Daira Mazza | [PR](LINK_PR) |
 | CU14 | Liquidar haberes | Malena Lescano | [PR](LINK_PR) |
