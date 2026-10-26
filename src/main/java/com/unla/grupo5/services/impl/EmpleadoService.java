@@ -310,4 +310,9 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         staffRepository.save(empleado);
     }
 
+    @Override
+    public List<Staff> traerActivosPorUnidad(Long idUnidadVenta) {
+        return staffRepository.findByUnidadDeVentaIdAndActivoTrue(idUnidadVenta);
+    }
+
 }

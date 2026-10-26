@@ -17,6 +17,20 @@
 
 <p th:if="${nombreUnidad}" class="text-muted">Unidad de venta: <strong th:text="${nombreUnidad}"></strong></p>
 
+<div class="mb-3 d-flex align-items-center gap-2">
+    <span class="fw-bold">Filtrar:</span>
+    <a th:href="@{/responsable/empleados}"
+       class="btn btn-sm"
+       th:classappend="${!soloActivos} ? 'btn-secondary' : 'btn-outline-secondary'">
+        Todos
+    </a>
+    <a th:href="@{/responsable/empleados(soloActivos=true)}"
+       class="btn btn-sm"
+       th:classappend="${soloActivos} ? 'btn-success' : 'btn-outline-success'">
+        Solo Activos
+    </a>
+</div>
+
 <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
 <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
 

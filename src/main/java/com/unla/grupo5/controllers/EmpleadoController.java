@@ -81,13 +81,20 @@ public class EmpleadoController {
         }
     }
 
-    // Lista de empleados de la unidad del responsable logueado
     @GetMapping
-    public String listarEmpleados(Principal principal, Model model) {
+    public String listarEmpleados(@RequestParam(name = "soloActivos", required = false, defaultValue = "false") boolean soloActivos,
+                                  Principal principal,
+                                  Model model) {
         try {
             UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
-            model.addAttribute("empleados", empleadoService.traerPorUnidad(unidad.getId()));
+
+            List<Staff> empleados = soloActivos
+                    ? empleadoService.traerActivosPorUnidad(unidad.getId())
+                    : empleadoService.traerPorUnidad(unidad.getId());
+
+            model.addAttribute("empleados", empleados);
             model.addAttribute("nombreUnidad", unidad.getNombreComercial());
+            model.addAttribute("soloActivos", soloActivos);
         } catch (IllegalArgumentException e) {
             // El responsable no tiene unidad asignada
             model.addAttribute("empleados", List.of());
