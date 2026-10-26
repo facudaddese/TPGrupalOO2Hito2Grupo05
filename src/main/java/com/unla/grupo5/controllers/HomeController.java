@@ -1,17 +1,22 @@
 package com.unla.grupo5.controllers;
 
 import com.unla.grupo5.entities.Festival;
+import com.unla.grupo5.entities.Staff;
 import com.unla.grupo5.entities.UnidadDeVenta;
 import com.unla.grupo5.repositories.FestivalRepository;
+import com.unla.grupo5.repositories.StaffRepository;
 import com.unla.grupo5.repositories.UnidadDeVentaRepository;
 import com.unla.grupo5.services.UnidadDeVentaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.Authentication;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -19,14 +24,14 @@ public class HomeController {
 
     private final FestivalRepository festivalRepository;
     private final UnidadDeVentaRepository unidadDeVentaRepository;
-
-    @Autowired
     private final UnidadDeVentaService unidadDeVentaService;
+    private final StaffRepository staffRepository;
 
-    public HomeController(FestivalRepository festivalRepository, UnidadDeVentaRepository unidadDeVentaRepository, UnidadDeVentaService unidadDeVentaService) {
+    public HomeController(FestivalRepository festivalRepository, UnidadDeVentaRepository unidadDeVentaRepository, UnidadDeVentaService unidadDeVentaService, StaffRepository staffRepository) {
         this.festivalRepository = festivalRepository;
         this.unidadDeVentaRepository = unidadDeVentaRepository;
         this.unidadDeVentaService = unidadDeVentaService;
+        this.staffRepository = staffRepository;
     }
 
     @GetMapping("/")
@@ -43,6 +48,11 @@ public class HomeController {
                         a.getAuthority().equals("ROLE_RESPONSABLE")
                 );
 
+        //Validacion de si es empleado
+        boolean esEmpleado = autenticado
+                && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLEADO"));
+
         if (esResponsable) {
             try {
                 // Unidad de venta asignada al responsable logueado
@@ -58,6 +68,24 @@ public class HomeController {
                 model.addAttribute("mensajeError", e.getMessage());
                 model.addAttribute("festivales", List.of());
             }
+        } else if(esEmpleado){
+            Staff empleado = staffRepository.findByUsuarioNombreUsuario(authentication.getName()).orElse(null);
+
+            if(empleado != null && empleado.getUnidadDeVenta() != null){
+                UnidadDeVenta unidad = empleado.getUnidadDeVenta();
+                Festival festival = unidad.getFestival();
+                model.addAttribute("miUnidad", unidad);
+                model.addAttribute("miFestival", festival);
+
+                //Validacion de si debe trabajar actualmente
+                LocalDate hoy = LocalDate.now();
+                boolean festivalActivo = !hoy.isBefore(festival.getFechaInicio()) && !hoy.isAfter(festival.getFechaFin());
+                model.addAttribute("festivalActivo", festivalActivo);
+            }else{
+                model.addAttribute("mensajeErrorEmpleado", "No tienes una unidad de venta ni festival asignados.");
+            }
+            model.addAttribute("festivales", festivalRepository.findAll());
+
         } else {
             model.addAttribute("festivales", festivalRepository.findAll());
         }

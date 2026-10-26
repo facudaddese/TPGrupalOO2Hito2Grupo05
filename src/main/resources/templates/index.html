@@ -8,7 +8,6 @@
 </head>
 <body>
 
-
 <header class="navbar">
     <h1>Epicentro Gourmet</h1>
 
@@ -29,57 +28,73 @@
     </div>
 </header>
 
-
-
 <main class="container">
 
-    <div style="margin-top: 15px;" sec:authorize="hasRole('EMPLEADO')">
-        <a
-                th:href="@{/empleado/sueldos}"
-                class="btn btn-primary">
-            Consultar mi sueldo
-        </a>
+    <!-- Dashboard: Mi Trabajo Actual (Empleado) -->
+    <div class="card" sec:authorize="hasRole('EMPLEADO')" style="margin-bottom: 20px;">
+        <div class="card-header">
+            <h2>Mi Trabajo Actual</h2>
+        </div>
+        <div class="card-body">
+            <p th:if="${mensajeErrorEmpleado}" th:text="${mensajeErrorEmpleado}" class="alert alert-error"></p>
+            <div th:if="${miUnidad}">
+                <p class="festival-info">
+                    <strong>Festival:</strong> <span th:text="${miFestival.nombre}"></span>
+                    <!-- Etiquetas dinámicas de estado basadas en las fechas -->
+                    <span th:if="${festivalActivo}" style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #237a36; margin-left: 10px; font-size: 13px; font-weight: bold;">ACTIVO</span>
+                    <span th:unless="${festivalActivo}" style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #6c757d; margin-left: 10px; font-size: 13px; font-weight: bold;">INACTIVO</span>
+                </p>
+                <p class="festival-info">
+                    <strong>Fechas del festival:</strong>
+                    <span th:text="${#temporals.format(miFestival.fechaInicio, 'dd/MM/yyyy')}"></span> al
+                    <span th:text="${#temporals.format(miFestival.fechaFin, 'dd/MM/yyyy')}"></span>
+                </p>
+                <hr style="border: 0; border-top: 1px solid #d7dce1; margin: 15px 0;">
+                <p class="festival-info">
+                    <strong>Unidad de Venta:</strong> <span th:text="${miUnidad.nombreComercial}"></span> (<span th:text="${miUnidad.codigo}"></span>)
+                </p>
+
+                <!-- Botón reubicado -->
+                <div style="margin-top: 20px;">
+                    <a th:href="@{/empleado/sueldos}" class="btn btn-primary">Consultar mi sueldo</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Responsable: gestión de su unidad -->
-
     <div class="card" sec:authorize="hasRole('RESPONSABLE')">
+        <div class="card-header">
+            <h2>
+                Mi unidad
+                <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
+            </h2>
+        </div>
 
-                <div class="card-header">
-                    <h2>
-                        Mi unidad
-                        <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
-                    </h2>
-                </div>
+        <div class="card-body">
+            <!-- Responsable sin unidad asignada -->
+            <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
 
-                <div class="card-body">
-                    <!-- Responsable sin unidad asignada -->
-                    <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
+            <div th:if="${unidad}">
+                <p class="festival-info">
+                    <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
+                </p>
 
-                    <div th:if="${unidad}">
-                        <p class="festival-info">
-                            <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
-                        </p>
-
-                        <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
-                        <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
-                        <a class="btn btn-primary" th:href="@{/responsable/pedidos}">Pedidos</a>
-                        <a class="btn btn-primary" th:href="@{/responsable/reportes/recaudacion}">Reporte Recaudación</a>
-                    </div>
-                </div>
+                <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
+                <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
+                <a class="btn btn-primary" th:href="@{/responsable/pedidos}">Pedidos</a>
+                <a class="btn btn-primary" th:href="@{/responsable/reportes/recaudacion}">Reporte Recaudación</a>
+            </div>
+        </div>
     </div>
+
     <div class="card" sec:authorize="!hasRole('EMPLEADO')">
-
-
         <div class="card-header" >
             <h2>Festivales</h2>
         </div>
 
         <div class="card-body">
-
-
             <ul class="festival-list">
-
                 <li class="festival-item"
                     th:each="f : ${festivales}">
 
@@ -113,13 +128,9 @@
                             Sumar mi Unidad de Venta al Festival
                         </a>
                     </div>
-
                 </li>
-
             </ul>
-
         </div>
-
     </div>
 
 </main>
