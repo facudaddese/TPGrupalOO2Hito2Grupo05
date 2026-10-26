@@ -8,15 +8,27 @@
 </head>
 <body>
 
-<header class="navbar">
 
+<header class="navbar">
     <h1>Epicentro Gourmet</h1>
 
     <div class="navbar-actions">
-        <a class="btn btn-light" th:href="@{/logout}">Cerrar sesión</a>
-    </div>
+        <!-- Solo para usuarios NO autenticados -->
+        <a class="btn btn-light"
+           th:href="@{/login}"
+           sec:authorize="isAnonymous()">
+            Iniciar sesión
+        </a>
 
+        <!-- Solo para usuarios autenticados -->
+        <a class="btn btn-light"
+           th:href="@{/logout}"
+           sec:authorize="isAuthenticated()">
+            Cerrar sesión
+        </a>
+    </div>
 </header>
+
 
 
 <main class="container">
@@ -72,11 +84,7 @@
                     th:each="f : ${festivales}">
 
                     <h3 class="festival-nombre">
-                        <!-- El admin entra al festival para ver sus unidades de venta -->
-                        <a sec:authorize="hasRole('ADMIN')"
-                           th:href="@{/unidades-venta(idFestival=${f.id})}"
-                           th:text="${f.nombre}">Nombre del festival</a>
-                        <span sec:authorize="!hasRole('ADMIN')" th:text="${f.nombre}">Nombre del festival</span>
+                        <a th:text="${f.nombre}">Nombre del festival</a>
                     </h3>
 
                     <p class="festival-info">
@@ -96,10 +104,15 @@
                            th:href="@{/admin/festivales/{id}/unidades(id=${f.id})}">
                             Ver Unidades de Venta
                         </a>
-
                     </div>
+                    <div style="margin-top: 15px;" sec:authorize="isAnonymous()"
+                         th:if="${f.fechaFin != null and !f.fechaFin.isBefore(T(java.time.LocalDate).now())}">
 
-
+                        <a class="btn btn-primary"
+                           th:href="@{/alta(idFestival=${f.id})}">
+                            Sumar mi Unidad de Venta al Festival
+                        </a>
+                    </div>
 
                 </li>
 

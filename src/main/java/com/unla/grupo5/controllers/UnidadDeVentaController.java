@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/unidades-venta")
 public class UnidadDeVentaController {
 
     @Autowired
@@ -25,7 +24,7 @@ public class UnidadDeVentaController {
     private FestivalRepository festivalRepository;
 
     // Unidades de venta del festival elegido en el inicio
-    @GetMapping
+    @GetMapping("/unidades-venta")
     public String listar(@RequestParam(required = false) Long idFestival, Model model) {
         Festival festival = idFestival == null ? null : festivalRepository.findById(idFestival).orElse(null);
         if (festival == null) {
@@ -63,7 +62,7 @@ public class UnidadDeVentaController {
             unidadDeVentaService.registrarUnidad(dto);
             redirect.addFlashAttribute("mensajeExito", "Unidad de venta registrada correctamente. Se han enviado las credenciales por e-mail.");
             redirect.addAttribute("idFestival", dto.getIdFestival());
-            return "redirect:/unidades-venta";
+            return "redirect:/";
 
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
@@ -73,7 +72,7 @@ public class UnidadDeVentaController {
     }
 
     // Modificación de una unidad de venta
-    @GetMapping("/editar/{id}")
+    @GetMapping("/unidades-venta/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable("id") Long id, Model model) {
         UnidadDeVenta unidad = unidadDeVentaService.buscarPorId(id);
 
@@ -89,7 +88,7 @@ public class UnidadDeVentaController {
         return "unidades-venta/form-editar-unidad";
     }
 
-    @PostMapping("/editar/{id}")
+    @PostMapping("/unidades-venta/editar/{id}")
     public String modificarUnidad(@PathVariable("id") Long id,
                                   @Valid @ModelAttribute("unidadDTO") UnidadDeVentaModificarDTO dto,
                                   BindingResult result,
