@@ -18,7 +18,7 @@
                 <span th:text="${mensajeError}"></span>
             </div>
 
-            <form th:action="@{/unidades-venta/guardar}" th:object="${unidadDTO}" method="post">
+            <form th:action="@{/guardar}" th:object="${unidadDTO}" method="post">
 
                 <h5 class="mb-3">Datos de la unidad</h5>
 
@@ -83,7 +83,7 @@
 
                 <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-primary btn-lg">Registrar Unidad de Venta</button>
-                    <a th:href="@{/unidades-venta(idFestival=${unidadDTO.idFestival})}"
+                    <a th:href="@{/}"
                        class="btn btn-outline-secondary">Cancelar</a>
                 </div>
 
