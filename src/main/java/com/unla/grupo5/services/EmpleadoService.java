@@ -4,6 +4,7 @@ import com.unla.grupo5.dtos.EmpleadoRequestDTO;
 import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.Staff;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface EmpleadoService {
@@ -22,5 +23,7 @@ public interface EmpleadoService {
     void darDeBajaEmpleado(Long id);
 
     public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones);
+
+    public List<LiquidacionHaberesDTO> calcularHaberesHastaFecha(Long idEmpleado, Long idFestival, LocalDate fechaCorte);
 
 }

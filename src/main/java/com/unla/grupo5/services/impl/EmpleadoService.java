@@ -27,12 +27,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     private StaffRepository staffRepository;
 
     @Autowired
-    private CocineroRepository cocineroRepository;
-
-    @Autowired
-    private CajeroRepository cajeroRepository;
-
-    @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
 
     @Autowired
@@ -219,6 +213,31 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
                         new RecursoNoEncontradoException("Festival", idFestival));
 
+        return calcularHaberes(idEmpleado, idFestival, null);
+    }
+
+    public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones) {
+
+        YearMonth mesActual = YearMonth.now();
+
+        return liquidaciones.stream()
+                .filter(l -> YearMonth.from(l.getPeriodoInicio())
+                        .isBefore(mesActual))
+                .toList();
+    }
+
+    public List<LiquidacionHaberesDTO> calcularHaberesHastaFecha(Long idEmpleado, Long idFestival, LocalDate fechaCorte) {
+        return calcularHaberes(idEmpleado, idFestival, fechaCorte);
+    }
+
+    private List<LiquidacionHaberesDTO> calcularHaberes(Long idEmpleado, Long idFestival, LocalDate fechaCorte) {
+
+        Staff empleado = staffRepository.findById(idEmpleado)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Especializacion del empleado", idEmpleado));
+
+        Festival festival = festivalRepository.findById(idFestival)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Festival", idFestival));
+
         Costo costo = festival.getCosto();
 
         LocalDate fechaInicio = festival.getFechaInicio();
@@ -228,61 +247,70 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             throw new IllegalArgumentException("Las fechas del festival no son válidas");
         }
 
+        // Duración total del festival y factor global
+        long diasDurFest = ChronoUnit.DAYS.between(fechaInicio, fechaFin) + 1;
+        double factorGlobal = calcularFactorDuracion(diasDurFest);
+
+        // Determinar hasta qué fecha se calculan los haberes.
+        LocalDate fechaFinCalculo = fechaFin;
+
+        if (fechaCorte != null && fechaCorte.isBefore(fechaFinCalculo)) {
+            fechaFinCalculo = fechaCorte;
+        }
+
         double sueldoBase = costo.getSueldoBase();
+
         List<LiquidacionHaberesDTO> liquidaciones = new ArrayList<>();
 
         YearMonth mesActual = YearMonth.from(fechaInicio);
-        YearMonth ultimoMes = YearMonth.from(fechaFin);
+        YearMonth ultimoMes = YearMonth.from(fechaFinCalculo);
 
-        while (!mesActual.isAfter(ultimoMes)) {
+        // Si el festival todavía no empezó, el ciclo no se ejecuta.
+        while (!fechaFinCalculo.isBefore(fechaInicio) && !mesActual.isAfter(ultimoMes)) {
 
             LocalDate inicioPeriodo = mesActual.atDay(1);
+
             if (inicioPeriodo.isBefore(fechaInicio)) {
                 inicioPeriodo = fechaInicio;
             }
 
             LocalDate finPeriodo = mesActual.atEndOfMonth();
-            if (finPeriodo.isAfter(fechaFin)) {
-                finPeriodo = fechaFin;
+
+            if (finPeriodo.isAfter(fechaFinCalculo)) {
+                finPeriodo = fechaFinCalculo;
             }
 
-            long dias = ChronoUnit.DAYS.between(
-                    inicioPeriodo, finPeriodo) + 1;
+            // Días trabajados en este mes específico
+            long diasMes = ChronoUnit.DAYS.between(inicioPeriodo, finPeriodo) + 1;
 
-            double factor = calcularFactorDuracion(dias);
-            double montoAdicional = 0;
+            double montoAdicional;
             String tipoEmpleado;
             String conceptoAdicional;
 
             if (empleado instanceof Cocinero cocinero) {
 
-                double plus = obtenerPlusCocinero(cocinero, costo);
-
+                montoAdicional = obtenerPlusCocinero(cocinero, costo);
                 tipoEmpleado = "Cocinero";
                 conceptoAdicional = "Plus " + cocinero.getCategoria();
-                montoAdicional = plus;
 
             } else if (empleado instanceof Cajero cajero) {
 
                 int aniosAntiguedad = Period.between(cajero.getFechaIngreso(), finPeriodo).getYears();
-
                 montoAdicional = aniosAntiguedad * costo.getAntiguedadCajero();
 
                 tipoEmpleado = "Cajero";
                 conceptoAdicional = "Antigüedad: " + aniosAntiguedad + " años";
 
             } else {
-                throw new IllegalArgumentException(
-                        "Tipo de empleado no contemplado: "
-                                + empleado.getClass().getSimpleName());
+                throw new IllegalArgumentException("Tipo de empleado no contemplado: " + empleado.getClass().getSimpleName());
             }
 
-            double sueldoCalculado =
-                    (sueldoBase + montoAdicional) * factor;
+            // Calculo del sueldo total del evento y su respectivo prorrateo mensual
+            double sueldoTotalEvento = (sueldoBase + montoAdicional) * factorGlobal;
+            double sueldoCalculado = sueldoTotalEvento * ((double) diasMes / diasDurFest);
 
-            liquidaciones.add(new LiquidacionHaberesDTO(
-                    empleado.getId(),
-                    empleado.getNombre() + " " + empleado.getApellido(), tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factor, sueldoCalculado,inicioPeriodo, finPeriodo, dias));
+            liquidaciones.add(new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(),
+                    tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factorGlobal, sueldoCalculado, inicioPeriodo, finPeriodo, diasMes));
 
             mesActual = mesActual.plusMonths(1);
         }
@@ -290,15 +318,5 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return liquidaciones;
     }
 
-    public List<LiquidacionHaberesDTO> filtrarMesesCerrados(List<LiquidacionHaberesDTO> liquidaciones) {
-
-        YearMonth mesActual = YearMonth.now();
-
-        return liquidaciones.stream()
-                .filter(l -> YearMonth
-                        .from(l.getPeriodoInicio())
-                        .isBefore(mesActual))
-                .toList();
-    }
 
 }

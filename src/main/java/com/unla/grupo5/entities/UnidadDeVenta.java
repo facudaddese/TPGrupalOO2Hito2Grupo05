@@ -55,4 +55,21 @@ public class UnidadDeVenta {
         return lstPedidos.stream().mapToDouble(Pedido::getTotal).sum();
     }
 
+    public double getCostoTotal() {
+        double total = 0.0;
+
+        if (lstPedidos != null && !lstPedidos.isEmpty()) {
+
+            for (Pedido pedido : lstPedidos) {
+                if (pedido.getListaItems() != null) {
+
+                    for (ItemPedido ip : pedido.getListaItems()) {
+                        total += ip.getPlato().getCostoProduccion() * ip.getCantidad();
+                    }
+                }
+            }
+        }
+
+        return total;
+    }
 }
