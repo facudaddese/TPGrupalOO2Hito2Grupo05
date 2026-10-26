@@ -32,8 +32,16 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model, Authentication authentication) {
 
-        boolean esResponsable = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_RESPONSABLE"));
+        //agregado para que el listado de festivales lo puedan ver visitantes no autenticados
+        boolean autenticado = authentication != null
+                && authentication.isAuthenticated()
+                && !authentication.getPrincipal().equals("anonymousUser");
+
+        boolean esResponsable = autenticado
+                && authentication.getAuthorities().stream()
+                .anyMatch(a ->
+                        a.getAuthority().equals("ROLE_RESPONSABLE")
+                );
 
         if (esResponsable) {
             try {

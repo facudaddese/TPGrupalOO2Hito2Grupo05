@@ -8,15 +8,27 @@
 </head>
 <body>
 
-<header class="navbar">
 
+<header class="navbar">
     <h1>Epicentro Gourmet</h1>
 
     <div class="navbar-actions">
-        <a class="btn btn-light" th:href="@{/logout}">Cerrar sesión</a>
-    </div>
+        <!-- Solo para usuarios NO autenticados -->
+        <a class="btn btn-light"
+           th:href="@{/login}"
+           sec:authorize="isAnonymous()">
+            Iniciar sesión
+        </a>
 
+        <!-- Solo para usuarios autenticados -->
+        <a class="btn btn-light"
+           th:href="@{/logout}"
+           sec:authorize="isAuthenticated()">
+            Cerrar sesión
+        </a>
+    </div>
 </header>
+
 
 
 <main class="container">
@@ -96,10 +108,7 @@
                            th:href="@{/admin/festivales/{id}/unidades(id=${f.id})}">
                             Ver Unidades de Venta
                         </a>
-
                     </div>
-
-
 
                 </li>
 
