@@ -84,11 +84,7 @@
                     th:each="f : ${festivales}">
 
                     <h3 class="festival-nombre">
-                        <!-- El admin entra al festival para ver sus unidades de venta -->
-                        <a sec:authorize="hasRole('ADMIN')"
-                           th:href="@{/unidades-venta(idFestival=${f.id})}"
-                           th:text="${f.nombre}">Nombre del festival</a>
-                        <span sec:authorize="!hasRole('ADMIN')" th:text="${f.nombre}">Nombre del festival</span>
+                        <a th:text="${f.nombre}">Nombre del festival</a>
                     </h3>
 
                     <p class="festival-info">
