@@ -64,26 +64,29 @@
 
     <!-- Responsable: gestión de su unidad -->
     <div class="card" sec:authorize="hasRole('RESPONSABLE')">
-        <div class="card-header">
-            <h2>
-                Mi unidad
-                <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
-            </h2>
-        </div>
 
-        <div class="card-body">
-            <!-- Responsable sin unidad asignada -->
-            <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
+                <div class="card-header">
+                    <h2>
+                        Mi unidad
+                        <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
+                    </h2>
+                </div>
 
-            <div th:if="${unidad}">
-                <p class="festival-info">
-                    <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
-                </p>
+                <div class="card-body">
+                    <!-- Responsable sin unidad asignada -->
+                    <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
+
+                    <div th:if="${unidad}">
+                        <p class="festival-info">
+                            <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
+                        </p>
 
                 <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
                 <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
                 <a class="btn btn-primary" th:href="@{/responsable/pedidos}">Pedidos</a>
                 <a class="btn btn-primary" th:href="@{/responsable/reportes/recaudacion}">Reporte Recaudación</a>
+                <a class="btn btn-primary" th:href="@{/responsable/rentabilidad}">Rentabilidad Neta</a>
+
             </div>
         </div>
     </div>

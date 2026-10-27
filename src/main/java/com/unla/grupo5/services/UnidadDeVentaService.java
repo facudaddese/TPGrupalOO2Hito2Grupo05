@@ -1,10 +1,10 @@
 package com.unla.grupo5.services;
 
-import com.unla.grupo5.dtos.ReporteVentaDTO;
-import com.unla.grupo5.dtos.UnidadDeVentaModificarDTO;
-import com.unla.grupo5.dtos.UnidadDeVentaRequestDTO;
+import com.unla.grupo5.dtos.*;
+import com.unla.grupo5.entities.Festival;
 import com.unla.grupo5.entities.UnidadDeVenta;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UnidadDeVentaService {
@@ -22,4 +22,10 @@ public interface UnidadDeVentaService {
     List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden);
 
     ReporteVentaDTO generarReporteRecaudacion(Long idFestival, String nombreUsuario);
+
+    RentabilidadNetaDTO calcularRentabilidadNeta(UnidadDeVenta unidad, Festival festival);
+
+    double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival);
+
+
 }

@@ -1,22 +1,15 @@
 package com.unla.grupo5.services.impl;
 
-import com.unla.grupo5.dtos.ReporteVentaDTO;
-import com.unla.grupo5.dtos.UnidadDeVentaModificarDTO;
-import com.unla.grupo5.dtos.UnidadDeVentaRequestDTO;
-import com.unla.grupo5.entities.Festival;
-import com.unla.grupo5.entities.Rol;
-import com.unla.grupo5.entities.UnidadDeVenta;
-import com.unla.grupo5.entities.Usuario;
-import com.unla.grupo5.repositories.FestivalRepository;
-import com.unla.grupo5.repositories.RolRepository;
-import com.unla.grupo5.repositories.UnidadDeVentaRepository;
-import com.unla.grupo5.repositories.UsuarioRepository;
+import com.unla.grupo5.dtos.*;
+import com.unla.grupo5.entities.*;
+import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -47,6 +40,12 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     // Codifica la contraseña antes de guardarla (nunca se guarda en texto plano)
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmpleadoService empleadoService;
+
+    @Autowired
+    private StaffRepository  staffRepository;
 
     // Devuelve las unidades de venta que pertenecen al festival indicado
     @Override
@@ -228,4 +227,43 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                 participo
         );
     }
+
+    private double calcularCanon(UnidadDeVenta unidad, Festival festival) {
+
+        // TODO: Reemplazar por el cálculo oficial del canon.
+        return 0.0;
+    }
+
+    public double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival) {
+        double totalSueldos = 0.0;
+
+        List<Staff> empleados = staffRepository.findByUnidadDeVentaId(unidad.getId());
+
+        LocalDate fechaCorte = LocalDate.now();
+
+        for (Staff empleado : empleados) {
+
+            List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesHastaFecha(empleado.getId(), festival.getId(), fechaCorte);
+
+            for (LiquidacionHaberesDTO liquidacion : liquidaciones) {
+                totalSueldos += liquidacion.getSueldoCalculado();
+            }
+        }
+
+        return totalSueldos;
+    }
+
+    //Rentabilidad de un festival a la fecha actual
+    public RentabilidadNetaDTO calcularRentabilidadNeta(UnidadDeVenta unidad, Festival festival){
+
+        double totalVentas = unidad.getRecaudacionTotal();
+        double costoPlatos = unidad.getCostoTotal();
+        double totalSueldos = calcularTotalSueldos(unidad, festival);
+        double canon = calcularCanon(unidad, festival);
+
+        double rentabilidadNeta = (totalVentas - costoPlatos) - totalSueldos - canon;
+
+        return new RentabilidadNetaDTO(totalVentas, costoPlatos, totalSueldos, canon, rentabilidadNeta);
+    }
+
 }

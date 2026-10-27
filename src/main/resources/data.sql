@@ -157,7 +157,7 @@ VALUES
 
 INSERT
 IGNORE INTO festival (id, nombre, temporada, fecha_inicio, fecha_fin, id_costo) VALUES
-(1, 'Festival Gastronómico Anual', 'Primavera-Verano', '2026-10-01', '2026-12-31', 1);
+(1, 'Festival Gastronómico Anual', 'Primavera-Verano', '2026-08-01', '2026-12-31', 1);
 
 INSERT INTO `Rol` (`rol`)
 SELECT 'ADMIN' WHERE NOT EXISTS (SELECT 1 FROM `Rol` WHERE `rol` = 'ADMIN');
