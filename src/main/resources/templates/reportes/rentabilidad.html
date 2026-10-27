@@ -67,6 +67,66 @@
 
             <div th:if="${rentabilidad != null}">
 
+                <div class="card mb-4">
+
+                    <div class="card-header bg-light">
+                        <h2 class="h5 mb-0">Consultar por período</h2>
+                    </div>
+
+                    <div class="card-body">
+
+                        <form th:action="@{/responsable/rentabilidad}"
+                              method="get"
+                              class="row g-3 align-items-end">
+
+                            <div class="col-md-4">
+                                <label for="fechaDesde" class="form-label">
+                                    Fecha desde
+                                </label>
+
+                                <input type="date"
+                                       id="fechaDesde"
+                                       name="fechaDesde"
+                                       class="form-control"
+                                       th:value="${fechaDesde}"
+                                       th:attr="min=${festival.fechaInicio},
+                                max=${festival.fechaFin}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="fechaHasta" class="form-label">
+                                    Fecha hasta
+                                </label>
+
+                                <input type="date"
+                                       id="fechaHasta"
+                                       name="fechaHasta"
+                                       class="form-control"
+                                       th:value="${fechaHasta}"
+                                       th:attr="min=${festival.fechaInicio},
+                                max=${festival.fechaFin}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-4 d-flex gap-2">
+
+                                <button type="submit" class="btn btn-primary">
+                                    Calcular rentabilidad
+                                </button>
+
+                                <a th:href="@{/responsable/rentabilidad}"
+                                   class="btn btn-secondary">
+                                    Restablecer
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
                 <!-- Información del festival -->
                 <section class="mb-4">
 
