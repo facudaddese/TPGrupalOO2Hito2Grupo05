@@ -470,4 +470,24 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return String.format("%s%03d", prefijo, siguienteNumero);
     }
 
+    /**
+     * Recupera el ranking de unidades por cantidad de pedidos para un festival.
+     * Transforma el resultado de la consulta agrupada (Object[]) mapeando la cuenta
+     * de pedidos al atributo @Transient de cada UnidadDeVenta antes de retornarla a la vista.
+     */
+    @Override
+    public List<UnidadDeVenta> listarPorFestivalOrdenadoPorCantidadPedidos(Long idFestival) {
+        List<Object[]> resultados = unidadDeVentaRepository.findByFestivalIdOrderByCantidadPedidosDesc(idFestival);
+        List<UnidadDeVenta> unidades = new ArrayList<>();
+
+        for (Object[] fila : resultados) {
+            UnidadDeVenta unidad = (UnidadDeVenta) fila[0];
+            Long cantidad = (Long) fila[1];
+            unidad.setCantidadPedidos(cantidad);// Inyección del dato en memoria
+            unidades.add(unidad);
+        }
+
+        return unidades;
+    }
+
 }

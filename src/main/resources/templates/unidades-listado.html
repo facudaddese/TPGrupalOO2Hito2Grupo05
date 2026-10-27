@@ -43,11 +43,18 @@
             <h2 th:text="${festival != null} ? 'Unidades de Venta - ' + ${festival.nombre} : 'Unidades de Venta'">
                 Unidades de Venta
             </h2>
-            <a th:if="${festival != null}" sec:authorize="hasRole('ADMIN')"
-               class="btn btn-light"
-               th:href="@{/unidades-venta/mayor-canon(idFestival=${festival.id})}">
-                Ranking de unidades con mayor canon
-            </a>
+            <div th:if="${festival != null}" sec:authorize="hasRole('ADMIN')" style="display: flex; gap: 10px;">
+                <a class="btn btn-light"
+                   th:href="@{/unidades-venta/mayor-canon(idFestival=${festival.id})}">
+                    Ranking de unidades con mayor canon
+                </a>
+
+                <a class="btn btn-light"
+                   th:href="@{'/admin/festivales/' + ${festival.id} + '/unidades'(criterio='pedidos')}"
+                   th:style="${criterioActual == 'pedidos'} ? 'font-weight: bold; border: 1px solid #000;' : ''">
+                    Ranking mayor cantidad de pedidos
+                </a>
+            </div>
         </div>
 
         <div class="card-body">
@@ -89,6 +96,11 @@
                     <p class="festival-info">
                         <strong>Recaudación Total:</strong>
                         $<span th:text="${#numbers.formatDecimal(u.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                    </p>
+
+                    <p class="festival-info" th:if="${u.cantidadPedidos != null}">
+                        <strong>Total de Pedidos:</strong>
+                        <span th:text="${u.cantidadPedidos}">0</span>
                     </p>
 
                 </li>
