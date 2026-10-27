@@ -71,16 +71,6 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Rol</label>
-                    <select th:field="*{rol}" class="form-select" th:errorclass="is-invalid">
-                        <option value="RESPONSABLE">Responsable</option>
-                        <option value="ADMINISTRADOR">Administrador</option>
-                        <option value="EMPLEADO">Empleado</option>
-                    </select>
-                    <div class="invalid-feedback" th:errors="*{rol}"></div>
-                </div>
-
                 <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-primary btn-lg">Registrar Unidad de Venta</button>
                     <a th:href="@{/}"

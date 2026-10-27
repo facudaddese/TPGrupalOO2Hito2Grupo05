@@ -37,6 +37,25 @@ public class UnidadDeVentaController {
         return "unidades-venta/listado";
     }
 
+    // Ranking de todas las unidades del festival, de mayor a menor canon
+    @GetMapping("/unidades-venta/mayor-canon")
+    public String unidadesConMayorCanon(@RequestParam(required = false) Long idFestival, Model model) {
+        Festival festival = idFestival == null ? null : festivalRepository.findById(idFestival).orElse(null);
+        if (festival == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("festival", festival);
+        model.addAttribute("idFestival", idFestival);
+
+        try {
+            model.addAttribute("reporte", unidadDeVentaService.obtenerUnidadesConMayorCanon(idFestival));
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+        }
+        return "unidades-venta/mayor-canon";
+    }
+
     @GetMapping("/alta")
     public String mostrarFormularioAlta(@RequestParam(required = false) Long idFestival, Model model) {
         UnidadDeVentaRequestDTO dto = new UnidadDeVentaRequestDTO();
