@@ -27,5 +27,8 @@ public interface UnidadDeVentaService {
 
     double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival);
 
+    // Todas las unidades del festival ordenadas de mayor a menor canon
+    List<ReporteMayoresCanonDTO> obtenerUnidadesConMayorCanon(Long idFestival);
+
 
 }

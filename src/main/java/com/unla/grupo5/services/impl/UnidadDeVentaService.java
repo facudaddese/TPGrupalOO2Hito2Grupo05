@@ -10,16 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVentaService {
 
-    // Rol que convierte al usuario creado en el responsable de la unidad
+    // El usuario que se crea en el alta siempre es el responsable de la unidad
     private static final String ROL_RESPONSABLE = "RESPONSABLE";
-    // Únicos roles que se aceptan desde el formulario
-    private static final List<String> ROLES_VALIDOS = List.of("RESPONSABLE", "ADMINISTRADOR", "EMPLEADO");
 
     @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
@@ -62,11 +61,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
             throw new IllegalArgumentException("Ya existe una unidad de venta con el código " + dto.getCodigo() + " en este festival.");
         }
 
-        // El rol solo puede ser uno de los permitidos
-        if (!ROLES_VALIDOS.contains(dto.getRol())) {
-            throw new IllegalArgumentException("El rol seleccionado no es válido.");
-        }
-
         // El nombre de usuario es único en todo el sistema
         // El e-mail es el nombre de usuario, y es único en todo el sistema
         if (usuarioRepository.existsByNombreUsuario(dto.getEmail())) {
@@ -83,15 +77,14 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         Festival festival = festivalRepository.findById(dto.getIdFestival())
                 .orElseThrow(() -> new IllegalArgumentException("El festival seleccionado no existe."));
 
-        // 2. Validaciones de negocio (código, rol y usuario)
+        // 2. Validaciones de negocio (código y usuario)
         validarDatos(dto);
 
-        // 3. Busca el rol en la tabla; si todavía no existe lo crea
-        String nombreRol = dto.getRol();
-        Rol rol = rolRepository.findByRol(nombreRol)
+        // 3. Busca el rol RESPONSABLE en la tabla; si todavía no existe lo crea
+        Rol rol = rolRepository.findByRol(ROL_RESPONSABLE)
                 .orElseGet(() -> {
                     Rol r = new Rol();
-                    r.setRol(nombreRol);
+                    r.setRol(ROL_RESPONSABLE);
                     return rolRepository.save(r);
                 });
 
@@ -114,11 +107,9 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         usuario.setUnidadDeVenta(unidad);
         usuario = usuarioRepository.save(usuario);
 
-        // 6. Solo si el rol es RESPONSABLE, ese usuario pasa a ser el responsable de la unidad
-        if (ROL_RESPONSABLE.equals(nombreRol)) {
-            unidad.setResponsable(usuario);
-            unidad = unidadDeVentaRepository.save(unidad);
-        }
+        // 6. Ese usuario pasa a ser el responsable de la unidad
+        unidad.setResponsable(usuario);
+        unidad = unidadDeVentaRepository.save(unidad);
 
         // 7. Se envían las credenciales por e-mail (si el envío falla no se cancela el alta)
         try {
@@ -228,10 +219,47 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         );
     }
 
+    // Canon = superficie de la unidad (m²) x costo por m² que fija el festival
     private double calcularCanon(UnidadDeVenta unidad, Festival festival) {
+        Costo costo = festival.getCosto();
+        if (costo == null || unidad.getSuperficie() == null) {
+            return 0.0;
+        }
+        return unidad.getSuperficie() * costo.getCostoSuperficies();
+    }
 
-        // TODO: Reemplazar por el cálculo oficial del canon.
-        return 0.0;
+    // Tipo de la unidad según su subclase
+    private String obtenerTipoUnidad(UnidadDeVenta unidad) {
+        if (unidad instanceof FoodTruck) {
+            return "Food Truck";
+        }
+        if (unidad instanceof PuestoDesarmable) {
+            return "Puesto Desarmable";
+        }
+        return "Sin tipo asignado";
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReporteMayoresCanonDTO> obtenerUnidadesConMayorCanon(Long idFestival) {
+        Festival festival = festivalRepository.findById(idFestival)
+                .orElseThrow(() -> new IllegalArgumentException("El festival seleccionado no existe."));
+
+        List<ReporteMayoresCanonDTO> reporte = new ArrayList<>();
+        for (UnidadDeVenta unidad : unidadDeVentaRepository.findByFestivalId(idFestival)) {
+            reporte.add(new ReporteMayoresCanonDTO(
+                    unidad.getNombreComercial(),
+                    unidad.getCodigo(),
+                    obtenerTipoUnidad(unidad),
+                    calcularCanon(unidad, festival)
+            ));
+        }
+
+        // De mayor a menor canon; si empatan, por nombre comercial
+        reporte.sort(Comparator.comparingDouble(ReporteMayoresCanonDTO::getCanon).reversed()
+                .thenComparing(ReporteMayoresCanonDTO::getNombreComercial));
+
+        return reporte;
     }
 
     public double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival) {

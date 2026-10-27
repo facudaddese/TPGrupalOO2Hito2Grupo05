@@ -33,6 +33,5 @@ public class UnidadDeVentaRequestDTO {
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
-    @NotBlank(message = "Debe seleccionar un rol")
-    private String rol = "RESPONSABLE";
+    // El rol no viene del formulario: el service siempre lo crea como RESPONSABLE
 }
