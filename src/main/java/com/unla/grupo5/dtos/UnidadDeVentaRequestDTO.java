@@ -18,7 +18,6 @@ public class UnidadDeVentaRequestDTO {
     @NotBlank(message = "El nombre comercial es obligatorio")
     private String nombreComercial;
 
-    @NotBlank(message = "El código es obligatorio")
     private String codigo;
 
     @NotNull(message = "La superficie es obligatoria")
