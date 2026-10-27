@@ -86,6 +86,7 @@
                 <a class="btn btn-primary" th:href="@{/responsable/pedidos}">Pedidos</a>
                 <a class="btn btn-primary" th:href="@{/responsable/reportes/recaudacion}">Reporte Recaudación</a>
                 <a class="btn btn-primary" th:href="@{/responsable/rentabilidad}">Rentabilidad Neta</a>
+                <a class="btn btn-primary" th:href="@{/responsable/canon}">Cálculo de Canon</a>
 
             </div>
         </div>
@@ -123,8 +124,7 @@
                             Ver Unidades de Venta
                         </a>
                     </div>
-                    <div style="margin-top: 15px;" sec:authorize="isAnonymous()"
-                         th:if="${f.fechaFin != null and !f.fechaFin.isBefore(T(java.time.LocalDate).now())}">
+                    <div style="margin-top: 15px;" sec:authorize="isAnonymous()">
 
                         <a class="btn btn-primary"
                            th:href="@{/alta(idFestival=${f.id})}">

@@ -228,6 +228,27 @@ IGNORE INTO unidad_de_venta (id, nombre_comercial, codigo, superficie, id_festiv
 (4, 'Pizza & Beer Stand', 'PD-002', 15, 1),
 (5, 'Tacos & Grill', 'FT-003', 10, 1);
 
+-- =========================================================
+-- TIPO DE CADA UNIDAD DE VENTA (para el cálculo del canon)
+-- Food Truck:        (superficie * $500) + $2000 si requiere conexión eléctrica
+-- Puesto Desarmable: (superficie * $500) - (tiempo de montaje * $10)
+--   FT-001 -> 15 m², con conexión  -> $9.500
+--   FT-002 -> 12 m², sin conexión  -> $6.000
+--   FT-003 -> 10 m², con conexión  -> $7.000
+--   PD-001 -> 10 m², 2,5 h montaje -> $4.975
+--   PD-002 -> 15 m², 4 h montaje   -> $7.460
+-- =========================================================
+INSERT
+IGNORE INTO foodtruck (id_food_truck, patente, estado_conexion) VALUES
+(1, 'AB123CD', true),
+(3, 'AC456EF', false),
+(5, 'AD789GH', true);
+
+INSERT
+IGNORE INTO puesto_desarmable (id_puesto_desarmable, cantidad_carpas, tiempo_montaje) VALUES
+(2, 2, 2.5),
+(4, 3, 4.0);
+
 UPDATE `unidad_de_venta`
 SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com' LIMIT 1)
 WHERE `codigo` = 'FT-001';
