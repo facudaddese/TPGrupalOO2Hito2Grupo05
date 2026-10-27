@@ -43,6 +43,11 @@
             <h2 th:text="${festival != null} ? 'Unidades de Venta - ' + ${festival.nombre} : 'Unidades de Venta'">
                 Unidades de Venta
             </h2>
+            <a th:if="${festival != null}" sec:authorize="hasRole('ADMIN')"
+               class="btn btn-light"
+               th:href="@{/unidades-venta/mayor-canon(idFestival=${festival.id})}">
+                Ranking de unidades con mayor canon
+            </a>
         </div>
 
         <div class="card-body">

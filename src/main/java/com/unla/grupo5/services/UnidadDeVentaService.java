@@ -27,6 +27,12 @@ public interface UnidadDeVentaService {
 
     double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival);
 
+    // Todas las unidades del festival ordenadas de mayor a menor canon
+    List<ReporteMayoresCanonDTO> obtenerUnidadesConMayorCanon(Long idFestival);
+
+    // Detalle del canon que paga la unidad del responsable logueado
+    CanonDTO calcularCanonUnidad(String nombreUsuario);
+
     double calcularTotalSueldosEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
 
     RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);

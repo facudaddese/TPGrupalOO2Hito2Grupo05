@@ -25,6 +25,21 @@ public class UnidadDeVentaRequestDTO {
     @Min(value = 1, message = "La superficie debe ser mayor a 0")
     private Integer superficie;
 
+    // ************ Tipo de unidad ************
+    // FOODTRUCK o PUESTO_DESARMABLE
+    @NotBlank(message = "Debe seleccionar el tipo de unidad")
+    private String tipoUnidad;
+
+    // Solo Food Truck (se validan en el service según el tipo elegido)
+    private String patente;
+
+    private boolean conexion;
+
+    // Solo Puesto Desarmable (se validan en el service según el tipo elegido)
+    private Integer cantidadCarpas;
+
+    private Double tiempoMontaje;
+
     // ************ Datos del usuario responsable ************
     @NotBlank(message = "El e-mail es obligatorio")
     @Email(message = "Debe ser un e-mail válido")
@@ -33,6 +48,5 @@ public class UnidadDeVentaRequestDTO {
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
-    @NotBlank(message = "Debe seleccionar un rol")
-    private String rol = "RESPONSABLE";
+    // El rol no viene del formulario: el service siempre lo crea como RESPONSABLE
 }

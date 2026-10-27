@@ -37,12 +37,37 @@ public class UnidadDeVentaController {
         return "unidades-venta/listado";
     }
 
+    // Ranking de todas las unidades del festival, de mayor a menor canon
+    @GetMapping("/unidades-venta/mayor-canon")
+    public String unidadesConMayorCanon(@RequestParam(required = false) Long idFestival, Model model) {
+        Festival festival = idFestival == null ? null : festivalRepository.findById(idFestival).orElse(null);
+        if (festival == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("festival", festival);
+        model.addAttribute("idFestival", idFestival);
+
+        try {
+            model.addAttribute("reporte", unidadDeVentaService.obtenerUnidadesConMayorCanon(idFestival));
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+        }
+        return "unidades-venta/mayor-canon";
+    }
+
     @GetMapping("/alta")
     public String mostrarFormularioAlta(@RequestParam(required = false) Long idFestival, Model model) {
+        // El festival es el desde el que se ingresó al alta; sin festival no hay formulario
+        Festival festival = idFestival == null ? null : festivalRepository.findById(idFestival).orElse(null);
+        if (festival == null) {
+            return "redirect:/";
+        }
+
         UnidadDeVentaRequestDTO dto = new UnidadDeVentaRequestDTO();
         dto.setIdFestival(idFestival);
         model.addAttribute("unidadDTO", dto);
-        model.addAttribute("festivales", festivalRepository.findAll());
+        model.addAttribute("festival", festival);
         return "unidades-venta/form-unidad";
     }
 
@@ -53,8 +78,13 @@ public class UnidadDeVentaController {
             Model model,
             RedirectAttributes redirect) {
 
+        Festival festival = dto.getIdFestival() == null ? null : festivalRepository.findById(dto.getIdFestival()).orElse(null);
+        if (festival == null) {
+            return "redirect:/";
+        }
+        model.addAttribute("festival", festival);
+
         if (result.hasErrors()) {
-            model.addAttribute("festivales", festivalRepository.findAll());
             return "unidades-venta/form-unidad";
         }
 
@@ -66,7 +96,6 @@ public class UnidadDeVentaController {
 
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
-            model.addAttribute("festivales", festivalRepository.findAll());
             return "unidades-venta/form-unidad";
         }
     }

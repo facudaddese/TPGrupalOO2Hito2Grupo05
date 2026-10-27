@@ -167,8 +167,7 @@ INSERT INTO `Rol` (`rol`)
 SELECT 'EMPLEADO' WHERE NOT EXISTS (SELECT 1 FROM `Rol` WHERE `rol` = 'EMPLEADO');
 
 -- =========================================================
--- USUARIO ADMIN
--- usuario: admin@gmail.com | clave: admin123
+-- USUARIO ADMIN (admin@gmail.com | admin123)
 -- =========================================================
 INSERT INTO `Usuario` (`nombre_usuario`, `password_usuario`, `usuario_activo`, `id_staff`, `id_rol`)
 SELECT 'admin@gmail.com',
@@ -229,6 +228,27 @@ IGNORE INTO unidad_de_venta (id, nombre_comercial, codigo, superficie, id_festiv
 (4, 'Pizza & Beer Stand', 'PD-002', 15, 1),
 (5, 'Tacos & Grill', 'FT-003', 10, 1);
 
+-- =========================================================
+-- TIPO DE CADA UNIDAD DE VENTA (para el cálculo del canon)
+-- Food Truck:        (superficie * $500) + $2000 si requiere conexión eléctrica
+-- Puesto Desarmable: (superficie * $500) - (tiempo de montaje * $10)
+--   FT-001 -> 15 m², con conexión  -> $9.500
+--   FT-002 -> 12 m², sin conexión  -> $6.000
+--   FT-003 -> 10 m², con conexión  -> $7.000
+--   PD-001 -> 10 m², 2,5 h montaje -> $4.975
+--   PD-002 -> 15 m², 4 h montaje   -> $7.460
+-- =========================================================
+INSERT
+IGNORE INTO foodtruck (id_food_truck, patente, estado_conexion) VALUES
+(1, 'AB123CD', true),
+(3, 'AC456EF', false),
+(5, 'AD789GH', true);
+
+INSERT
+IGNORE INTO puesto_desarmable (id_puesto_desarmable, cantidad_carpas, tiempo_montaje) VALUES
+(2, 2, 2.5),
+(4, 3, 4.0);
+
 UPDATE `unidad_de_venta`
 SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com' LIMIT 1)
 WHERE `codigo` = 'FT-001';
@@ -247,19 +267,14 @@ WHERE `codigo` = 'FT-003';
 
 INSERT
 IGNORE INTO staff (id, dni, nombre, apellido, fecha_nacimiento, fecha_ingreso, sueldo, activo, id_unidad_venta) VALUES
-
 (1, 35123456, 'Juan', 'Pérez', '1990-05-15', '2023-01-10', 850000.00, true, 1),
 (2, 38987654, 'María', 'Gómez', '1995-08-20', '2023-03-01', 920000.00, true, 1),
-
 (3, 36111222, 'Carlos', 'López', '1992-02-10', '2023-02-15', 850000.00, true, 2),
 (4, 37333444, 'Ana', 'Martínez', '1994-11-05', '2023-04-10', 920000.00, true, 2),
-
 (5, 34555666, 'Lucas', 'Fernández', '1989-07-22', '2023-01-20', 850000.00, true, 3),
 (6, 39777888, 'Sofia', 'Rodríguez', '1996-09-12', '2023-05-01', 920000.00, true, 3),
-
 (7, 33999000, 'Diego', 'Sánchez', '1988-03-30', '2023-02-01', 850000.00, true, 4),
 (8, 40111222, 'Laura', 'Díaz', '1997-12-18', '2023-06-15', 920000.00, true, 4),
-
 (9, 32333444, 'Mateo', 'Álvarez', '1987-10-08', '2023-01-05', 850000.00, true, 5),
 (10, 41555666, 'Camila', 'Torres', '1998-04-25', '2023-07-01', 920000.00, true, 5);
 
@@ -271,7 +286,9 @@ INSERT
 IGNORE INTO cajero (id_staff, turno_trabajo) VALUES
 (2, 'NOCHE'), (4, 'MAÑANA'), (6, 'TARDE'), (8, 'NOCHE'), (10, 'MAÑANA');
 
--- USUARIOS PARA CADA EMPLEADO (Clave: empleado123)
+-- =========================================================
+-- USUARIOS EMPLEADOS (Clave: empleado123)
+-- =========================================================
 INSERT INTO `Usuario` (`nombre_usuario`, `password_usuario`, `usuario_activo`, `id_staff`, `id_rol`)
 SELECT 'empleado1@gmail.com',
        '$2y$10$/tEyJqFNxSlMJNYQ1oEv9.gb.VsIxJxDIW9mFLriPsaTj3F/Foata',
@@ -289,8 +306,20 @@ SELECT 'empleado2@gmail.com',
 WHERE NOT EXISTS (SELECT 1 FROM `Usuario` WHERE `nombre_usuario` = 'empleado2@gmail.com');
 
 INSERT
-IGNORE INTO pedido (id, fecha, total, id_unidad_de_venta) VALUES
+IGNORE INTO plato (id, nombre, precio, costo_produccion, id_unidad_de_venta) VALUES
+(1, 'Empanada Criolla', 1500.00, 500.00, 1),
+(2, 'Hamburguesa Completa', 6500.00, 2500.00, 1),
+(3, 'Locro Tradicional', 4500.00, 1500.00, 2),
+(4, 'Tamal Salteño', 3500.00, 1000.00, 2),
+(5, 'Burger Doble Queso', 7000.00, 2800.00, 3),
+(6, 'Papas Bastón', 3000.00, 800.00, 3),
+(7, 'Pizza Muzzarella', 8000.00, 3000.00, 4),
+(8, 'Cerveza Artesanal 500ml', 3500.00, 1200.00, 4),
+(9, 'Taco de Carne', 4000.00, 1400.00, 5),
+(10, 'Quesadilla de Pollo', 4500.00, 1600.00, 5);
 
+INSERT
+IGNORE INTO pedido (id, fecha, total, id_unidad_de_venta) VALUES
 (1, '2026-10-15', 12000.00, 1),
 (2, '2026-10-15', 15500.00, 1),
 (3, '2026-10-15', 8000.00, 2),
@@ -312,3 +341,27 @@ IGNORE INTO pedido (id, fecha, total, id_unidad_de_venta) VALUES
 (18, '2026-10-16', 28000.00, 4),
 (19, '2026-10-16', 12500.00, 5),
 (20, '2026-10-16', 25000.00, 5);
+
+INSERT
+IGNORE INTO item_pedido (id, cantidad, id_pedido, id_plato) VALUES
+(1, 2, 1, 2),
+(2, 1, 2, 2),
+(3, 2, 3, 3),
+(4, 2, 4, 4),
+(5, 1, 5, 5),
+(6, 1, 6, 6),
+(7, 2, 7, 7),
+(8, 2, 8, 8),
+(9, 1, 9, 9),
+(10, 3, 10, 10),
+
+(11, 2, 11, 1),
+(12, 1, 12, 2),
+(13, 1, 13, 3),
+(14, 3, 14, 4),
+(15, 2, 15, 5),
+(16, 1, 16, 6),
+(17, 2, 17, 7),
+(18, 4, 18, 8),
+(19, 1, 19, 9),
+(20, 2, 20, 10);
