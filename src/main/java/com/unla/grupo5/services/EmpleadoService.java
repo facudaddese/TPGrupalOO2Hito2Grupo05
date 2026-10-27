@@ -26,4 +26,7 @@ public interface EmpleadoService {
 
     public List<LiquidacionHaberesDTO> calcularHaberesHastaFecha(Long idEmpleado, Long idFestival, LocalDate fechaCorte);
 
+    void reactivarEmpleado(Long id);
+
+    List<Staff> traerActivosPorUnidad(Long idUnidadVenta);
 }

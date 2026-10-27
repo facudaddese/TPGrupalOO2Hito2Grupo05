@@ -27,6 +27,12 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     private StaffRepository staffRepository;
 
     @Autowired
+    private CocineroRepository cocineroRepository;
+
+    @Autowired
+    private CajeroRepository cajeroRepository;
+
+    @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
 
     @Autowired
@@ -318,5 +324,18 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return liquidaciones;
     }
 
+    @Override
+    public void reactivarEmpleado(Long id) {
+        Staff empleado = staffRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Empleado no encontrado con ID: " + id));
+
+        empleado.setActivo(true);
+        staffRepository.save(empleado);
+    }
+
+    @Override
+    public List<Staff> traerActivosPorUnidad(Long idUnidadVenta) {
+        return staffRepository.findByUnidadDeVentaIdAndActivoTrue(idUnidadVenta);
+    }
 
 }
