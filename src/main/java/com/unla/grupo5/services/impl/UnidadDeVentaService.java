@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -370,6 +371,79 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         double costoPlatos = unidad.getCostoTotal();
         double totalSueldos = calcularTotalSueldos(unidad, festival);
         double canon = calcularCanon(unidad, festival);
+
+        double rentabilidadNeta = (totalVentas - costoPlatos) - totalSueldos - canon;
+
+        return new RentabilidadNetaDTO(totalVentas, costoPlatos, totalSueldos, canon, rentabilidadNeta);
+    }
+
+    public double calcularTotalSueldosEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
+        double totalSueldos = 0.0;
+
+        List<Staff> empleados = staffRepository.findByUnidadDeVentaId(unidad.getId());
+
+        for (Staff empleado : empleados) {
+
+            List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesHastaFecha(empleado.getId(), festival.getId(), fechaHasta);
+
+            for (LiquidacionHaberesDTO liquidacion : liquidaciones) {
+                LocalDate inicioPeriodo = liquidacion.getPeriodoInicio();
+                LocalDate finPeriodo = liquidacion.getPeriodoFin();
+
+                // Verificamos si el período de la liquidación se cruza con nuestro rango
+                if (!(finPeriodo.isBefore(fechaDesde) || inicioPeriodo.isAfter(fechaHasta))) {
+
+                    // Si el mes está completamente dentro del rango, sumamos el sueldo completo de ese mes
+                    if (!inicioPeriodo.isBefore(fechaDesde) && !finPeriodo.isAfter(fechaHasta)) {
+                        totalSueldos += liquidacion.getSueldoCalculado();
+                    } else {
+                        // Si el rango corta el mes a la mitad, prorrateamos los días exactos que caen en el rango
+                        LocalDate inicioEfectivo = inicioPeriodo.isBefore(fechaDesde) ? fechaDesde : inicioPeriodo;
+                        LocalDate finEfectivo = finPeriodo.isAfter(fechaHasta) ? fechaHasta : finPeriodo;
+
+                        long diasEnRango = ChronoUnit.DAYS.between(inicioEfectivo, finEfectivo) + 1;
+                        long diasTotalesMes = liquidacion.getDiasLiquidacion();
+
+                        if (diasTotalesMes > 0) {
+                            double proporcion = (double) diasEnRango / diasTotalesMes;
+                            totalSueldos += liquidacion.getSueldoCalculado() * proporcion;
+                        } else {
+                            totalSueldos += liquidacion.getSueldoCalculado();
+                        }
+                    }
+                }
+            }
+        }
+
+        return totalSueldos;
+    }
+
+    private double calcularCanonEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
+
+        double canonTotal = calcularCanon(unidad, festival);
+
+        LocalDate inicioFestival = festival.getFechaInicio();
+        LocalDate finFestival = festival.getFechaFin();
+
+        long diasFestival = ChronoUnit.DAYS.between(
+                inicioFestival, finFestival) + 1;
+
+        if (diasFestival <= 0) {
+            return 0.0;
+        }
+
+        long diasConsultados = ChronoUnit.DAYS.between(
+                fechaDesde, fechaHasta) + 1;
+
+        return canonTotal * diasConsultados / diasFestival;
+    }
+
+    public RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta){
+
+        double totalVentas = unidad.getRecaudacionEntreFechas(fechaDesde, fechaHasta);
+        double costoPlatos = unidad.getCostoTotalEntreFechas(fechaDesde, fechaHasta);
+        double totalSueldos = calcularTotalSueldosEntreFechas(unidad, festival, fechaDesde, fechaHasta);
+        double canon = calcularCanonEntreFechas(unidad, festival, fechaDesde, fechaHasta);
 
         double rentabilidadNeta = (totalVentas - costoPlatos) - totalSueldos - canon;
 

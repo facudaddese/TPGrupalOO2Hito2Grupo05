@@ -33,5 +33,9 @@ public interface UnidadDeVentaService {
     // Detalle del canon que paga la unidad del responsable logueado
     CanonDTO calcularCanonUnidad(String nombreUsuario);
 
+    double calcularTotalSueldosEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
+
+    RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
+
 
 }
