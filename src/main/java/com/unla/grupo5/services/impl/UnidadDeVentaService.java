@@ -4,6 +4,7 @@ import com.unla.grupo5.dtos.*;
 import com.unla.grupo5.entities.*;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
 
     // El usuario que se crea en el alta siempre es el responsable de la unidad
     private static final String ROL_RESPONSABLE = "RESPONSABLE";
+    // Tipos de unidad que se pueden elegir en el alta
+    private static final String TIPO_FOODTRUCK = "FOODTRUCK";
+    private static final String TIPO_PUESTO_DESARMABLE = "PUESTO_DESARMABLE";
 
     @Autowired
     private UnidadDeVentaRepository unidadDeVentaRepository;
@@ -68,6 +72,34 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         }
     }
 
+    // Crea la subclase que corresponde al tipo elegido y valida sus datos propios
+    private UnidadDeVenta crearUnidadSegunTipo(UnidadDeVentaRequestDTO dto) {
+        if (TIPO_FOODTRUCK.equals(dto.getTipoUnidad())) {
+            if (dto.getPatente() == null || dto.getPatente().isBlank()) {
+                throw new IllegalArgumentException("La patente es obligatoria para un Food Truck.");
+            }
+            FoodTruck foodTruck = new FoodTruck();
+            foodTruck.setPatente(dto.getPatente().trim().toUpperCase());
+            foodTruck.setConexion(dto.isConexion());
+            return foodTruck;
+        }
+
+        if (TIPO_PUESTO_DESARMABLE.equals(dto.getTipoUnidad())) {
+            if (dto.getCantidadCarpas() == null || dto.getCantidadCarpas() < 1) {
+                throw new IllegalArgumentException("La cantidad de carpas debe ser mayor a 0.");
+            }
+            if (dto.getTiempoMontaje() == null || dto.getTiempoMontaje() <= 0) {
+                throw new IllegalArgumentException("El tiempo de montaje debe ser mayor a 0.");
+            }
+            PuestoDesarmable puesto = new PuestoDesarmable();
+            puesto.setCantidadCarpas(dto.getCantidadCarpas());
+            puesto.setTiempoMontaje(dto.getTiempoMontaje());
+            return puesto;
+        }
+
+        throw new IllegalArgumentException("El tipo de unidad seleccionado no es válido.");
+    }
+
     // Alta de una unidad de venta junto con su usuario.
     // Todo o nada: si algo falla no queda ni el usuario ni la unidad.
     @Override
@@ -88,8 +120,8 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                     return rolRepository.save(r);
                 });
 
-        // 4. Se guarda primero la unidad, así el usuario puede quedar asociado a ella
-        UnidadDeVenta unidad = new UnidadDeVenta();
+        // 4. Se crea la unidad según su tipo y se guarda primero, así el usuario puede quedar asociado a ella
+        UnidadDeVenta unidad = crearUnidadSegunTipo(dto);
         unidad.setNombreComercial(dto.getNombreComercial());
         unidad.setCodigo(dto.getCodigo());
         unidad.setSuperficie(dto.getSuperficie());
@@ -219,17 +251,67 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         );
     }
 
-    // Canon = superficie de la unidad (m²) x costo por m² que fija el festival
-    private double calcularCanon(UnidadDeVenta unidad, Festival festival) {
+    // Arma el detalle del canon de una unidad con los costos que fija el festival:
+    //  - Food Truck: (superficie * costo por m²) + plus de electricidad si requiere conexión
+    //  - Puesto Desarmable: (superficie * costo por m²) - (tiempo de montaje * costo de montaje)
+    private CanonDTO armarDetalleCanon(UnidadDeVenta unidad, Festival festival) {
+        // La relación puede venir como proxy de Hibernate: se obtiene la subclase real
+        unidad = (UnidadDeVenta) Hibernate.unproxy(unidad);
         Costo costo = festival.getCosto();
-        if (costo == null || unidad.getSuperficie() == null) {
-            return 0.0;
+        if (costo == null) {
+            throw new IllegalArgumentException("El festival " + festival.getNombre() + " no tiene los costos configurados.");
         }
-        return unidad.getSuperficie() * costo.getCostoSuperficies();
+
+        CanonDTO detalle = new CanonDTO();
+        detalle.setNombreFestival(festival.getNombre());
+        detalle.setNombreComercial(unidad.getNombreComercial());
+        detalle.setCodigo(unidad.getCodigo());
+        detalle.setTipoUnidad(obtenerTipoUnidad(unidad));
+
+        int superficie = unidad.getSuperficie() == null ? 0 : unidad.getSuperficie();
+        detalle.setSuperficie(superficie);
+        detalle.setCostoSuperficie(costo.getCostoSuperficies());
+        detalle.setMontoSuperficie(superficie * costo.getCostoSuperficies());
+
+        double canon = detalle.getMontoSuperficie();
+
+        if (unidad instanceof FoodTruck foodTruck) {
+            detalle.setEsFoodTruck(true);
+            detalle.setRequiereConexion(foodTruck.isConexion());
+            if (foodTruck.isConexion()) {
+                detalle.setPlusElectricidad(costo.getPlusElectricidad());
+                canon += costo.getPlusElectricidad();
+            }
+        } else if (unidad instanceof PuestoDesarmable puesto) {
+            detalle.setEsPuestoDesarmable(true);
+            detalle.setTiempoMontaje(puesto.getTiempoMontaje());
+            detalle.setCostoMontaje(costo.getCostoMontaje());
+            detalle.setDescuentoMontaje(puesto.getTiempoMontaje() * costo.getCostoMontaje());
+            canon -= detalle.getDescuentoMontaje();
+        }
+
+        detalle.setCanon(canon);
+        return detalle;
+    }
+
+    private double calcularCanon(UnidadDeVenta unidad, Festival festival) {
+        return armarDetalleCanon(unidad, festival).getCanon();
+    }
+
+    // Reporte del canon de la unidad del responsable logueado
+    @Override
+    @Transactional(readOnly = true)
+    public CanonDTO calcularCanonUnidad(String nombreUsuario) {
+        UnidadDeVenta unidad = getUdVByUser(nombreUsuario);
+        if (unidad.getFestival() == null) {
+            throw new IllegalArgumentException("Tu unidad de venta no tiene un festival asignado.");
+        }
+        return armarDetalleCanon(unidad, unidad.getFestival());
     }
 
     // Tipo de la unidad según su subclase
     private String obtenerTipoUnidad(UnidadDeVenta unidad) {
+        unidad = (UnidadDeVenta) Hibernate.unproxy(unidad);
         if (unidad instanceof FoodTruck) {
             return "Food Truck";
         }

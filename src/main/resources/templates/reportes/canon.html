@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Canon - Epicentro Gourmet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5" style="max-width: 800px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Cálculo de Canon</h4>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${mensajeError}" class="alert alert-danger" role="alert">
+                <span th:text="${mensajeError}"></span>
+            </div>
+
+            <div th:if="${detalle != null}">
+
+                <p class="mb-1"><strong>Festival:</strong> <span th:text="${detalle.nombreFestival}"></span></p>
+                <p class="mb-1"><strong>Unidad de venta:</strong>
+                    <span th:text="${detalle.nombreComercial}"></span>
+                    (<span th:text="${detalle.codigo}"></span>)
+                </p>
+                <p class="mb-3"><strong>Tipo de unidad:</strong> <span th:text="${detalle.tipoUnidad}"></span></p>
+
+                <table class="table table-bordered align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Cálculo</th>
+                        <th class="text-end">Importe</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Superficie</td>
+                        <td th:text="${detalle.superficie + ' m² x $ ' + #numbers.formatDecimal(detalle.costoSuperficie, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td class="text-end" th:text="${'$ ' + #numbers.formatDecimal(detalle.montoSuperficie, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <!-- Food Truck: plus por conexión eléctrica -->
+                    <tr th:if="${detalle.esFoodTruck}">
+                        <td>Conexión eléctrica</td>
+                        <td th:text="${detalle.requiereConexion} ? 'Requiere conexión' : 'No requiere conexión'"></td>
+                        <td class="text-end" th:text="${'+ $ ' + #numbers.formatDecimal(detalle.plusElectricidad, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+
+                    <!-- Puesto Desarmable: descuento por tiempo de montaje -->
+                    <tr th:if="${detalle.esPuestoDesarmable}">
+                        <td>Tiempo de montaje</td>
+                        <td th:text="${#numbers.formatDecimal(detalle.tiempoMontaje, 1, 'POINT', 2, 'COMMA') + ' h x $ ' + #numbers.formatDecimal(detalle.costoMontaje, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td class="text-end" th:text="${'- $ ' + #numbers.formatDecimal(detalle.descuentoMontaje, 1, 'POINT', 2, 'COMMA')}"></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr class="table-light">
+                        <th colspan="2">Canon a pagar</th>
+                        <th class="text-end" th:text="${'$ ' + #numbers.formatDecimal(detalle.canon, 1, 'POINT', 2, 'COMMA')}"></th>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <div th:if="${!detalle.esFoodTruck and !detalle.esPuestoDesarmable}" class="alert alert-warning mb-0">
+                    La unidad no tiene un tipo asignado (Food Truck o Puesto Desarmable): solo se cobra la superficie.
+                </div>
+            </div>
+
+            <a th:href="@{/}" class="btn btn-link mt-3">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

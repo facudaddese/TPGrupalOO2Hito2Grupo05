@@ -30,5 +30,8 @@ public interface UnidadDeVentaService {
     // Todas las unidades del festival ordenadas de mayor a menor canon
     List<ReporteMayoresCanonDTO> obtenerUnidadesConMayorCanon(Long idFestival);
 
+    // Detalle del canon que paga la unidad del responsable logueado
+    CanonDTO calcularCanonUnidad(String nombreUsuario);
+
 
 }

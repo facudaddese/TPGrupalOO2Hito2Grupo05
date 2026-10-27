@@ -22,14 +22,11 @@
 
                 <h5 class="mb-3">Datos de la unidad</h5>
 
+                <!-- El festival es el desde el que se ingresó: se muestra pero no se puede cambiar -->
                 <div class="mb-3">
                     <label class="form-label">Festival</label>
-                    <select th:field="*{idFestival}" class="form-select" th:errorclass="is-invalid">
-                        <option value="">-- Seleccionar Festival --</option>
-                        <option th:each="f : ${festivales}" th:value="${f.id}"
-                                th:text="${f.nombre} + ' - ' + ${f.temporada}"></option>
-                    </select>
-                    <div class="invalid-feedback" th:errors="*{idFestival}"></div>
+                    <input type="text" class="form-control" th:value="${festival.nombre} + ' - ' + ${festival.temporada}" disabled/>
+                    <input type="hidden" th:field="*{idFestival}"/>
                 </div>
 
                 <div class="row mb-3">
@@ -49,6 +46,44 @@
                         <input type="number" th:field="*{superficie}" class="form-control"
                                th:errorclass="is-invalid"/>
                         <div class="invalid-feedback" th:errors="*{superficie}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tipo de unidad</label>
+                    <select th:field="*{tipoUnidad}" id="tipoUnidad" class="form-select" th:errorclass="is-invalid">
+                        <option value="">-- Seleccionar tipo --</option>
+                        <option value="FOODTRUCK">Food Truck</option>
+                        <option value="PUESTO_DESARMABLE">Puesto Desarmable</option>
+                    </select>
+                    <div class="invalid-feedback" th:errors="*{tipoUnidad}"></div>
+                </div>
+
+                <!-- Datos propios de un Food Truck -->
+                <div id="datosFoodTruck" class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Patente</label>
+                        <input type="text" th:field="*{patente}" class="form-control" maxlength="10"/>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check mb-2">
+                            <input type="checkbox" th:field="*{conexion}" class="form-check-input"/>
+                            <label class="form-check-label" th:for="${#ids.prev('conexion')}">
+                                Requiere conexión eléctrica
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos propios de un Puesto Desarmable -->
+                <div id="datosPuesto" class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Cantidad de carpas</label>
+                        <input type="number" min="1" step="1" th:field="*{cantidadCarpas}" class="form-control"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tiempo de montaje (horas)</label>
+                        <input type="number" min="0" step="0.5" th:field="*{tiempoMontaje}" class="form-control"/>
                     </div>
                 </div>
 
@@ -81,6 +116,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Muestra solo los datos que corresponden al tipo de unidad elegido
+    const tipo = document.getElementById('tipoUnidad');
+    function mostrarDatosSegunTipo() {
+        document.getElementById('datosFoodTruck').style.display = tipo.value === 'FOODTRUCK' ? '' : 'none';
+        document.getElementById('datosPuesto').style.display = tipo.value === 'PUESTO_DESARMABLE' ? '' : 'none';
+    }
+    tipo.addEventListener('change', mostrarDatosSegunTipo);
+    mostrarDatosSegunTipo();
+</script>
 
 </body>
 </html>
