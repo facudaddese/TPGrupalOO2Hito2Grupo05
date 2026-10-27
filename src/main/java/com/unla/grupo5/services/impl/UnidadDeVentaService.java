@@ -418,12 +418,32 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return totalSueldos;
     }
 
+    private double calcularCanonEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
+
+        double canonTotal = calcularCanon(unidad, festival);
+
+        LocalDate inicioFestival = festival.getFechaInicio();
+        LocalDate finFestival = festival.getFechaFin();
+
+        long diasFestival = ChronoUnit.DAYS.between(
+                inicioFestival, finFestival) + 1;
+
+        if (diasFestival <= 0) {
+            return 0.0;
+        }
+
+        long diasConsultados = ChronoUnit.DAYS.between(
+                fechaDesde, fechaHasta) + 1;
+
+        return canonTotal * diasConsultados / diasFestival;
+    }
+
     public RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta){
 
         double totalVentas = unidad.getRecaudacionEntreFechas(fechaDesde, fechaHasta);
         double costoPlatos = unidad.getCostoTotalEntreFechas(fechaDesde, fechaHasta);
         double totalSueldos = calcularTotalSueldosEntreFechas(unidad, festival, fechaDesde, fechaHasta);
-        double canon = calcularCanon(unidad, festival);
+        double canon = calcularCanonEntreFechas(unidad, festival, fechaDesde, fechaHasta);
 
         double rentabilidadNeta = (totalVentas - costoPlatos) - totalSueldos - canon;
 
