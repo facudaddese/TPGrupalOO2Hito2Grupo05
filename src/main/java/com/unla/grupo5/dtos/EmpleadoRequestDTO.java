@@ -1,8 +1,6 @@
 package com.unla.grupo5.dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -16,6 +14,8 @@ public class EmpleadoRequestDTO {
     private String apellido;
 
     @NotNull(message = "El DNI es obligatorio")
+    @Min(value = 1000000, message = "El DNI debe tener al menos 7 dígitos")
+    @Max(value = 99999999, message = "El DNI no puede tener más de 8 dígitos")
     private Long dni;
 
     @NotBlank(message = "El e-mail es obligatorio")
