@@ -26,4 +26,8 @@ public interface UnidadDeVentaRepository extends JpaRepository<UnidadDeVenta, Lo
     // Igual que la anterior pero ignorando la propia unidad (para la modificación)
     boolean existsByCodigoAndFestivalIdAndIdNot(String codigo, Long idFestival, Long id);
     Optional<UnidadDeVenta> findByResponsable(Usuario responsable);
+
+    //Consulta para obtener el ultimo codigo registrado segun el prefijo
+    @Query("SELECT MAX(u.codigo) FROM UnidadDeVenta u WHERE u.codigo LIKE :prefijo%")
+    String findMaxCodigoByPrefijo(@Param("prefijo") String prefijo);
 }

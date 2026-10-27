@@ -61,11 +61,11 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     // Reglas de negocio del alta. Si alguna falla se lanza IllegalArgumentException
     // y el controlador muestra el mensaje en el formulario.
     private void validarDatos(UnidadDeVentaRequestDTO dto) {
-        // El código identifica a la unidad: no puede repetirse dentro del mismo festival
+        /*// El código identifica a la unidad: no puede repetirse dentro del mismo festival
         if (unidadDeVentaRepository.existsByCodigoAndFestivalId(dto.getCodigo(), dto.getIdFestival())) {
             throw new IllegalArgumentException("Ya existe una unidad de venta con el código " + dto.getCodigo() + " en este festival.");
         }
-
+        */
         // El nombre de usuario es único en todo el sistema
         // El e-mail es el nombre de usuario, y es único en todo el sistema
         if (usuarioRepository.existsByNombreUsuario(dto.getEmail())) {
@@ -124,7 +124,7 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         // 4. Se crea la unidad según su tipo y se guarda primero, así el usuario puede quedar asociado a ella
         UnidadDeVenta unidad = crearUnidadSegunTipo(dto);
         unidad.setNombreComercial(dto.getNombreComercial());
-        unidad.setCodigo(dto.getCodigo());
+        unidad.setCodigo(generarCodigoAutomatico(unidad));
         unidad.setSuperficie(dto.getSuperficie());
         unidad.setFestival(festival);
         unidad = unidadDeVentaRepository.save(unidad);
@@ -448,6 +448,26 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         double rentabilidadNeta = (totalVentas - costoPlatos) - totalSueldos - canon;
 
         return new RentabilidadNetaDTO(totalVentas, costoPlatos, totalSueldos, canon, rentabilidadNeta);
+    }
+
+    private String generarCodigoAutomatico(UnidadDeVenta unidad){
+        //Define el prefijo basandose en la seleccion del formulario
+        String prefijo = (unidad instanceof FoodTruck) ? "FT-" : "PD-";
+        String maxCodigo = unidadDeVentaRepository.findMaxCodigoByPrefijo(prefijo);
+
+        int siguienteNumero = 1;
+        if(maxCodigo != null && maxCodigo.length() >= 4){
+            //Extraemos la parte numerica del codigo y le sumamos 1
+            String numeroStr = maxCodigo.substring(3);
+            try{
+                siguienteNumero = Integer.parseInt(numeroStr) + 1;
+            }catch (NumberFormatException e){
+                siguienteNumero = 1;
+            }
+        }
+
+        //Formateamos el numero a 3 digitos con ceros a la izquierda
+        return String.format("%s%03d", prefijo, siguienteNumero);
     }
 
 }
