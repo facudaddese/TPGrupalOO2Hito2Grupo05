@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +67,37 @@ public class UnidadDeVenta {
                     for (ItemPedido ip : pedido.getListaItems()) {
                         total += ip.getPlato().getCostoProduccion() * ip.getCantidad();
                     }
+                }
+            }
+        }
+
+        return total;
+    }
+
+    public double getRecaudacionEntreFechas(LocalDate inicio, LocalDate fin){
+        double total = 0.0;
+
+        if (lstPedidos != null && !lstPedidos.isEmpty()) {
+            for (Pedido pedido : lstPedidos) {
+                if(!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)){
+                    total += pedido.getTotal();
+                }
+            }
+        }
+
+        return total;
+    }
+
+    public double getCostoTotalEntreFechas(LocalDate inicio, LocalDate fin){
+        double total = 0.0;
+        if (lstPedidos != null && !lstPedidos.isEmpty()) {
+
+            for (Pedido pedido : lstPedidos) {
+                if(!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)){
+                    for (ItemPedido ip : pedido.getListaItems()) {
+                        total += ip.getPlato().getCostoProduccion() * ip.getCantidad();
+                    }
+
                 }
             }
         }

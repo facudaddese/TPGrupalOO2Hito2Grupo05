@@ -27,5 +27,9 @@ public interface UnidadDeVentaService {
 
     double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival);
 
+    double calcularTotalSueldosEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
+
+    RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
+
 
 }
