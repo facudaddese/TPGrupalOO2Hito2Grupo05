@@ -35,4 +35,17 @@ public class Pedido {
     @JoinColumn(name = "id_unidad_de_venta", nullable = false)
     private UnidadDeVenta unidadDeVenta;
 
+    public String getDetallePlatos() {
+        if (listaItems == null || listaItems.isEmpty()) {
+            return "Sin ítems";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (ItemPedido item : listaItems) {
+            if (!sb.isEmpty()) sb.append(", ");
+            sb.append(item.getCantidad())
+                    .append("x ")
+                    .append(item.getPlato() != null ? item.getPlato().getNombre() : "Plato");
+        }
+        return sb.toString();
+    }
 }

@@ -37,7 +37,8 @@ public class PedidoController {
     @GetMapping
     public String listarPedidos(Principal principal, Model model) {
         UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
-        model.addAttribute("pedidos", pedidoService.traerPorUnidad(unidad.getId()));
+        // Se utiliza el nuevo método para traer la lista con los ítems precargados (CU33)
+        model.addAttribute("pedidos", pedidoService.traerPorUnidadConItems(unidad.getId()));
         model.addAttribute("nombreUnidad", unidad.getNombreComercial());
         return "pedidos/listado";
     }

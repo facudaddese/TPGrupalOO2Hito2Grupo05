@@ -9,4 +9,6 @@ public interface PedidoService {
     Pedido registrarPedido(PedidoRequestDTO dto);
 
     List<Pedido> traerPorUnidad(Long idUnidadVenta);
+
+    List<Pedido> traerPorUnidadConItems(Long idUnidadVenta);
 }

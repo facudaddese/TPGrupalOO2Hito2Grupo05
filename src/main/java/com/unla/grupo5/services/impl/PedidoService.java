@@ -80,4 +80,10 @@ public class PedidoService implements com.unla.grupo5.services.PedidoService {
     public List<Pedido> traerPorUnidad(Long idUnidadVenta) {
         return pedidoRepository.findByUnidadDeVentaIdOrderByFechaDescIdDesc(idUnidadVenta);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Pedido> traerPorUnidadConItems(Long idUnidadVenta) {
+        return pedidoRepository.findByUnidadDeVentaIdConItems(idUnidadVenta);
+    }
 }

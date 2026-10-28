@@ -21,11 +21,12 @@
     Todavía no hay pedidos registrados.
 </div>
 
-<table th:unless="${#lists.isEmpty(pedidos)}" class="table table-striped table-bordered">
+<table th:unless="${#lists.isEmpty(pedidos)}" class="table table-striped table-bordered align-middle">
     <thead class="table-dark">
     <tr>
         <th>N° Pedido</th>
         <th>Fecha</th>
+        <th>Detalle de Platos</th>
         <th>Total</th>
     </tr>
     </thead>
@@ -33,12 +34,13 @@
     <tr th:each="p : ${pedidos}">
         <td th:text="${p.id}"></td>
         <td th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}"></td>
+        <td th:text="${p.detallePlatos}"></td>
         <td th:text="${'$ ' + #numbers.formatDecimal(p.total, 1, 'POINT', 2, 'COMMA')}"></td>
     </tr>
     </tbody>
 </table>
 
-<a th:href="@{/}" class="btn btn-link">Volver al inicio</a>
+<a th:href="@{/}" class="btn btn-outline-secondary mt-2">Volver</a>
 
 </body>
 </html>
