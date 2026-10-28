@@ -49,14 +49,18 @@ public class UnidadDeVenta {
     @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Pedido> lstPedidos = new HashSet<>();
 
+    // Estado de la caja para el CU "Cerrar Caja"
+    @Column(name = "caja_abierta", nullable = false)
+    private boolean cajaAbierta = true;
+
     // Campo transitorio para almacenar la cantidad calculada de pedidos en los rankings.
     // @Transient evita la persistencia en la BD ya que no existe una columna física asociada.
     @Transient
     private Long cantidadPedidos;
 
 
-    public double getRecaudacionTotal(){
-        if(lstPedidos == null || lstPedidos.isEmpty()){
+    public double getRecaudacionTotal() {
+        if (lstPedidos == null || lstPedidos.isEmpty()) {
             return 0.0;
         }
         return lstPedidos.stream().mapToDouble(Pedido::getTotal).sum();
@@ -80,12 +84,12 @@ public class UnidadDeVenta {
         return total;
     }
 
-    public double getRecaudacionEntreFechas(LocalDate inicio, LocalDate fin){
+    public double getRecaudacionEntreFechas(LocalDate inicio, LocalDate fin) {
         double total = 0.0;
 
         if (lstPedidos != null && !lstPedidos.isEmpty()) {
             for (Pedido pedido : lstPedidos) {
-                if(!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)){
+                if (!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)) {
                     total += pedido.getTotal();
                 }
             }
@@ -94,12 +98,12 @@ public class UnidadDeVenta {
         return total;
     }
 
-    public double getCostoTotalEntreFechas(LocalDate inicio, LocalDate fin){
+    public double getCostoTotalEntreFechas(LocalDate inicio, LocalDate fin) {
         double total = 0.0;
         if (lstPedidos != null && !lstPedidos.isEmpty()) {
 
             for (Pedido pedido : lstPedidos) {
-                if(!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)){
+                if (!pedido.getFecha().isBefore(inicio) && !pedido.getFecha().isAfter(fin)) {
                     for (ItemPedido ip : pedido.getListaItems()) {
                         total += ip.getPlato().getCostoProduccion() * ip.getCantidad();
                     }
