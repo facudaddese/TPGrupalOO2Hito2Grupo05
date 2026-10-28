@@ -103,7 +103,10 @@ public class HomeController {
         List<UnidadDeVenta> unidades;
 
         if("pedidos".equalsIgnoreCase(criterio)){
-            unidades = unidadDeVentaService.listarPorFestivalOrdenadoPorCantidadPedidos(id);
+            // El ranking por pedidos se muestra como tabla, igual que el ranking de canon
+            model.addAttribute("festival", festival);
+            model.addAttribute("unidades", unidadDeVentaService.listarPorFestivalOrdenadoPorCantidadPedidos(id));
+            return "unidades-venta/ranking-pedidos";
         }else{
             unidades = unidadDeVentaService.listarPorFestivalOrdenadoPorRecaudacion(id, orden);
         }

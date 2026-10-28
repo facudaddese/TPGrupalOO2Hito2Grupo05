@@ -40,9 +40,7 @@
     <div class="card">
 
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 th:text="${festival != null} ? 'Unidades de Venta - ' + ${festival.nombre} : 'Unidades de Venta'">
-                Unidades de Venta
-            </h2>
+            <h2>Unidades de Venta</h2>
             <div th:if="${festival != null}" sec:authorize="hasRole('ADMIN')" style="display: flex; gap: 10px;">
                 <a class="btn btn-light"
                    th:href="@{/unidades-venta/mayor-canon(idFestival=${festival.id})}">
@@ -50,8 +48,7 @@
                 </a>
 
                 <a class="btn btn-light"
-                   th:href="@{'/admin/festivales/' + ${festival.id} + '/unidades'(criterio='pedidos')}"
-                   th:style="${criterioActual == 'pedidos'} ? 'font-weight: bold; border: 1px solid #000;' : ''">
+                   th:href="@{'/admin/festivales/' + ${festival.id} + '/unidades'(criterio='pedidos')}">
                     Ranking mayor cantidad de pedidos
                 </a>
             </div>
