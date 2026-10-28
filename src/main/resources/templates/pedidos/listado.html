@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Pedidos - Epicentro Gourmet</title>
@@ -14,25 +15,49 @@
         <span th:if="${cajaAbierta}" class="badge bg-success fs-6">Caja Abierta</span>
         <span th:unless="${cajaAbierta}" class="badge bg-danger fs-6">Caja Cerrada</span>
 
-        <!-- Botones de Acción de Caja -->
-        <form th:if="${cajaAbierta}" th:action="@{/responsable/pedidos/cerrar-caja}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-outline-danger"
-                    onclick="return confirm('¿Está seguro de que desea cerrar la caja por hoy?');">
-                Cerrar Caja
-            </button>
-        </form>
-        <form th:unless="${cajaAbierta}" th:action="@{/responsable/pedidos/abrir-caja}" method="post" class="d-inline">
-            <button type="submit" class="btn btn-outline-success">
-                Abrir Caja
-            </button>
-        </form>
+        <!-- Botones de Acción de Caja para CAJERO / EMPLEADO -->
+        <th:block sec:authorize="hasRole('EMPLEADO')">
+            <form th:if="${cajaAbierta}" th:action="@{/cajero/pedidos/cerrar-caja}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger"
+                        onclick="return confirm('¿Está seguro de que desea cerrar la caja por hoy?');">
+                    Cerrar Caja
+                </button>
+            </form>
+            <form th:unless="${cajaAbierta}" th:action="@{/cajero/pedidos/abrir-caja}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-success">
+                    Abrir Caja
+                </button>
+            </form>
 
-        <!-- Botón Nuevo Pedido (deshabilitado si la caja está cerrada) -->
-        <a th:if="${cajaAbierta}" th:href="@{/responsable/pedidos/nuevo}" class="btn btn-primary">Nuevo Pedido</a>
-        <button th:unless="${cajaAbierta}" class="btn btn-secondary" disabled
-                title="Debe abrir la caja para registrar pedidos">
-            Nuevo Pedido
-        </button>
+            <a th:if="${cajaAbierta}" th:href="@{/cajero/pedidos/nuevo}" class="btn btn-primary">Nuevo Pedido</a>
+            <button th:unless="${cajaAbierta}" class="btn btn-secondary" disabled
+                    title="Debe abrir la caja para registrar pedidos">
+                Nuevo Pedido
+            </button>
+        </th:block>
+
+        <!-- Botones de Acción de Caja para RESPONSABLE (si aplica) -->
+        <th:block sec:authorize="hasRole('RESPONSABLE')">
+            <form th:if="${cajaAbierta}" th:action="@{/responsable/pedidos/cerrar-caja}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger"
+                        onclick="return confirm('¿Está seguro de que desea cerrar la caja por hoy?');">
+                    Cerrar Caja
+                </button>
+            </form>
+            <form th:unless="${cajaAbierta}" th:action="@{/responsable/pedidos/abrir-caja}" method="post"
+                  class="d-inline">
+                <button type="submit" class="btn btn-outline-success">
+                    Abrir Caja
+                </button>
+            </form>
+
+            <a th:if="${cajaAbierta}" th:href="@{/responsable/pedidos/nuevo}" class="btn btn-primary">Nuevo Pedido</a>
+            <button th:unless="${cajaAbierta}" class="btn btn-secondary" disabled
+                    title="Debe abrir la caja para registrar pedidos">
+                Nuevo Pedido
+            </button>
+        </th:block>
+
     </div>
 </div>
 
