@@ -106,28 +106,4 @@ public class PedidoController {
         }
     }
 
-    // Acciones de Cerrar y Abrir Caja por el Cajero / Responsable
-    @PostMapping("/cerrar-caja")
-    public String cerrarCaja(Principal principal, RedirectAttributes redirect) {
-        try {
-            UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
-            unidadDeVentaService.cerrarCaja(unidad.getId());
-            redirect.addFlashAttribute("mensajeExito", "La caja ha sido cerrada correctamente al finalizar la jornada.");
-        } catch (IllegalArgumentException e) {
-            redirect.addFlashAttribute("mensajeError", e.getMessage());
-        }
-        return "redirect:/responsable/pedidos";
-    }
-
-    @PostMapping("/abrir-caja")
-    public String abrirCaja(Principal principal, RedirectAttributes redirect) {
-        try {
-            UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
-            unidadDeVentaService.abrirCaja(unidad.getId());
-            redirect.addFlashAttribute("mensajeExito", "La caja ha sido abierta correctamente.");
-        } catch (IllegalArgumentException e) {
-            redirect.addFlashAttribute("mensajeError", e.getMessage());
-        }
-        return "redirect:/responsable/pedidos";
-    }
 }

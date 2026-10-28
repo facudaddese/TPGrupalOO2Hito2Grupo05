@@ -41,8 +41,10 @@
                 <p class="festival-info">
                     <strong>Festival:</strong> <span th:text="${miFestival.nombre}"></span>
                     <!-- Etiquetas dinámicas de estado basadas en las fechas -->
-                    <span th:if="${festivalActivo}" style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #237a36; margin-left: 10px; font-size: 13px; font-weight: bold;">ACTIVO</span>
-                    <span th:unless="${festivalActivo}" style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #6c757d; margin-left: 10px; font-size: 13px; font-weight: bold;">INACTIVO</span>
+                    <span th:if="${festivalActivo}"
+                          style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #237a36; margin-left: 10px; font-size: 13px; font-weight: bold;">ACTIVO</span>
+                    <span th:unless="${festivalActivo}"
+                          style="padding: 4px 8px; border-radius: 4px; color: white; background-color: #6c757d; margin-left: 10px; font-size: 13px; font-weight: bold;">INACTIVO</span>
                 </p>
                 <p class="festival-info">
                     <strong>Fechas del festival:</strong>
@@ -51,11 +53,13 @@
                 </p>
                 <hr style="border: 0; border-top: 1px solid #d7dce1; margin: 15px 0;">
                 <p class="festival-info">
-                    <strong>Unidad de Venta:</strong> <span th:text="${miUnidad.nombreComercial}"></span> (<span th:text="${miUnidad.codigo}"></span>)
+                    <strong>Unidad de Venta:</strong> <span th:text="${miUnidad.nombreComercial}"></span> (<span
+                        th:text="${miUnidad.codigo}"></span>)
                 </p>
 
-                <!-- Botón reubicado -->
+                <!-- Botones del Empleado -->
                 <div style="margin-top: 20px;">
+                    <a th:href="@{/cajero/pedidos}" class="btn btn-primary">Atender Caja y Pedidos</a>
                     <a th:href="@{/empleado/sueldos}" class="btn btn-primary">Consultar mi sueldo</a>
                     <a th:href="@{/empleado/historial}" class="btn btn-primary">Mi historial de trabajo</a>
                 </div>
@@ -66,21 +70,21 @@
     <!-- Responsable: gestión de su unidad -->
     <div class="card" sec:authorize="hasRole('RESPONSABLE')">
 
-                <div class="card-header">
-                    <h2>
-                        Mi unidad
-                        <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
-                    </h2>
-                </div>
+        <div class="card-header">
+            <h2>
+                Mi unidad
+                <span th:if="${unidad}" th:text="${': ' + unidad.nombreComercial}"></span>
+            </h2>
+        </div>
 
-                <div class="card-body">
-                    <!-- Responsable sin unidad asignada -->
-                    <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
+        <div class="card-body">
+            <!-- Responsable sin unidad asignada -->
+            <p th:if="${mensajeError}" th:text="${mensajeError}" style="color: #b00020;"></p>
 
-                    <div th:if="${unidad}">
-                        <p class="festival-info">
-                            <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
-                        </p>
+            <div th:if="${unidad}">
+                <p class="festival-info">
+                    <strong>Código:</strong> <span th:text="${unidad.codigo}"></span>
+                </p>
 
                 <a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
                 <a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
@@ -95,7 +99,7 @@
     </div>
 
     <div class="card" sec:authorize="!hasRole('EMPLEADO')">
-        <div class="card-header" >
+        <div class="card-header">
             <h2>Festivales</h2>
         </div>
 
