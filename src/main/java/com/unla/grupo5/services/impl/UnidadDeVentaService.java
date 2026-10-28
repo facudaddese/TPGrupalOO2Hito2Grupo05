@@ -169,11 +169,27 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
             throw new IllegalArgumentException("El usuario no existe: " + nombreUsuario);
         }
 
-        UnidadDeVenta unidad = usuario.getUnidadDeVenta();
+        UnidadDeVenta unidad = null;
+
+        // 1. Si es Responsable, busca la unidad asignada a él
+        if (usuario.getRol() != null && "RESPONSABLE".equalsIgnoreCase(usuario.getRol().getRol())) {
+            unidad = unidadDeVentaRepository.findByResponsable(usuario).orElse(null);
+        }
+
+        // 2. Si es Empleado, obtiene la unidad asignada a su Staff
+        if (unidad == null && usuario.getStaff() != null) {
+            unidad = usuario.getStaff().getUnidadDeVenta();
+        }
+
+        // 3. Respaldo directo por si estuviera guardado directo en usuario
+        if (unidad == null) {
+            unidad = usuario.getUnidadDeVenta();
+        }
+
         if (unidad == null) {
             throw new IllegalArgumentException("El usuario " + nombreUsuario + " no tiene una unidad de venta asignada.");
         }
-        unidad.getNombreComercial();
+
         return unidad;
     }
 
