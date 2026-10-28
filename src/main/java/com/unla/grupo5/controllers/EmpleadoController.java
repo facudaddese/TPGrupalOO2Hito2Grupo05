@@ -45,7 +45,6 @@ public class EmpleadoController {
     private UnidadDeVentaService unidadDeVentaService;
 
     private void cargarAtributosFormulario(Model model) {
-        model.addAttribute("unidadesVenta", unidadDeVentaRepository.findAll());
         model.addAttribute("categoriasCocinero", List.of("COCINERO", "AYUDANTE", "LAVAPLATOS"));
         model.addAttribute("turnosCajero", List.of("MAÑANA", "TARDE", "NOCHE"));
     }
@@ -63,7 +62,7 @@ public class EmpleadoController {
             @Valid @ModelAttribute("empleadoDTO") EmpleadoRequestDTO dto,
             BindingResult result,
             Model model,
-            RedirectAttributes redirect) {
+            RedirectAttributes redirect, Authentication authentication) {
 
         if (result.hasErrors()) {
             cargarAtributosFormulario(model);
@@ -71,14 +70,21 @@ public class EmpleadoController {
         }
 
         try {
-            empleadoService.registrarEmpleado(dto);
+            empleadoService.registrarEmpleado(dto, authentication.getName());
             redirect.addFlashAttribute("mensajeExito", "Empleado registrado correctamente. Se han enviado las credenciales por e-mail.");
             return "redirect:/responsable/empleados";
         } catch (IllegalArgumentException e) {
             model.addAttribute("mensajeError", e.getMessage());
             cargarAtributosFormulario(model);
             return "empleados/form-alta-empleado";
+
+        } catch (org.springframework.mail.MailException e) {
+            model.addAttribute("mensajeError", "No se pudo enviar el correo con las credenciales. El empleado no fue registrado.");
+
+            cargarAtributosFormulario(model);
+            return "empleados/form-alta-empleado";
         }
+
     }
 
     @GetMapping
@@ -114,14 +120,9 @@ public class EmpleadoController {
         dto.setDni(empleado.getDni());
         dto.setFechaNacimiento(empleado.getFechaNacimiento());
         dto.setFechaIngreso(empleado.getFechaIngreso());
-        dto.setSueldo(empleado.getSueldo());
 
         if (empleado.getUsuario() != null) {
             dto.setEmail(empleado.getUsuario().getNombreUsuario());
-        }
-
-        if (empleado.getUnidadDeVenta() != null) {
-            dto.setIdUnidadVenta(empleado.getUnidadDeVenta().getId());
         }
 
         if (empleado instanceof Cocinero) {
@@ -145,7 +146,7 @@ public class EmpleadoController {
                                     @Valid @ModelAttribute("empleadoDTO") EmpleadoRequestDTO dto,
                                     BindingResult result,
                                     RedirectAttributes redirectAttributes,
-                                    Model model) {
+                                    Model model, Authentication authentication) {
 
         if (result.hasErrors()) {
             model.addAttribute("empleadoId", id);
@@ -154,7 +155,7 @@ public class EmpleadoController {
         }
 
         try {
-            empleadoService.modificarEmpleado(id, dto);
+            empleadoService.modificarEmpleado(id, dto,  authentication.getName());
             redirectAttributes.addFlashAttribute("mensajeExito", "Empleado modificado correctamente.");
             return "redirect:/responsable/empleados";
         } catch (Exception e) {

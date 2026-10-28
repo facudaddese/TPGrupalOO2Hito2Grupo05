@@ -7,7 +7,7 @@ import com.unla.grupo5.entities.*;
 import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,10 +79,22 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public Staff registrarEmpleado(EmpleadoRequestDTO dto) {
+    public Staff registrarEmpleado(EmpleadoRequestDTO dto, String usuarioResponsable) {
         validarDatosEmpleado(dto);
-        UnidadDeVenta unidad = unidadDeVentaRepository.findById(dto.getIdUnidadVenta())
+
+        Usuario responsable = usuarioRepository.findByNombreUsuario(usuarioResponsable);
+
+        // Verificar que sea un responsable.
+        if (responsable.getRol() == null ||
+                !"RESPONSABLE".equals(responsable.getRol().getRol())) {
+            throw new IllegalArgumentException(
+                    "El usuario no tiene permisos para registrar empleados."
+            );
+        }
+
+        UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable)
                 .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
 
         Staff empleado;
@@ -106,7 +118,7 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         empleado.setDni(dto.getDni());
         empleado.setFechaNacimiento(dto.getFechaNacimiento());
         empleado.setFechaIngreso(dto.getFechaIngreso());
-        empleado.setSueldo(dto.getSueldo());
+        empleado.setUnidadDeVenta(unidad);
         empleado.setActivo(true);
         empleado.setUnidadDeVenta(unidad);
         // Queda registrada en el historial de unidades en las que trabajó
@@ -121,23 +133,21 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         usuario.setPassword(passwordEncoder.encode(passwordGenerada));
         usuario.setActivo(true);
         usuario.setStaff(empleadoGuardado);
+
         usuarioRepository.save(usuario);
 
-        Rol rol = rolRepository.findByRol("ROLE_EMPLEADO")
+        Rol rol = rolRepository.findByRol("EMPLEADO")
                 .orElseGet(() -> {
                     Rol r = new Rol();
-                    r.setRol("ROLE_EMPLEADO");
+                    r.setRol("EMPLEADO");
                     return rolRepository.save(r);
                 });
 
         usuario.setRol(rol);
         usuarioRepository.save(usuario);
 
-        try {
-            emailService.enviarCredencialesEmpleado(dto.getEmail(), usuario.getNombreUsuario(), passwordGenerada);
-        } catch (Exception e) {
-            System.err.println("No se pudo enviar el correo de credenciales: " + e.getMessage());
-        }
+
+        emailService.enviarCredencialesEmpleado(dto.getEmail(), usuario.getNombreUsuario(), passwordGenerada);
 
         return empleadoGuardado;
     }
@@ -161,7 +171,17 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
 
     @Override
     @Transactional
-    public Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto) {
+    public Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto, String usuarioResponsable) {
+
+        Usuario responsable = usuarioRepository.findByNombreUsuario(usuarioResponsable);
+
+        // Verificar que sea un responsable.
+        if (responsable.getRol() == null ||
+                !"RESPONSABLE".equals(responsable.getRol().getRol())) {
+            throw new IllegalArgumentException(
+                    "El usuario no tiene permisos para registrar empleados."
+            );
+        }
         Staff empleado = buscarPorId(id);
 
         if (!Objects.equals(empleado.getDni(), dto.getDni())) {
@@ -175,21 +195,21 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         empleado.setDni(dto.getDni());
         empleado.setFechaNacimiento(dto.getFechaNacimiento());
         empleado.setFechaIngreso(dto.getFechaIngreso());
-        if (dto.getSueldo() != null) empleado.setSueldo(dto.getSueldo());
 
-        if (dto.getIdUnidadVenta() != null) {
-            UnidadDeVenta unidad = unidadDeVentaRepository.findById(dto.getIdUnidadVenta())
+        UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable)
                     .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
+
             empleado.setUnidadDeVenta(unidad);
             // Si cambia de unidad, la nueva se suma al historial (las anteriores quedan registradas)
             empleado.getHistorialUnidades().add(unidad);
-        }
 
         if (empleado instanceof Cocinero && dto.getCategoriaCocinero() != null) {
             ((Cocinero) empleado).setCategoria(dto.getCategoriaCocinero());
         } else if (empleado instanceof Cajero && dto.getTurnoCajero() != null) {
             ((Cajero) empleado).setTurnoTrabajo(dto.getTurnoCajero());
         }
+
+        empleado.setUnidadDeVenta(unidad);
 
         return staffRepository.save(empleado);
     }

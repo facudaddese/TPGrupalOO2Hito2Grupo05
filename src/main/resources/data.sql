@@ -285,17 +285,17 @@ SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` 
 WHERE `codigo` = 'FT-003';
 
 INSERT
-IGNORE INTO staff (id, dni, nombre, apellido, fecha_nacimiento, fecha_ingreso, sueldo, activo, id_unidad_venta) VALUES
-(1, 35123456, 'Juan', 'Pérez', '1990-05-15', '2023-01-10', 850000.00, true, 1),
-(2, 38987654, 'María', 'Gómez', '1995-08-20', '2023-03-01', 920000.00, true, 1),
-(3, 36111222, 'Carlos', 'López', '1992-02-10', '2023-02-15', 850000.00, true, 2),
-(4, 37333444, 'Ana', 'Martínez', '1994-11-05', '2023-04-10', 920000.00, true, 2),
-(5, 34555666, 'Lucas', 'Fernández', '1989-07-22', '2023-01-20', 850000.00, true, 3),
-(6, 39777888, 'Sofia', 'Rodríguez', '1996-09-12', '2023-05-01', 920000.00, true, 3),
-(7, 33999000, 'Diego', 'Sánchez', '1988-03-30', '2023-02-01', 850000.00, true, 4),
-(8, 40111222, 'Laura', 'Díaz', '1997-12-18', '2023-06-15', 920000.00, true, 4),
-(9, 32333444, 'Mateo', 'Álvarez', '1987-10-08', '2023-01-05', 850000.00, true, 5),
-(10, 41555666, 'Camila', 'Torres', '1998-04-25', '2023-07-01', 920000.00, true, 5);
+IGNORE INTO staff (id, dni, nombre, apellido, fecha_nacimiento, fecha_ingreso, activo, id_unidad_venta) VALUES
+(1, 35123456, 'Juan', 'Pérez', '1990-05-15', '2023-01-10', true, 1),
+(2, 38987654, 'María', 'Gómez', '1995-08-20', '2023-03-01', true, 1),
+(3, 36111222, 'Carlos', 'López', '1992-02-10', '2023-02-15', true, 2),
+(4, 37333444, 'Ana', 'Martínez', '1994-11-05', '2023-04-10', true, 2),
+(5, 34555666, 'Lucas', 'Fernández', '1989-07-22', '2023-01-20', true, 3),
+(6, 39777888, 'Sofia', 'Rodríguez', '1996-09-12', '2023-05-01', true, 3),
+(7, 33999000, 'Diego', 'Sánchez', '1988-03-30', '2023-02-01', true, 4),
+(8, 40111222, 'Laura', 'Díaz', '1997-12-18', '2023-06-15', true, 4),
+(9, 32333444, 'Mateo', 'Álvarez', '1987-10-08', '2023-01-05', true, 5),
+(10, 41555666, 'Camila', 'Torres', '1998-04-25', '2023-07-01', true, 5);
 
 INSERT
 IGNORE INTO cocinero (id_staff, categoria) VALUES

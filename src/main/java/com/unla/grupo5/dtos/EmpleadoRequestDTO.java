@@ -30,12 +30,6 @@ public class EmpleadoRequestDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaIngreso;
 
-    @NotNull(message = "El sueldo es obligatorio")
-    private Double sueldo;
-
-    @NotNull(message = "Debe seleccionar una unidad de venta")
-    private Long idUnidadVenta;
-
     @NotBlank(message = "Debe seleccionar el tipo de empleado")
     private String tipoEmpleado;
 
@@ -90,22 +84,6 @@ public class EmpleadoRequestDTO {
 
     public void setFechaIngreso(LocalDate fechaIngreso) {
         this.fechaIngreso = fechaIngreso;
-    }
-
-    public Double getSueldo() {
-        return sueldo;
-    }
-
-    public void setSueldo(Double sueldo) {
-        this.sueldo = sueldo;
-    }
-
-    public Long getIdUnidadVenta() {
-        return idUnidadVenta;
-    }
-
-    public void setIdUnidadVenta(Long idUnidadVenta) {
-        this.idUnidadVenta = idUnidadVenta;
     }
 
     public String getTipoEmpleado() {

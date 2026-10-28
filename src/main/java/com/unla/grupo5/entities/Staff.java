@@ -38,9 +38,6 @@ public abstract class Staff {
     private LocalDate fechaIngreso;
 
     @Column(nullable = false)
-    private double sueldo;
-
-    @Column(nullable = false)
     private boolean activo = true;
 
     // Muchos empleados en una sola unidad de venta
