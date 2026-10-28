@@ -7,7 +7,7 @@ import com.unla.grupo5.entities.*;
 import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -202,7 +202,6 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             empleado.setUnidadDeVenta(unidad);
             // Si cambia de unidad, la nueva se suma al historial (las anteriores quedan registradas)
             empleado.getHistorialUnidades().add(unidad);
-        }
 
         if (empleado instanceof Cocinero && dto.getCategoriaCocinero() != null) {
             ((Cocinero) empleado).setCategoria(dto.getCategoriaCocinero());
