@@ -94,16 +94,27 @@ public class HomeController {
     }
 
     @GetMapping("/admin/festivales/{id}/unidades")
-    public String verUnidadesDeVenta(@PathVariable("id") Long id, @RequestParam(name = "orden", defaultValue = "desc") String orden, Model model){
+    public String verUnidadesDeVenta(@PathVariable("id") Long id,
+                                     @RequestParam(name = "orden", defaultValue = "desc") String orden,
+                                     @RequestParam(name = "criterio", defaultValue = "recaudacion") String criterio,
+                                     Model model){
         Festival festival = festivalRepository.findById(id).orElse(null);
 
-        List<UnidadDeVenta> unidades = unidadDeVentaService.listarPorFestivalOrdenadoPorRecaudacion(id, orden);
+        List<UnidadDeVenta> unidades;
+
+        if("pedidos".equalsIgnoreCase(criterio)){
+            unidades = unidadDeVentaService.listarPorFestivalOrdenadoPorCantidadPedidos(id);
+        }else{
+            unidades = unidadDeVentaService.listarPorFestivalOrdenadoPorRecaudacion(id, orden);
+        }
 
         model.addAttribute("festival", festival);
         model.addAttribute("unidades", unidades);
         model.addAttribute("ordenActual", orden);
+        model.addAttribute("criterioActual", criterio);
 
         return "unidades-listado";
 
     }
+
 }

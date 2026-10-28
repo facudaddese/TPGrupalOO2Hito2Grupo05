@@ -49,6 +49,12 @@ public class UnidadDeVenta {
     @OneToMany(mappedBy = "unidadDeVenta", fetch = FetchType.LAZY)
     private Set<Pedido> lstPedidos = new HashSet<>();
 
+    // Campo transitorio para almacenar la cantidad calculada de pedidos en los rankings.
+    // @Transient evita la persistencia en la BD ya que no existe una columna física asociada.
+    @Transient
+    private Long cantidadPedidos;
+
+
     public double getRecaudacionTotal(){
         if(lstPedidos == null || lstPedidos.isEmpty()){
             return 0.0;

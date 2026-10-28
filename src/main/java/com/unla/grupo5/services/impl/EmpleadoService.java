@@ -66,6 +66,12 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         if (staffRepository.findByDni(dto.getDni()).isPresent()) {
             throw new IllegalArgumentException("Ya existe un empleado registrado con el DNI " + dto.getDni());
         }
+
+        if (dto.getFechaIngreso().isBefore(dto.getFechaNacimiento())) {
+            throw new IllegalArgumentException(
+                    "La fecha de ingreso no puede ser anterior a la fecha de nacimiento."
+            );
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
