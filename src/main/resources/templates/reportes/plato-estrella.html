@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plato Estrella - Epicentro Gourmet</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5" style="max-width: 800px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Plato Estrella</h4>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${mensajeError}" class="alert alert-danger" role="alert">
+                <span th:text="${mensajeError}"></span>
+            </div>
+
+            <div th:if="${unidad != null and festival != null}">
+                <p class="mb-1"><strong>Festival:</strong> <span th:text="${festival.nombre}"></span></p>
+                <p class="mb-3"><strong>Unidad de venta:</strong>
+                    <span th:text="${unidad.nombreComercial}"></span>
+                    (<span th:text="${unidad.codigo}"></span>)
+                </p>
+
+                <div th:if="${platoEstrella == null and mensajeError == null}" class="alert alert-info mb-0">
+                    La unidad todavía no registró pedidos en este festival.
+                </div>
+
+                <div th:if="${platoEstrella != null}">
+                    <p class="text-muted mb-2">El plato que registró la mayor cantidad de pedidos es:</p>
+                    <h3 class="mb-3" th:text="${platoEstrella.nombre}">Nombre del plato</h3>
+
+                    <table class="table table-bordered align-middle">
+                        <tbody>
+                        <tr>
+                            <th style="width: 50%;">Cantidad de pedidos</th>
+                            <td th:text="${platoEstrella.cantidadPedidos}"></td>
+                        </tr>
+                        <tr>
+                            <th>Unidades vendidas</th>
+                            <td th:text="${platoEstrella.cantidadVendida}"></td>
+                        </tr>
+                        <tr>
+                            <th>Precio</th>
+                            <td th:text="${'$ ' + #numbers.formatDecimal(platoEstrella.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+                        </tr>
+                        <tr>
+                            <th>Costo de producción</th>
+                            <td th:text="${'$ ' + #numbers.formatDecimal(platoEstrella.costoProduccion, 1, 'POINT', 2, 'COMMA')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <a th:href="@{/}" class="btn btn-link mt-3">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

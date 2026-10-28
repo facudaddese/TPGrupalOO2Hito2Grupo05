@@ -153,11 +153,16 @@ INSERT
 IGNORE INTO costo
 (id, costo_superficie, costo_montaje, plus_electricidad, sueldo_base, antiguedad_cajero, plus_cocinero, plus_ayudante, plus_lavaplatos)
 VALUES
-(1, 500, 10, 2000, 100000, 5000, 150000, 100000, 50000);
+(1, 500, 10, 2000, 100000, 5000, 150000, 100000, 50000),
+(2, 500, 10, 2000, 100000, 5000, 150000, 100000, 50000),
+(3, 500, 10, 2000, 100000, 5000, 150000, 100000, 50000);
 
+-- Festivales 2 y 3 ya terminaron: se usan para el historial de trabajo de los empleados
 INSERT
 IGNORE INTO festival (id, nombre, temporada, fecha_inicio, fecha_fin, id_costo) VALUES
-(1, 'Festival Gastronómico Anual', 'Primavera-Verano', '2026-08-01', '2026-12-31', 1);
+(1, 'Festival Gastronómico Anual', 'Primavera-Verano', '2026-08-01', '2026-12-31', 1),
+(2, 'Street Food Festival', 'Verano', '2026-01-10', '2026-02-28', 2),
+(3, 'Festival de Comida Saludable', 'Otoño', '2026-03-01', '2026-04-30', 3);
 
 INSERT INTO `Rol` (`rol`)
 SELECT 'ADMIN' WHERE NOT EXISTS (SELECT 1 FROM `Rol` WHERE `rol` = 'ADMIN');
@@ -249,6 +254,20 @@ IGNORE INTO puesto_desarmable (id_puesto_desarmable, cantidad_carpas, tiempo_mon
 (2, 2, 2.5),
 (4, 3, 4.0);
 
+-- Unidades de festivales anteriores (para el historial de trabajo de los empleados)
+INSERT
+IGNORE INTO unidad_de_venta (id, nombre_comercial, codigo, superficie, id_festival) VALUES
+(6, 'Street Burgers', 'FT-004', 12, 2),
+(7, 'Puesto Verde', 'PD-003', 8, 3);
+
+INSERT
+IGNORE INTO foodtruck (id_food_truck, patente, estado_conexion) VALUES
+(6, 'AE321JK', true);
+
+INSERT
+IGNORE INTO puesto_desarmable (id_puesto_desarmable, cantidad_carpas, tiempo_montaje) VALUES
+(7, 1, 1.5);
+
 UPDATE `unidad_de_venta`
 SET `id_usuario_responsable` = (SELECT id FROM `Usuario` WHERE `nombre_usuario` = 'responsable1@gmail.com' LIMIT 1)
 WHERE `codigo` = 'FT-001';
@@ -285,6 +304,20 @@ IGNORE INTO cocinero (id_staff, categoria) VALUES
 INSERT
 IGNORE INTO cajero (id_staff, turno_trabajo) VALUES
 (2, 'NOCHE'), (4, 'MAÑANA'), (6, 'TARDE'), (8, 'NOCHE'), (10, 'MAÑANA');
+
+-- =========================================================
+-- HISTORIAL DE TRABAJO (staff <-> unidad de venta, muchos a muchos)
+-- Cada empleado tiene su unidad actual y algunos trabajaron antes en otras:
+--   Juan Pérez (empleado1)  -> FT-001 (actual), FT-004 (Street Food Festival), PD-003 (Comida Saludable)
+--   María Gómez (empleado2) -> FT-001 (actual), FT-004 (Street Food Festival)
+--   Carlos López            -> PD-001 (actual), PD-003 (Comida Saludable)
+-- =========================================================
+INSERT
+IGNORE INTO staff_unidad_de_venta (id_staff, id_unidad_de_venta) VALUES
+(1, 1), (2, 1), (3, 2), (4, 2), (5, 3), (6, 3), (7, 4), (8, 4), (9, 5), (10, 5),
+(1, 6), (1, 7),
+(2, 6),
+(3, 7);
 
 -- =========================================================
 -- USUARIOS EMPLEADOS (Clave: empleado123)

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "staff")
@@ -43,6 +45,13 @@ public abstract class Staff {
     // Clave foranea
     @JoinColumn(name = "idUnidadVenta")
     private UnidadDeVenta unidadDeVenta;
+
+    // Historial: todas las unidades de venta en las que trabajó el empleado (incluida la actual)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "staff_unidad_de_venta",
+            joinColumns = @JoinColumn(name = "id_staff"),
+            inverseJoinColumns = @JoinColumn(name = "id_unidad_de_venta"))
+    private Set<UnidadDeVenta> historialUnidades = new HashSet<>();
 
     // Un empleado tiene un usuario
     @OneToOne(mappedBy = "staff", fetch = FetchType.LAZY)

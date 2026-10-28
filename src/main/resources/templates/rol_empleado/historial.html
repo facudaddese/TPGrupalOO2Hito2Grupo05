@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Historial de Trabajo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5" style="max-width: 1000px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Mi Historial de Trabajo</h4>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
+
+            <div th:if="${historial != null and #lists.isEmpty(historial)}" class="alert alert-info">
+                Todavía no tenés festivales ni unidades de venta registradas.
+            </div>
+
+            <div class="table-responsive" th:if="${historial != null and !#lists.isEmpty(historial)}">
+                <p class="text-muted">Festivales y unidades de venta en las que trabajaste, del más reciente al más antiguo.</p>
+
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Festival</th>
+                        <th>Temporada</th>
+                        <th>Fechas</th>
+                        <th>Unidad de venta</th>
+                        <th>Código</th>
+                        <th>Tipo</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="h : ${historial}">
+                        <td th:text="${h.nombreFestival}"></td>
+                        <td th:text="${h.temporada}"></td>
+                        <td>
+                            <span th:text="${#temporals.format(h.fechaInicio, 'dd/MM/yyyy')}"></span> al
+                            <span th:text="${#temporals.format(h.fechaFin, 'dd/MM/yyyy')}"></span>
+                        </td>
+                        <td th:text="${h.nombreUnidad}"></td>
+                        <td th:text="${h.codigoUnidad}"></td>
+                        <td th:text="${h.tipoUnidad}"></td>
+                        <td>
+                            <span th:if="${h.actual}" class="badge bg-success">Actual</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a th:href="@{/}" class="btn btn-link mt-3">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
