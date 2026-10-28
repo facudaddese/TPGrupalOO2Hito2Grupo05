@@ -36,6 +36,17 @@ public class Rol_EmpleadoController {
     @Autowired
     private StaffRepository staffRepository;
 
+    // Festivales y unidades de venta en las que trabajó el empleado
+    @GetMapping("/historial")
+    public String consultarHistorial(Model model, Authentication authentication) {
+        try {
+            model.addAttribute("historial", empleadoService.obtenerHistorialTrabajo(authentication.getName()));
+        } catch (RecursoNoEncontradoException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+        }
+        return "rol_empleado/historial";
+    }
+
     @GetMapping("/sueldos")
     public String consultarSueldos(Model model, Authentication authentication) {
         LocalDate fechaActual = LocalDate.now();

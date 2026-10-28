@@ -1,12 +1,14 @@
 package com.unla.grupo5.services.impl;
 
 import com.unla.grupo5.dtos.EmpleadoRequestDTO;
+import com.unla.grupo5.dtos.HistorialTrabajoDTO;
 import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
 import com.unla.grupo5.entities.*;
 import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
 import com.unla.grupo5.services.EmailService;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,8 +18,11 @@ import java.time.Period;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -104,6 +109,8 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         empleado.setSueldo(dto.getSueldo());
         empleado.setActivo(true);
         empleado.setUnidadDeVenta(unidad);
+        // Queda registrada en el historial de unidades en las que trabajó
+        empleado.getHistorialUnidades().add(unidad);
 
         Staff empleadoGuardado = staffRepository.save(empleado);
 
@@ -174,6 +181,8 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             UnidadDeVenta unidad = unidadDeVentaRepository.findById(dto.getIdUnidadVenta())
                     .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
             empleado.setUnidadDeVenta(unidad);
+            // Si cambia de unidad, la nueva se suma al historial (las anteriores quedan registradas)
+            empleado.getHistorialUnidades().add(unidad);
         }
 
         if (empleado instanceof Cocinero && dto.getCategoriaCocinero() != null) {
@@ -342,6 +351,54 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     @Override
     public List<Staff> traerActivosPorUnidad(Long idUnidadVenta) {
         return staffRepository.findByUnidadDeVentaIdAndActivoTrue(idUnidadVenta);
+    }
+
+    // Historial de trabajo: festivales y unidades de venta en las que trabajó el empleado,
+    // del festival más reciente al más antiguo
+    @Override
+    @Transactional
+    public List<HistorialTrabajoDTO> obtenerHistorialTrabajo(String nombreUsuario) {
+        Staff empleado = staffRepository.findByUsuarioNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Puesto de staff"));
+
+        // Se parte del historial y se asegura que la unidad actual esté incluida
+        Set<UnidadDeVenta> unidades = new HashSet<>(empleado.getHistorialUnidades());
+        if (empleado.getUnidadDeVenta() != null) {
+            unidades.add(empleado.getUnidadDeVenta());
+        }
+
+        Long idUnidadActual = empleado.getUnidadDeVenta() == null ? null : empleado.getUnidadDeVenta().getId();
+
+        List<HistorialTrabajoDTO> historial = new ArrayList<>();
+        for (UnidadDeVenta unidad : unidades) {
+            Festival festival = unidad.getFestival();
+            historial.add(new HistorialTrabajoDTO(
+                    festival.getNombre(),
+                    festival.getTemporada(),
+                    festival.getFechaInicio(),
+                    festival.getFechaFin(),
+                    unidad.getNombreComercial(),
+                    unidad.getCodigo(),
+                    obtenerTipoUnidad(unidad),
+                    unidad.getId().equals(idUnidadActual)
+            ));
+        }
+
+        historial.sort(Comparator.comparing(HistorialTrabajoDTO::getFechaInicio).reversed()
+                .thenComparing(HistorialTrabajoDTO::getNombreUnidad));
+        return historial;
+    }
+
+    // Tipo de la unidad según su subclase (la relación puede venir como proxy de Hibernate)
+    private String obtenerTipoUnidad(UnidadDeVenta unidad) {
+        Object real = Hibernate.unproxy(unidad);
+        if (real instanceof FoodTruck) {
+            return "Food Truck";
+        }
+        if (real instanceof PuestoDesarmable) {
+            return "Puesto Desarmable";
+        }
+        return "Sin tipo asignado";
     }
 
 }
