@@ -1,5 +1,6 @@
 package com.unla.grupo5.services.impl;
 
+import com.unla.grupo5.dtos.PlatoDTO;
 import com.unla.grupo5.dtos.PlatoModificarDTO;
 import com.unla.grupo5.dtos.PlatoRequestDTO;
 import com.unla.grupo5.entities.Plato;
@@ -75,5 +76,23 @@ public class PlatoService implements com.unla.grupo5.services.PlatoService {
     @Transactional(readOnly = true)
     public List<Plato> traerPorUnidad(Long idUnidadVenta) {
         return platoRepository.findByUnidadDeVentaId(idUnidadVenta);
+    }
+
+    // Plato estrella: el plato de la unidad que aparece en más pedidos dentro del festival
+    @Override
+    @Transactional(readOnly = true)
+    public PlatoDTO obtenerPlatoEstrella(Long idUnidadVenta, Long idFestival) {
+        UnidadDeVenta unidad = unidadDeVentaRepository.findById(idUnidadVenta)
+                .orElseThrow(() -> new IllegalArgumentException("La unidad de venta no existe."));
+
+        // La unidad tiene que participar del festival indicado
+        if (unidad.getFestival() == null || !unidad.getFestival().getId().equals(idFestival)) {
+            throw new IllegalArgumentException("La unidad de venta no participa del festival seleccionado.");
+        }
+
+        List<PlatoDTO> ranking = platoRepository.rankingPlatosPorPedidos(idUnidadVenta, idFestival);
+
+        // Si la unidad todavía no tiene pedidos no hay plato estrella
+        return ranking.isEmpty() ? null : ranking.get(0);
     }
 }
