@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.MailException;
 
 @Service
 public class EmailService implements com.unla.grupo5.services.EmailService {
@@ -28,6 +29,8 @@ public class EmailService implements com.unla.grupo5.services.EmailService {
             System.out.println("Correo de credenciales enviado con éxito a " + emailDestino);
         } catch (Exception e) {
             System.err.println("No se pudo enviar el correo a " + emailDestino + ". Motivo: " + e.getMessage());
+            throw e;
         }
-    }
+        }
+
 }

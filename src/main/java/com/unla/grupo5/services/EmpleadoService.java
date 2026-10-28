@@ -8,11 +8,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface EmpleadoService {
-    Staff registrarEmpleado(EmpleadoRequestDTO dto);
+    Staff registrarEmpleado(EmpleadoRequestDTO dto, String usuarioResponsable);
 
     Staff buscarPorId(Long id);
 
-    Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto);
+    Staff modificarEmpleado(Long id, EmpleadoRequestDTO dto, String usuarioResponsable);
 
     List<Staff> traerTodos();
 
