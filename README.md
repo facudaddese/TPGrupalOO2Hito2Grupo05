@@ -53,10 +53,10 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU04 | Ver unidades de venta de un festival | Lautaro Gonzalez | [PR](LINK_PR) |
 | CU05 | Generar ranking de unidades por recaudación | Lautaro Gonzalez | [PR](LINK_PR) |
 | CU06 | Obtener unidades con mayor canon | Daira Mazza | [PR](LINK_PR) |
-| CU07 | Dar de alta un empleado | Facundo D'Addese | [PR](LINK_PR) |
-| CU08 | Modificar empleado | Facundo D'Addese | [PR](LINK_PR) |
-| CU09 | Dar de baja lógica a un empleado | Facundo D'Addese | [PR](LINK_PR) |
-| CU10 | Reactivar empleado eliminado | Facundo D'Addese | [PR](LINK_PR) |
+| CU07 | Dar de alta un empleado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/a962e773d1188f74e76cc069acd2984f0dd94b83) |
+| CU08 | Modificar empleado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/93108e2c2e6333a00937c0fbccc9a16713b51cf3) |
+| CU09 | Dar de baja lógica a un empleado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/394ad0047f6e68926b33e195ddf5deb05b66e353) |
+| CU10 | Reactivar empleado eliminado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/7527de9114c7cbdbff3ed28d9be40aad4d75f093) |
 | CU11 | Filtrar / listar empleados activos | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/25a4f92f72d414176bd21bff8f0ef1c511017322) |
 | CU12 | Dar de alta un plato | Daira Mazza | [PR](LINK_PR) |
 | CU13 | Calcular canon de una unidad | Daira Mazza | [PR](LINK_PR) |
@@ -69,9 +69,9 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU20 | Consultar sueldo recibido por festival | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/16)|
 | CU21 | Descargar recibo de sueldo en PDF | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/19) |
 | CU22 | Consultar festival y unidad de trabajo actual | Lautaro Gonzalez | [PR](LINK_PR) |
-| CU23 | Cerrar caja | Facundo D'Addese | [PR](LINK_PR) |
+| CU23 | Cerrar caja | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/547621ad83f5917c7c7f016029bc9da5a77e1080) |
 | CU24 | Alta Pedido | Daira Mazza | [PR](LINK_PR) |
-| CU25 | Fix: Actualizar data.sql | Facundo D'Addese | [PR](LINK_PR) |
+| CU25 | Fix: Actualizar data.sql | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/6c2cd862de34967c742ee47c57fb0be0861d1d25) |
 | CU26 | Fix: Generar código de unidad de venta | Lautaro Gonzalez | [PR](LINK_PR) |
 | CU27 | Asignar rol de responsable a la unidad de venta | Daira Mazza | [PR](LINK_PR) |
 | CU28 | Registrar tipo de unidad de venta | Daira Mazza | [PR](LINK_PR) |
@@ -79,7 +79,7 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU30 | Consultar landing de reportes | Daira Mazza | [PR](LINK_PR) |
 | CU31 | Consultar ranking de unidades de venta más vendidas | Lautaro Gonzalez | [PR](LINK_PR) |
 | CU32 | Habilitar pago de sueldos | Malena Lescano | [PR](LINK_PR) |
-| CU33 | fix: Columna detalle | Facundo D'Addese | [PR](LINK_PR) |
+| CU33 | fix: Columna detalle | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/6f1e84fe813d05272059d67afc39e6e1711b355c) |
 | CU34 | Fix: Dos vistas de lista de UDVs | Lautaro Gonzalez | [PR](LINK_PR) |
 | CU35 | Fix: sacar sueldo de Alta empleado y seleccion de UDV | Malena Lescano | [PR](LINK_PR) |
 | CU36 | Validaciones de Alta Empleado | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/30) |
