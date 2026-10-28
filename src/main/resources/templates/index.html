@@ -125,6 +125,14 @@
                            th:href="@{/admin/festivales/{id}/unidades(id=${f.id})}">
                             Ver Unidades de Venta
                         </a>
+                        <a class="btn btn-light"
+                           th:href="@{/admin/festivales/{id}/unidades(id=${f.id}, criterio='pedidos')}">
+                            Ranking por pedidos
+                        </a>
+                        <a class="btn btn-light"
+                           th:href="@{/unidades-venta/mayor-canon(idFestival=${f.id})}">
+                            Ranking mayor canon
+                        </a>
                     </div>
                     <div style="margin-top: 15px;" sec:authorize="isAnonymous()">
 
