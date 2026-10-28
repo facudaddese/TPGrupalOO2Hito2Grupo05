@@ -69,7 +69,7 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU20 | Consultar sueldo recibido por festival | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/16)|
 | CU21 | Descargar recibo de sueldo en PDF | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/19) |
 | CU22 | Consultar festival y unidad de trabajo actual | Lautaro Gonzalez | [PR](LINK_PR) |
-| CU23 | Cerrar caja | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/547621ad83f5917c7c7f016029bc9da5a77e1080) |
+| CU23 | Cerrar caja | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/dd1badf754994f40462412694c71f95acf8abb4b) |
 | CU24 | Alta Pedido | Daira Mazza | [PR](LINK_PR) |
 | CU25 | Fix: Actualizar data.sql | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/6c2cd862de34967c742ee47c57fb0be0861d1d25) |
 | CU26 | Fix: Generar código de unidad de venta | Lautaro Gonzalez | [PR](LINK_PR) |
