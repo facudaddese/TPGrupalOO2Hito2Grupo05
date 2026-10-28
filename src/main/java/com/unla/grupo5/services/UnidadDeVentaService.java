@@ -37,5 +37,5 @@ public interface UnidadDeVentaService {
 
     RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
 
-
+    List<UnidadDeVenta> listarPorFestivalOrdenadoPorCantidadPedidos(Long idFestival);
 }
