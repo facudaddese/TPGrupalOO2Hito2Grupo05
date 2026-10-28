@@ -49,7 +49,7 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     private EmpleadoService empleadoService;
 
     @Autowired
-    private StaffRepository  staffRepository;
+    private StaffRepository staffRepository;
 
     // Devuelve las unidades de venta que pertenecen al festival indicado
     @Override
@@ -61,13 +61,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     // Reglas de negocio del alta. Si alguna falla se lanza IllegalArgumentException
     // y el controlador muestra el mensaje en el formulario.
     private void validarDatos(UnidadDeVentaRequestDTO dto) {
-        /*// El código identifica a la unidad: no puede repetirse dentro del mismo festival
-        if (unidadDeVentaRepository.existsByCodigoAndFestivalId(dto.getCodigo(), dto.getIdFestival())) {
-            throw new IllegalArgumentException("Ya existe una unidad de venta con el código " + dto.getCodigo() + " en este festival.");
-        }
-        */
-        // El nombre de usuario es único en todo el sistema
-        // El e-mail es el nombre de usuario, y es único en todo el sistema
         if (usuarioRepository.existsByNombreUsuario(dto.getEmail())) {
             throw new IllegalArgumentException("El e-mail " + dto.getEmail() + " ya está en uso como usuario.");
         }
@@ -102,18 +95,14 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
     }
 
     // Alta de una unidad de venta junto con su usuario.
-    // Todo o nada: si algo falla no queda ni el usuario ni la unidad.
     @Override
     @Transactional
     public UnidadDeVenta registrarUnidad(UnidadDeVentaRequestDTO dto) {
-        // 1. El festival elegido tiene que existir
         Festival festival = festivalRepository.findById(dto.getIdFestival())
                 .orElseThrow(() -> new IllegalArgumentException("El festival seleccionado no existe."));
 
-        // 2. Validaciones de negocio (código y usuario)
         validarDatos(dto);
 
-        // 3. Busca el rol RESPONSABLE en la tabla; si todavía no existe lo crea
         Rol rol = rolRepository.findByRol(ROL_RESPONSABLE)
                 .orElseGet(() -> {
                     Rol r = new Rol();
@@ -121,7 +110,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                     return rolRepository.save(r);
                 });
 
-        // 4. Se crea la unidad según su tipo y se guarda primero, así el usuario puede quedar asociado a ella
         UnidadDeVenta unidad = crearUnidadSegunTipo(dto);
         unidad.setNombreComercial(dto.getNombreComercial());
         unidad.setCodigo(generarCodigoAutomatico(unidad));
@@ -129,9 +117,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         unidad.setFestival(festival);
         unidad = unidadDeVentaRepository.save(unidad);
 
-        // 5. Se crea el usuario y se lo asocia a la unidad (siempre pertenece a ella).
-        //    El e-mail es el nombre de usuario y la contraseña es la que se completó en el
-        //    formulario. Se guarda codificada; en claro solo viaja por e-mail.
         Usuario usuario = new Usuario();
         usuario.setNombreUsuario(dto.getEmail());
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -140,11 +125,9 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         usuario.setUnidadDeVenta(unidad);
         usuario = usuarioRepository.save(usuario);
 
-        // 6. Ese usuario pasa a ser el responsable de la unidad
         unidad.setResponsable(usuario);
         unidad = unidadDeVentaRepository.save(unidad);
 
-        // 7. Se envían las credenciales por e-mail (si el envío falla no se cancela el alta)
         try {
             emailService.enviarCredencialesEmpleado(dto.getEmail(), usuario.getNombreUsuario(), dto.getPassword());
         } catch (Exception e) {
@@ -154,7 +137,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return unidad;
     }
 
-    // Busca una unidad por su id; si no existe avisa con un mensaje claro
     @Override
     @Transactional(readOnly = true)
     public UnidadDeVenta buscarPorId(Long id) {
@@ -162,15 +144,11 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                 .orElseThrow(() -> new IllegalArgumentException("La unidad de venta no existe con el ID: " + id));
     }
 
-    // Modifica los datos de una unidad ya registrada (nombre, código y superficie).
-    // El festival, el responsable y los usuarios no cambian.
     @Override
     @Transactional
     public UnidadDeVenta modificarUnidad(Long id, UnidadDeVentaModificarDTO dto) {
         UnidadDeVenta unidad = buscarPorId(id);
 
-        // El código no puede coincidir con el de OTRA unidad del mismo festival
-        // (se excluye la propia unidad para poder guardar sin cambiar el código)
         if (unidadDeVentaRepository.existsByCodigoAndFestivalIdAndIdNot(dto.getCodigo(), unidad.getFestival().getId(), id)) {
             throw new IllegalArgumentException("Ya existe otra unidad de venta con el código " + dto.getCodigo() + " en este festival.");
         }
@@ -182,13 +160,12 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return unidadDeVentaRepository.save(unidad);
     }
 
-    // Devuelve la unidad de venta del usuario; si no tiene ninguna asignada avisa con un mensaje claro
     @Override
     @Transactional(readOnly = true)
     public UnidadDeVenta getUdVByUser(String nombreUsuario) {
         Usuario usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
 
-        if (usuario == null){
+        if (usuario == null) {
             throw new IllegalArgumentException("El usuario no existe: " + nombreUsuario);
         }
 
@@ -196,34 +173,30 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         if (unidad == null) {
             throw new IllegalArgumentException("El usuario " + nombreUsuario + " no tiene una unidad de venta asignada.");
         }
-        // Se fuerza la carga dentro de la transacción (la relación es LAZY)
         unidad.getNombreComercial();
         return unidad;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden){
+    public List<UnidadDeVenta> listarPorFestivalOrdenadoPorRecaudacion(Long idFestival, String orden) {
         List<UnidadDeVenta> unidades = unidadDeVentaRepository.findByFestivalIdWithPedidos(idFestival);
 
-        if("asc".equalsIgnoreCase(orden)){
+        if ("asc".equalsIgnoreCase(orden)) {
             unidades.sort(Comparator.comparingDouble(UnidadDeVenta::getRecaudacionTotal));
-        }else{
+        } else {
             unidades.sort(Comparator.comparingDouble(UnidadDeVenta::getRecaudacionTotal).reversed());
         }
 
         return unidades;
-
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ReporteVentaDTO generarReporteRecaudacion(Long idFestival, String nombreUsuario){
-        //Verificamos la existencia del festival
+    public ReporteVentaDTO generarReporteRecaudacion(Long idFestival, String nombreUsuario) {
         Festival festival = festivalRepository.findById(idFestival)
                 .orElseThrow(() -> new IllegalArgumentException("El festival seleccionado no existe."));
 
-        //Obtenemos la UDV asociada al usuario
         UnidadDeVenta unidad = getUdVByUser(nombreUsuario);
 
         double recaudacion = 0.0;
@@ -231,7 +204,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
 
         boolean participo = unidad.getFestival() != null && unidad.getFestival().getId().equals(idFestival);
 
-        //Verificamos que ld UDV pertenezca al festival y si es asi obtenemos su recaudacion y pedidos
         if (participo) {
             UnidadDeVenta unidadConPedidos = unidadDeVentaRepository.findByIdWithPedidos(unidad.getId())
                     .orElse(unidad);
@@ -239,7 +211,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
             cantidadPedidos = unidadConPedidos.getLstPedidos() != null ? unidadConPedidos.getLstPedidos().size() : 0;
         }
 
-        //Retornamos el DTO
         return new ReporteVentaDTO(
                 festival.getId(),
                 festival.getNombre(),
@@ -252,11 +223,7 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         );
     }
 
-    // Arma el detalle del canon de una unidad con los costos que fija el festival:
-    //  - Food Truck: (superficie * costo por m²) + plus de electricidad si requiere conexión
-    //  - Puesto Desarmable: (superficie * costo por m²) - (tiempo de montaje * costo de montaje)
     private CanonDTO armarDetalleCanon(UnidadDeVenta unidad, Festival festival) {
-        // La relación puede venir como proxy de Hibernate: se obtiene la subclase real
         unidad = (UnidadDeVenta) Hibernate.unproxy(unidad);
         Costo costo = festival.getCosto();
         if (costo == null) {
@@ -299,7 +266,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return armarDetalleCanon(unidad, festival).getCanon();
     }
 
-    // Reporte del canon de la unidad del responsable logueado
     @Override
     @Transactional(readOnly = true)
     public CanonDTO calcularCanonUnidad(String nombreUsuario) {
@@ -310,7 +276,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return armarDetalleCanon(unidad, unidad.getFestival());
     }
 
-    // Tipo de la unidad según su subclase
     private String obtenerTipoUnidad(UnidadDeVenta unidad) {
         unidad = (UnidadDeVenta) Hibernate.unproxy(unidad);
         if (unidad instanceof FoodTruck) {
@@ -338,7 +303,6 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
             ));
         }
 
-        // De mayor a menor canon; si empatan, por nombre comercial
         reporte.sort(Comparator.comparingDouble(ReporteMayoresCanonDTO::getCanon).reversed()
                 .thenComparing(ReporteMayoresCanonDTO::getNombreComercial));
 
@@ -347,26 +311,19 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
 
     public double calcularTotalSueldos(UnidadDeVenta unidad, Festival festival) {
         double totalSueldos = 0.0;
-
         List<Staff> empleados = staffRepository.findByUnidadDeVentaId(unidad.getId());
-
         LocalDate fechaCorte = LocalDate.now();
 
         for (Staff empleado : empleados) {
-
             List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesHastaFecha(empleado.getId(), festival.getId(), fechaCorte);
-
             for (LiquidacionHaberesDTO liquidacion : liquidaciones) {
                 totalSueldos += liquidacion.getSueldoCalculado();
             }
         }
-
         return totalSueldos;
     }
 
-    //Rentabilidad de un festival a la fecha actual
-    public RentabilidadNetaDTO calcularRentabilidadNeta(UnidadDeVenta unidad, Festival festival){
-
+    public RentabilidadNetaDTO calcularRentabilidadNeta(UnidadDeVenta unidad, Festival festival) {
         double totalVentas = unidad.getRecaudacionTotal();
         double costoPlatos = unidad.getCostoTotal();
         double totalSueldos = calcularTotalSueldos(unidad, festival);
@@ -379,25 +336,19 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
 
     public double calcularTotalSueldosEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
         double totalSueldos = 0.0;
-
         List<Staff> empleados = staffRepository.findByUnidadDeVentaId(unidad.getId());
 
         for (Staff empleado : empleados) {
-
             List<LiquidacionHaberesDTO> liquidaciones = empleadoService.calcularHaberesHastaFecha(empleado.getId(), festival.getId(), fechaHasta);
 
             for (LiquidacionHaberesDTO liquidacion : liquidaciones) {
                 LocalDate inicioPeriodo = liquidacion.getPeriodoInicio();
                 LocalDate finPeriodo = liquidacion.getPeriodoFin();
 
-                // Verificamos si el período de la liquidación se cruza con nuestro rango
                 if (!(finPeriodo.isBefore(fechaDesde) || inicioPeriodo.isAfter(fechaHasta))) {
-
-                    // Si el mes está completamente dentro del rango, sumamos el sueldo completo de ese mes
                     if (!inicioPeriodo.isBefore(fechaDesde) && !finPeriodo.isAfter(fechaHasta)) {
                         totalSueldos += liquidacion.getSueldoCalculado();
                     } else {
-                        // Si el rango corta el mes a la mitad, prorrateamos los días exactos que caen en el rango
                         LocalDate inicioEfectivo = inicioPeriodo.isBefore(fechaDesde) ? fechaDesde : inicioPeriodo;
                         LocalDate finEfectivo = finPeriodo.isAfter(fechaHasta) ? fechaHasta : finPeriodo;
 
@@ -414,32 +365,26 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
                 }
             }
         }
-
         return totalSueldos;
     }
 
     private double calcularCanonEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
-
         double canonTotal = calcularCanon(unidad, festival);
-
         LocalDate inicioFestival = festival.getFechaInicio();
         LocalDate finFestival = festival.getFechaFin();
 
-        long diasFestival = ChronoUnit.DAYS.between(
-                inicioFestival, finFestival) + 1;
+        long diasFestival = ChronoUnit.DAYS.between(inicioFestival, finFestival) + 1;
 
         if (diasFestival <= 0) {
             return 0.0;
         }
 
-        long diasConsultados = ChronoUnit.DAYS.between(
-                fechaDesde, fechaHasta) + 1;
+        long diasConsultados = ChronoUnit.DAYS.between(fechaDesde, fechaHasta) + 1;
 
         return canonTotal * diasConsultados / diasFestival;
     }
 
-    public RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta){
-
+    public RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta) {
         double totalVentas = unidad.getRecaudacionEntreFechas(fechaDesde, fechaHasta);
         double costoPlatos = unidad.getCostoTotalEntreFechas(fechaDesde, fechaHasta);
         double totalSueldos = calcularTotalSueldosEntreFechas(unidad, festival, fechaDesde, fechaHasta);
@@ -450,31 +395,22 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         return new RentabilidadNetaDTO(totalVentas, costoPlatos, totalSueldos, canon, rentabilidadNeta);
     }
 
-    private String generarCodigoAutomatico(UnidadDeVenta unidad){
-        //Define el prefijo basandose en la seleccion del formulario
+    private String generarCodigoAutomatico(UnidadDeVenta unidad) {
         String prefijo = (unidad instanceof FoodTruck) ? "FT-" : "PD-";
         String maxCodigo = unidadDeVentaRepository.findMaxCodigoByPrefijo(prefijo);
 
         int siguienteNumero = 1;
-        if(maxCodigo != null && maxCodigo.length() >= 4){
-            //Extraemos la parte numerica del codigo y le sumamos 1
+        if (maxCodigo != null && maxCodigo.length() >= 4) {
             String numeroStr = maxCodigo.substring(3);
-            try{
+            try {
                 siguienteNumero = Integer.parseInt(numeroStr) + 1;
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 siguienteNumero = 1;
             }
         }
-
-        //Formateamos el numero a 3 digitos con ceros a la izquierda
         return String.format("%s%03d", prefijo, siguienteNumero);
     }
 
-    /**
-     * Recupera el ranking de unidades por cantidad de pedidos para un festival.
-     * Transforma el resultado de la consulta agrupada (Object[]) mapeando la cuenta
-     * de pedidos al atributo @Transient de cada UnidadDeVenta antes de retornarla a la vista.
-     */
     @Override
     public List<UnidadDeVenta> listarPorFestivalOrdenadoPorCantidadPedidos(Long idFestival) {
         List<Object[]> resultados = unidadDeVentaRepository.findByFestivalIdOrderByCantidadPedidosDesc(idFestival);
@@ -483,11 +419,32 @@ public class UnidadDeVentaService implements com.unla.grupo5.services.UnidadDeVe
         for (Object[] fila : resultados) {
             UnidadDeVenta unidad = (UnidadDeVenta) fila[0];
             Long cantidad = (Long) fila[1];
-            unidad.setCantidadPedidos(cantidad);// Inyección del dato en memoria
+            unidad.setCantidadPedidos(cantidad);
             unidades.add(unidad);
         }
 
         return unidades;
     }
 
+    @Override
+    @Transactional
+    public void cerrarCaja(Long idUnidad) {
+        UnidadDeVenta unidad = buscarPorId(idUnidad);
+        if (!unidad.isCajaAbierta()) {
+            throw new IllegalArgumentException("La caja ya se encuentra cerrada.");
+        }
+        unidad.setCajaAbierta(false);
+        unidadDeVentaRepository.save(unidad);
+    }
+
+    @Override
+    @Transactional
+    public void abrirCaja(Long idUnidad) {
+        UnidadDeVenta unidad = buscarPorId(idUnidad);
+        if (unidad.isCajaAbierta()) {
+            throw new IllegalArgumentException("La caja ya se encuentra abierta.");
+        }
+        unidad.setCajaAbierta(true);
+        unidadDeVentaRepository.save(unidad);
+    }
 }

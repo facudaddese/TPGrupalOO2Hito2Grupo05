@@ -38,4 +38,9 @@ public interface UnidadDeVentaService {
     RentabilidadNetaDTO calcularRentabilidadNetaEntreFechas(UnidadDeVenta unidad, Festival festival, LocalDate fechaDesde, LocalDate fechaHasta);
 
     List<UnidadDeVenta> listarPorFestivalOrdenadoPorCantidadPedidos(Long idFestival);
+
+    // Gestiones de Caja para la acción del Cajero / Responsable
+    void cerrarCaja(Long idUnidad);
+
+    void abrirCaja(Long idUnidad);
 }

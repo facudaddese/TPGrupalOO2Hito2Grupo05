@@ -33,20 +33,28 @@ public class PedidoController {
     @Autowired
     private UnidadDeVentaService unidadDeVentaService;
 
-    // Lista de pedidos de la unidad del responsable
+    // Lista de pedidos de la unidad del responsable y estado de la caja
     @GetMapping
     public String listarPedidos(Principal principal, Model model) {
         UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
-        // Se utiliza el nuevo método para traer la lista con los ítems precargados (CU33)
+
         model.addAttribute("pedidos", pedidoService.traerPorUnidadConItems(unidad.getId()));
         model.addAttribute("nombreUnidad", unidad.getNombreComercial());
+        model.addAttribute("cajaAbierta", unidad.isCajaAbierta());
+
         return "pedidos/listado";
     }
 
-    // Alta de un pedido
+    // Alta de un pedido (bloquea si la caja está cerrada)
     @GetMapping("/nuevo")
-    public String mostrarFormularioAlta(Principal principal, Model model) {
+    public String mostrarFormularioAlta(Principal principal, Model model, RedirectAttributes redirect) {
         UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+
+        if (!unidad.isCajaAbierta()) {
+            redirect.addFlashAttribute("mensajeError", "No se pueden registrar pedidos porque la caja está cerrada.");
+            return "redirect:/responsable/pedidos";
+        }
+
         List<Plato> platos = platoService.traerPorUnidad(unidad.getId());
 
         // Una fila por cada plato de la unidad, con cantidad 0
@@ -72,6 +80,12 @@ public class PedidoController {
             RedirectAttributes redirect) {
 
         UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+
+        if (!unidad.isCajaAbierta()) {
+            redirect.addFlashAttribute("mensajeError", "No se pueden registrar pedidos porque la caja está cerrada.");
+            return "redirect:/responsable/pedidos";
+        }
+
         model.addAttribute("platos", platoService.traerPorUnidad(unidad.getId()));
         model.addAttribute("nombreUnidad", unidad.getNombreComercial());
 
@@ -90,5 +104,30 @@ public class PedidoController {
             model.addAttribute("mensajeError", e.getMessage());
             return "pedidos/form-alta-pedido";
         }
+    }
+
+    // Acciones de Cerrar y Abrir Caja por el Cajero / Responsable
+    @PostMapping("/cerrar-caja")
+    public String cerrarCaja(Principal principal, RedirectAttributes redirect) {
+        try {
+            UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+            unidadDeVentaService.cerrarCaja(unidad.getId());
+            redirect.addFlashAttribute("mensajeExito", "La caja ha sido cerrada correctamente al finalizar la jornada.");
+        } catch (IllegalArgumentException e) {
+            redirect.addFlashAttribute("mensajeError", e.getMessage());
+        }
+        return "redirect:/responsable/pedidos";
+    }
+
+    @PostMapping("/abrir-caja")
+    public String abrirCaja(Principal principal, RedirectAttributes redirect) {
+        try {
+            UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+            unidadDeVentaService.abrirCaja(unidad.getId());
+            redirect.addFlashAttribute("mensajeExito", "La caja ha sido abierta correctamente.");
+        } catch (IllegalArgumentException e) {
+            redirect.addFlashAttribute("mensajeError", e.getMessage());
+        }
+        return "redirect:/responsable/pedidos";
     }
 }
