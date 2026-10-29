@@ -49,9 +49,9 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 |---|---|---|---|
 | CU01 | Iniciar sesión | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/7) |
 | CU02 | Registrar Responsable con Unidad de Venta | Daira Mazza | [PR](LINK_PR) |
-| CU03 | Consultar festivales | Lautaro Gonzalez | [PR](LINK_PR) |
-| CU04 | Ver unidades de venta de un festival | Lautaro Gonzalez | [PR](LINK_PR) |
-| CU05 | Generar ranking de unidades por recaudación | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU03 | Consultar festivales | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/5) |
+| CU04 | Ver unidades de venta de un festival | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/10) |
+| CU05 | Generar ranking de unidades por recaudación | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/12) |
 | CU06 | Obtener unidades con mayor canon | Daira Mazza | [PR](LINK_PR) |
 | CU07 | Dar de alta un empleado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/a962e773d1188f74e76cc069acd2984f0dd94b83) |
 | CU08 | Modificar empleado | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/93108e2c2e6333a00937c0fbccc9a16713b51cf3) |
@@ -61,23 +61,23 @@ El listado completo de casos de uso, dependencias, estado y distribución de tar
 | CU12 | Dar de alta un plato | Daira Mazza | [PR](LINK_PR) |
 | CU13 | Calcular canon de una unidad | Daira Mazza | [PR](LINK_PR) |
 | CU14 | Liquidar haberes | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/8) [Fix](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/13)|
-| CU15 | Generar reporte de recaudación | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU15 | Generar reporte de recaudación | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/17) |
 | CU16 | Calcular rentabilidad neta | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/25) |
 | CU17 | Calcular rentabilidad neta entre dos fechas | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/29) |
 | CU18 | Obtener plato estrella | Daira Mazza | [PR](LINK_PR) |
 | CU19 | Consultar historial de trabajo | Daira Mazza | [PR](LINK_PR) |
 | CU20 | Consultar sueldo recibido por festival | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/16)|
 | CU21 | Descargar recibo de sueldo en PDF | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/19) |
-| CU22 | Consultar festival y unidad de trabajo actual | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU22 | Consultar festival y unidad de trabajo actual | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/24) |
 | CU23 | Cerrar caja | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/dd1badf754994f40462412694c71f95acf8abb4b) |
 | CU24 | Alta Pedido | Daira Mazza | [PR](LINK_PR) |
 | CU25 | Fix: Actualizar data.sql | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/6c2cd862de34967c742ee47c57fb0be0861d1d25) |
-| CU26 | Fix: Generar código de unidad de venta | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU26 | Fix: Generar código de unidad de venta | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/31) |
 | CU27 | Asignar rol de responsable a la unidad de venta | Daira Mazza | [PR](LINK_PR) |
 | CU28 | Registrar tipo de unidad de venta | Daira Mazza | [PR](LINK_PR) |
 | CU29 | fix: Landing principal | Malena Lescano | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/20) |
 | CU30 | Consultar landing de reportes | Daira Mazza | [PR](LINK_PR) |
-| CU31 | Consultar ranking de unidades de venta más vendidas | Lautaro Gonzalez | [PR](LINK_PR) |
+| CU31 | Consultar ranking de unidades de venta más vendidas | Lautaro Gonzalez | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/32) |
 | CU32 | Habilitar pago de sueldos | Malena Lescano | [PR](LINK_PR) |
 | CU33 | fix: Columna detalle | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/6f1e84fe813d05272059d67afc39e6e1711b355c) |
 | CU34 | Fix: Dos vistas de lista de UDVs | Lautaro Gonzalez | [PR](LINK_PR) |
