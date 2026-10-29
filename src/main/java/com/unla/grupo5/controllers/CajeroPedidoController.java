@@ -1,17 +1,23 @@
 package com.unla.grupo5.controllers;
 
+import com.unla.grupo5.dtos.ItemPedidoRequestDTO;
+import com.unla.grupo5.dtos.PedidoRequestDTO;
+import com.unla.grupo5.entities.Pedido;
+import com.unla.grupo5.entities.Plato;
 import com.unla.grupo5.entities.UnidadDeVenta;
 import com.unla.grupo5.services.PedidoService;
+import com.unla.grupo5.services.PlatoService;
 import com.unla.grupo5.services.UnidadDeVentaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/cajero/pedidos")
@@ -19,6 +25,9 @@ public class CajeroPedidoController {
 
     @Autowired
     private PedidoService pedidoService;
+
+    @Autowired
+    private PlatoService platoService;
 
     @Autowired
     private UnidadDeVentaService unidadDeVentaService;
@@ -32,6 +41,64 @@ public class CajeroPedidoController {
         model.addAttribute("cajaAbierta", unidad.isCajaAbierta());
 
         return "pedidos/listado";
+    }
+
+    @GetMapping("/nuevo")
+    public String mostrarFormularioAlta(Principal principal, Model model, RedirectAttributes redirect) {
+        UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+
+        if (!unidad.isCajaAbierta()) {
+            redirect.addFlashAttribute("mensajeError", "No se pueden registrar pedidos porque la caja está cerrada.");
+            return "redirect:/cajero/pedidos";
+        }
+
+        List<Plato> platos = platoService.traerPorUnidad(unidad.getId());
+
+        PedidoRequestDTO dto = new PedidoRequestDTO();
+        for (Plato plato : platos) {
+            ItemPedidoRequestDTO item = new ItemPedidoRequestDTO();
+            item.setIdPlato(plato.getId());
+            dto.getItems().add(item);
+        }
+
+        model.addAttribute("pedidoDTO", dto);
+        model.addAttribute("platos", platos);
+        model.addAttribute("nombreUnidad", unidad.getNombreComercial());
+        return "pedidos/form-alta-pedido";
+    }
+
+    @PostMapping("/guardar")
+    public String guardarPedido(
+            @Valid @ModelAttribute("pedidoDTO") PedidoRequestDTO dto,
+            BindingResult result,
+            Principal principal,
+            Model model,
+            RedirectAttributes redirect) {
+
+        UnidadDeVenta unidad = unidadDeVentaService.getUdVByUser(principal.getName());
+
+        if (!unidad.isCajaAbierta()) {
+            redirect.addFlashAttribute("mensajeError", "No se pueden registrar pedidos porque la caja está cerrada.");
+            return "redirect:/cajero/pedidos";
+        }
+
+        model.addAttribute("platos", platoService.traerPorUnidad(unidad.getId()));
+        model.addAttribute("nombreUnidad", unidad.getNombreComercial());
+
+        if (result.hasErrors()) {
+            return "pedidos/form-alta-pedido";
+        }
+
+        try {
+            dto.setIdUnidadVenta(unidad.getId());
+            Pedido pedido = pedidoService.registrarPedido(dto);
+            redirect.addFlashAttribute("mensajeExito",
+                    "Pedido N° " + pedido.getId() + " registrado correctamente. Total: $" + String.format("%.2f", pedido.getTotal()));
+            return "redirect:/cajero/pedidos";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("mensajeError", e.getMessage());
+            return "pedidos/form-alta-pedido";
+        }
     }
 
     @PostMapping("/cerrar-caja")
