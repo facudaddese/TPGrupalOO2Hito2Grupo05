@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Alta de Pedido - Epicentro Gourmet</title>
@@ -24,7 +25,41 @@
                 La unidad de venta no tiene platos cargados. Primero registrá un plato.
             </div>
 
-            <form th:unless="${#lists.isEmpty(platos)}" th:action="@{/responsable/pedidos/guardar}"
+            <form sec:authorize="hasRole('EMPLEADO')" th:unless="${#lists.isEmpty(platos)}" th:action="@{/cajero/pedidos/guardar}"
+                  th:object="${pedidoDTO}" method="post">
+
+                <p class="text-muted small">Completá la cantidad de cada plato. Los que queden en 0 no se incluyen.</p>
+
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Plato</th>
+                        <th>Precio</th>
+                        <th style="width: 160px;">Cantidad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="plato, st : ${platos}">
+                        <td th:text="${plato.nombre}"></td>
+                        <td th:text="${'$ ' + #numbers.formatDecimal(plato.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+                        <td>
+                            <input type="hidden" th:field="*{items[__${st.index}__].idPlato}"/>
+                            <input type="number" min="0" step="1" class="form-control"
+                                   th:field="*{items[__${st.index}__].cantidad}" th:errorclass="is-invalid"/>
+                            <div class="invalid-feedback" th:errors="*{items[__${st.index}__].cantidad}"></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Registrar pedido</button>
+                    <a th:href="@{/cajero/pedidos}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+
+            </form>
+
+            <form sec:authorize="hasRole('RESPONSABLE')" th:unless="${#lists.isEmpty(platos)}" th:action="@{/responsable/pedidos/guardar}"
                   th:object="${pedidoDTO}" method="post">
 
                 <p class="text-muted small">Completá la cantidad de cada plato. Los que queden en 0 no se incluyen.</p>
@@ -58,7 +93,8 @@
 
             </form>
 
-            <a th:if="${#lists.isEmpty(platos)}" th:href="@{/responsable/platos/nuevo}" class="btn btn-primary">Nuevo Plato</a>
+            <a th:if="${#lists.isEmpty(platos)}" sec:authorize="hasRole('RESPONSABLE')" th:href="@{/responsable/platos/nuevo}" class="btn btn-primary">Nuevo Plato</a>
+            <a th:if="${#lists.isEmpty(platos)}" sec:authorize="hasRole('EMPLEADO')" th:href="@{/cajero/pedidos}" class="btn btn-secondary">Volver</a>
         </div>
     </div>
 </div>
