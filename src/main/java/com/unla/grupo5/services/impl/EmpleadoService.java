@@ -345,13 +345,11 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             } else {
                 throw new IllegalArgumentException("Tipo de empleado no contemplado: " + empleado.getClass().getSimpleName());
             }
-
-            // Calculo del sueldo total del evento y su respectivo prorrateo mensual
+            
             double sueldoTotalEvento = (sueldoBase + montoAdicional) * factorGlobal;
-            double sueldoCalculado = sueldoTotalEvento * ((double) diasMes / diasDurFest);
 
             liquidaciones.add(new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(),
-                    tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factorGlobal, sueldoCalculado, inicioPeriodo, finPeriodo, diasMes));
+                    tipoEmpleado, sueldoBase, conceptoAdicional, montoAdicional, factorGlobal, sueldoTotalEvento, inicioPeriodo, finPeriodo, diasMes));
 
             mesActual = mesActual.plusMonths(1);
         }
