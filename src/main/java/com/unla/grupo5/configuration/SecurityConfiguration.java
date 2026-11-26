@@ -33,10 +33,12 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/login","/css/**", "/imgs/**", "/js/**","/","/alta","/guardar").permitAll();
+                    auth.requestMatchers("/login", "/css/**", "/imgs/**", "/js/**", "/", "/alta", "/guardar").permitAll();
+                    // Rutas públicas para Swagger UI, OpenAPI Docs y los controladores REST
+                    auth.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api/**").permitAll();
                     auth.requestMatchers("/admin/**", "/unidades-venta/**").hasRole("ADMIN");
                     auth.requestMatchers("/responsable/**").hasRole("RESPONSABLE");
-                    auth.requestMatchers("/empleado/**").hasRole("EMPLEADO");
+                    auth.requestMatchers("/empleado/**", "/cajero/**").hasRole("EMPLEADO");
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(login -> {
@@ -58,7 +60,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

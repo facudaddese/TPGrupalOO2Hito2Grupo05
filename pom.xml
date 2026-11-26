@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>grupo5</name>
-    <description>Sistema de gestion Epicentro Gourmet HITO 2</description>
+    <description>Sistema de gestion Epicentro Gourmet HITO 3</description>
     <url/>
     <licenses>
         <license/>
@@ -85,6 +85,11 @@
             <groupId>com.github.librepdf</groupId>
             <artifactId>openpdf</artifactId>
             <version>3.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
         </dependency>
     </dependencies>
     <build>
