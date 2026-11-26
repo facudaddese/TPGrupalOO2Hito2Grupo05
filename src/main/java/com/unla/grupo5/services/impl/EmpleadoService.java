@@ -514,4 +514,12 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
                 .map(StaffResponseDTO::fromEntity)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public StaffResponseDTO obtenerEmpleadoPorIdApi(Long id) {
+        Staff empleado = staffRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No se encontró ningún empleado con el ID: " + id));
+        return StaffResponseDTO.fromEntity(empleado);
+    }
 }
