@@ -162,9 +162,10 @@ http://localhost:8080
 | ID | Endpoint | Responsable | Pull Request |
 | :--- | :--- | :--- | :--- |
 | API-01 | Alta de empleado (`POST /api/staff`) | Facundo Daddese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/44) |
+| API-02 | Búsqueda de empleados con filtros (`GET /api/staff/buscar`) | Facundo Daddese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/45) |
 
 ## Controladores:
 
 | Controlador | Responsable | Detalle |
 | :--- | :--- | :--- |
-| `StaffRestController` (`/api/staff`) | Facundo Daddese | Gestiona las operaciones REST del módulo de Staff (Cocineros y Cajeros), exponiendo respuestas desacopladas mediante DTOs (`StaffCreateRequestDTO`, `StaffResponseDTO`) y manejo global de errores (`ApiExceptionHandler`). |
+| `StaffRestController` (`/api/staff`) | Facundo Daddese | Gestiona el alta (`POST`) y la búsqueda filtrada (`GET`) del módulo de Staff (Cocineros y Cajeros), exponiendo respuestas desacopladas mediante DTOs (`StaffCreateRequestDTO`, `StaffResponseDTO`) y manejo global de errores (`ApiExceptionHandler`). |
