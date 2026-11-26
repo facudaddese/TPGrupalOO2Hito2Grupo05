@@ -36,4 +36,11 @@ public class StaffRestController {
                 nombre, apellido, tipoEmpleado, idUnidadDeVenta, activo);
         return ResponseEntity.ok(resultados);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StaffResponseDTO> obtenerPorId(@PathVariable Long id) {
+        StaffResponseDTO empleado = empleadoService.obtenerEmpleadoPorIdApi(id);
+        return ResponseEntity.ok(empleado);
+    }
+
 }

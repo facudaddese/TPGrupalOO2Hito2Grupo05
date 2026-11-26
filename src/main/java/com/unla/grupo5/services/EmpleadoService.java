@@ -41,4 +41,6 @@ public interface EmpleadoService {
             Long idUnidadDeVenta,
             Boolean activo
     );
+
+    StaffResponseDTO obtenerEmpleadoPorIdApi(Long id);
 }
