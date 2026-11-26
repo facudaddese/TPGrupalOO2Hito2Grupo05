@@ -33,4 +33,12 @@ public interface EmpleadoService {
     List<HistorialTrabajoDTO> obtenerHistorialTrabajo(String nombreUsuario);
 
     StaffResponseDTO registrarEmpleadoApi(StaffCreateRequestDTO dto);
+
+    List<StaffResponseDTO> buscarEmpleadosApi(
+            String nombre,
+            String apellido,
+            String tipoEmpleado,
+            Long idUnidadDeVenta,
+            Boolean activo
+    );
 }
