@@ -1,8 +1,6 @@
 package com.unla.grupo5.services.impl;
 
-import com.unla.grupo5.dtos.EmpleadoRequestDTO;
-import com.unla.grupo5.dtos.HistorialTrabajoDTO;
-import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
+import com.unla.grupo5.dtos.*;
 import com.unla.grupo5.entities.*;
 import com.unla.grupo5.exceptions.RecursoNoEncontradoException;
 import com.unla.grupo5.repositories.*;
@@ -197,11 +195,11 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         empleado.setFechaIngreso(dto.getFechaIngreso());
 
         UnidadDeVenta unidad = unidadDeVentaRepository.findByResponsable(responsable)
-                    .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
+                .orElseThrow(() -> new IllegalArgumentException("La Unidad de Venta seleccionada no existe."));
 
-            empleado.setUnidadDeVenta(unidad);
-            // Si cambia de unidad, la nueva se suma al historial (las anteriores quedan registradas)
-            empleado.getHistorialUnidades().add(unidad);
+        empleado.setUnidadDeVenta(unidad);
+        // Si cambia de unidad, la nueva se suma al historial (las anteriores quedan registradas)
+        empleado.getHistorialUnidades().add(unidad);
 
         if (empleado instanceof Cocinero && dto.getCategoriaCocinero() != null) {
             ((Cocinero) empleado).setCategoria(dto.getCategoriaCocinero());
@@ -249,10 +247,10 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
     public List<LiquidacionHaberesDTO> calcularHaberesMensuales(Long idEmpleado, Long idFestival) {
 
         Staff empleado = staffRepository.findById(idEmpleado).orElseThrow(() ->
-                        new RecursoNoEncontradoException("Especializacion del empleado", idEmpleado));
+                new RecursoNoEncontradoException("Especializacion del empleado", idEmpleado));
 
         Festival festival = festivalRepository.findById(idFestival).orElseThrow(() ->
-                        new RecursoNoEncontradoException("Festival", idFestival));
+                new RecursoNoEncontradoException("Festival", idFestival));
 
         return calcularHaberes(idEmpleado, idFestival, null);
     }
@@ -345,7 +343,7 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             } else {
                 throw new IllegalArgumentException("Tipo de empleado no contemplado: " + empleado.getClass().getSimpleName());
             }
-            
+
             double sueldoTotalEvento = (sueldoBase + montoAdicional) * factorGlobal;
 
             liquidaciones.add(new LiquidacionHaberesDTO(empleado.getId(), empleado.getNombre() + " " + empleado.getApellido(),
@@ -417,6 +415,75 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             return "Puesto Desarmable";
         }
         return "Sin tipo asignado";
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public StaffResponseDTO registrarEmpleadoApi(StaffCreateRequestDTO dto) {
+        validarDatosEmpleado(dto);
+
+        UnidadDeVenta unidad = unidadDeVentaRepository.findById(dto.getIdUnidadDeVenta())
+                .orElseThrow(() -> new RecursoNoEncontradoException("Unidad de Venta", dto.getIdUnidadDeVenta()));
+
+        Staff empleado;
+
+        if ("COCINERO".equalsIgnoreCase(dto.getTipoEmpleado())) {
+            if (dto.getCategoriaCocinero() == null || dto.getCategoriaCocinero().isBlank()) {
+                throw new IllegalArgumentException("La categoría del cocinero es obligatoria.");
+            }
+            Cocinero cocinero = new Cocinero();
+            cocinero.setCategoria(dto.getCategoriaCocinero());
+            empleado = cocinero;
+
+        } else if ("CAJERO".equalsIgnoreCase(dto.getTipoEmpleado())) {
+            if (dto.getTurnoCajero() == null || dto.getTurnoCajero().isBlank()) {
+                throw new IllegalArgumentException("El turno de trabajo del cajero es obligatorio.");
+            }
+            Cajero cajero = new Cajero();
+            cajero.setTurnoTrabajo(dto.getTurnoCajero());
+            empleado = cajero;
+
+        } else {
+            throw new IllegalArgumentException("Tipo de empleado no válido. Debe ser COCINERO o CAJERO.");
+        }
+
+        empleado.setNombre(dto.getNombre());
+        empleado.setApellido(dto.getApellido());
+        empleado.setDni(dto.getDni());
+        empleado.setFechaNacimiento(dto.getFechaNacimiento());
+        empleado.setFechaIngreso(dto.getFechaIngreso());
+        empleado.setUnidadDeVenta(unidad);
+        empleado.setActivo(true);
+        empleado.getHistorialUnidades().add(unidad);
+
+        Staff empleadoGuardado = staffRepository.save(empleado);
+
+        String passwordGenerada = UUID.randomUUID().toString().substring(0, 8);
+
+        Rol rol = rolRepository.findByRol("EMPLEADO")
+                .orElseGet(() -> {
+                    Rol r = new Rol();
+                    r.setRol("EMPLEADO");
+                    return rolRepository.save(r);
+                });
+
+        Usuario usuario = new Usuario();
+        usuario.setNombreUsuario(dto.getEmail());
+        usuario.setPassword(passwordEncoder.encode(passwordGenerada));
+        usuario.setActivo(true);
+        usuario.setStaff(empleadoGuardado);
+        usuario.setRol(rol);
+        usuarioRepository.save(usuario);
+
+        empleadoGuardado.setUsuario(usuario);
+
+        try {
+            emailService.enviarCredencialesEmpleado(dto.getEmail(), usuario.getNombreUsuario(), passwordGenerada);
+        } catch (Exception e) {
+            // Si en entorno local o defensa no hay conexión SMTP, no abortamos el alta REST
+        }
+
+        return StaffResponseDTO.fromEntity(empleadoGuardado);
     }
 
 }

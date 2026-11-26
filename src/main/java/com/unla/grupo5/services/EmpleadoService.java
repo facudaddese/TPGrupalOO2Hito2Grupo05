@@ -1,8 +1,6 @@
 package com.unla.grupo5.services;
 
-import com.unla.grupo5.dtos.EmpleadoRequestDTO;
-import com.unla.grupo5.dtos.HistorialTrabajoDTO;
-import com.unla.grupo5.dtos.LiquidacionHaberesDTO;
+import com.unla.grupo5.dtos.*;
 import com.unla.grupo5.entities.Staff;
 
 import java.time.LocalDate;
@@ -33,4 +31,6 @@ public interface EmpleadoService {
 
     // Festivales y unidades de venta en las que trabajó el empleado logueado
     List<HistorialTrabajoDTO> obtenerHistorialTrabajo(String nombreUsuario);
+
+    StaffResponseDTO registrarEmpleadoApi(StaffCreateRequestDTO dto);
 }
