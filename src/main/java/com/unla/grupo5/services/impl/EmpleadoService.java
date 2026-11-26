@@ -486,4 +486,32 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
         return StaffResponseDTO.fromEntity(empleadoGuardado);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<StaffResponseDTO> buscarEmpleadosApi(
+            String nombre,
+            String apellido,
+            String tipoEmpleado,
+            Long idUnidadDeVenta,
+            Boolean activo) {
+
+        String nombreFiltro = (nombre != null && !nombre.isBlank()) ? nombre.trim() : null;
+        String apellidoFiltro = (apellido != null && !apellido.isBlank()) ? apellido.trim() : null;
+
+        Class<? extends Staff> tipoClase = null;
+        if (tipoEmpleado != null && !tipoEmpleado.isBlank()) {
+            if ("COCINERO".equalsIgnoreCase(tipoEmpleado.trim())) {
+                tipoClase = Cocinero.class;
+            } else if ("CAJERO".equalsIgnoreCase(tipoEmpleado.trim())) {
+                tipoClase = Cajero.class;
+            } else {
+                throw new IllegalArgumentException("Tipo de empleado no válido para filtrar. Use COCINERO o CAJERO.");
+            }
+        }
+
+        return staffRepository.buscarConFiltros(nombreFiltro, apellidoFiltro, idUnidadDeVenta, activo, tipoClase)
+                .stream()
+                .map(StaffResponseDTO::fromEntity)
+                .toList();
+    }
 }

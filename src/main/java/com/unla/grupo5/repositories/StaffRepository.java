@@ -27,4 +27,18 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
 
     @Query("SELECT s FROM Staff s JOIN FETCH s.usuario WHERE s.usuario.nombreUsuario = :nombreUsuario")
     Optional<Staff> findByUsuarioNombreUsuario(@Param("nombreUsuario") String nombreUsuario);
+
+    @Query("SELECT s FROM Staff s WHERE " +
+            "(:nombre IS NULL OR LOWER(s.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
+            "(:apellido IS NULL OR LOWER(s.apellido) LIKE LOWER(CONCAT('%', :apellido, '%'))) AND " +
+            "(:idUnidadDeVenta IS NULL OR s.unidadDeVenta.id = :idUnidadDeVenta) AND " +
+            "(:activo IS NULL OR s.activo = :activo) AND " +
+            "(:tipoClase IS NULL OR TYPE(s) = :tipoClase)")
+    List<Staff> buscarConFiltros(
+            @Param("nombre") String nombre,
+            @Param("apellido") String apellido,
+            @Param("idUnidadDeVenta") Long idUnidadDeVenta,
+            @Param("activo") Boolean activo,
+            @Param("tipoClase") Class<? extends Staff> tipoClase
+    );
 }
