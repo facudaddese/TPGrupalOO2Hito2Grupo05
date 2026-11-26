@@ -161,4 +161,4 @@ http://localhost:8080
 
 | ID | Endpoint | Responsable | Pull Request |
 | :--- | :--- | :--- | :--- |
-| API-01 | Alta de empleado (`POST /api/staff`) | Facundo Daddese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/44) |
+| API-01 | Alta de empleado (`POST /api/staff`) | Facundo Daddese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/commit/1f6bb06c3e3c12dc636214005df439517877ba54) |
