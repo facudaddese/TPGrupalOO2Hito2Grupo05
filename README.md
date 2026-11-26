@@ -156,4 +156,9 @@ Una vez iniciada la aplicación, acceder desde:
 http://localhost:8080
 ```
 
+# ----------------------------------
+# API REST (HITO 3 - FINAL)
 
+| ID | Endpoint | Responsable | Pull Request |
+| :--- | :--- | :--- | :--- |
+| API-01 | Alta de empleado (`POST /api/staff`) | Facundo Daddese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/44) |
