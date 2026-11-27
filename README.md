@@ -171,4 +171,4 @@ http://localhost:8080
 
 | Controlador | Responsable | Detalle |
 | :--- | :--- | :--- |
-| `StaffRestController` (`/api/staff`) | Facundo D'Addese | Gestiona el alta (`POST`), la búsqueda filtrada (`GET /buscar` por nombre, apellido, tipo, unidad de venta, estado activo y fecha de ingreso desde) y la consulta por ID (`GET /{id}`) del módulo de Staff (Cocineros y Cajeros), exponiendo respuestas desacopladas mediante DTOs (`StaffCreateRequestDTO`, `StaffResponseDTO`), documentación OpenAPI/Swagger y manejo global de errores (`ApiExceptionHandler`). |
+| `StaffRestController` (`/api/staff`) | Facundo D'Addese | Gestiona el alta de un nuevo empleado (Cajero/Cocinero) (`POST`), la búsqueda filtrada por nombre, apellido, tipo, unidad de venta, estado activo y fecha de ingreso desde (`GET /buscar`) y la consulta por ID (`GET /{id}`) obteniendo al empleado del Staff, utilizando DTOs, documentación Swagger y manejo global de errores. |
