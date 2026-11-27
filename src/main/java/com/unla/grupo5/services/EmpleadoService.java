@@ -29,7 +29,6 @@ public interface EmpleadoService {
 
     List<Staff> traerActivosPorUnidad(Long idUnidadVenta);
 
-    // Festivales y unidades de venta en las que trabajó el empleado logueado
     List<HistorialTrabajoDTO> obtenerHistorialTrabajo(String nombreUsuario);
 
     StaffResponseDTO registrarEmpleadoApi(StaffCreateRequestDTO dto);
@@ -39,7 +38,8 @@ public interface EmpleadoService {
             String apellido,
             String tipoEmpleado,
             Long idUnidadDeVenta,
-            Boolean activo
+            Boolean activo,
+            LocalDate fechaIngresoDesde
     );
 
     StaffResponseDTO obtenerEmpleadoPorIdApi(Long id);

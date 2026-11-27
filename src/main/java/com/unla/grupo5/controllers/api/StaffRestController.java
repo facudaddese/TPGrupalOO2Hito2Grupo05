@@ -13,10 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -56,7 +58,7 @@ public class StaffRestController {
 
     @Operation(
             summary = "Buscar empleados con filtros opcionales",
-            description = "Permite filtrar empleados por nombre, apellido, tipo de empleado (COCINERO / CAJERO), unidad de venta y estado activo. Si no se envían filtros, retorna el listado completo."
+            description = "Permite filtrar empleados por nombre, apellido, tipo de empleado (COCINERO / CAJERO), unidad de venta, estado activo y fecha de ingreso desde. Si no se envían filtros, retorna el listado completo."
     )
     @ApiResponses(value = {
             @ApiResponse(
@@ -81,10 +83,12 @@ public class StaffRestController {
             @Parameter(description = "ID de la Unidad de Venta asignada", example = "1")
             @RequestParam(required = false) Long idUnidadDeVenta,
             @Parameter(description = "Estado lógico del empleado (true = activo, false = inactivo)", example = "true")
-            @RequestParam(required = false) Boolean activo) {
+            @RequestParam(required = false) Boolean activo,
+            @Parameter(description = "Filtra empleados ingresados a partir de esta fecha (YYYY-MM-DD)", example = "2023-01-01")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaIngresoDesde) {
 
         List<StaffResponseDTO> resultados = empleadoService.buscarEmpleadosApi(
-                nombre, apellido, tipoEmpleado, idUnidadDeVenta, activo);
+                nombre, apellido, tipoEmpleado, idUnidadDeVenta, activo, fechaIngresoDesde);
         return ResponseEntity.ok(resultados);
     }
 
@@ -111,4 +115,5 @@ public class StaffRestController {
         StaffResponseDTO empleado = empleadoService.obtenerEmpleadoPorIdApi(id);
         return ResponseEntity.ok(empleado);
     }
+
 }

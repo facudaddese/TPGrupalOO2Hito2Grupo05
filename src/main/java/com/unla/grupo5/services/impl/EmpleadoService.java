@@ -493,7 +493,8 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             String apellido,
             String tipoEmpleado,
             Long idUnidadDeVenta,
-            Boolean activo) {
+            Boolean activo,
+            LocalDate fechaIngresoDesde) {
 
         String nombreFiltro = (nombre != null && !nombre.isBlank()) ? nombre.trim() : null;
         String apellidoFiltro = (apellido != null && !apellido.isBlank()) ? apellido.trim() : null;
@@ -509,7 +510,8 @@ public class EmpleadoService implements com.unla.grupo5.services.EmpleadoService
             }
         }
 
-        return staffRepository.buscarConFiltros(nombreFiltro, apellidoFiltro, idUnidadDeVenta, activo, tipoClase)
+        return staffRepository.buscarConFiltros(
+                        nombreFiltro, apellidoFiltro, idUnidadDeVenta, activo, fechaIngresoDesde, tipoClase)
                 .stream()
                 .map(StaffResponseDTO::fromEntity)
                 .toList();

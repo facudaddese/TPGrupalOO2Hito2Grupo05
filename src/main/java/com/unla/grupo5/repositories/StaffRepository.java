@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +34,14 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
             "(:apellido IS NULL OR LOWER(s.apellido) LIKE LOWER(CONCAT('%', :apellido, '%'))) AND " +
             "(:idUnidadDeVenta IS NULL OR s.unidadDeVenta.id = :idUnidadDeVenta) AND " +
             "(:activo IS NULL OR s.activo = :activo) AND " +
+            "(:fechaIngresoDesde IS NULL OR s.fechaIngreso >= :fechaIngresoDesde) AND " +
             "(:tipoClase IS NULL OR TYPE(s) = :tipoClase)")
     List<Staff> buscarConFiltros(
             @Param("nombre") String nombre,
             @Param("apellido") String apellido,
             @Param("idUnidadDeVenta") Long idUnidadDeVenta,
             @Param("activo") Boolean activo,
+            @Param("fechaIngresoDesde") LocalDate fechaIngresoDesde,
             @Param("tipoClase") Class<? extends Staff> tipoClase
     );
 }
