@@ -111,5 +111,4 @@ public class StaffRestController {
         StaffResponseDTO empleado = empleadoService.obtenerEmpleadoPorIdApi(id);
         return ResponseEntity.ok(empleado);
     }
-
 }
