@@ -165,9 +165,10 @@ http://localhost:8080
 | API-02 | Búsqueda de empleados con filtros (`GET /api/staff/buscar`) | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/45) |
 | API-03 | Consulta de empleado por ID (`GET /api/staff/{id}`) | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/46) |
 | API-04 | Documentación OpenAPI / Swagger en `StaffRestController` | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/47) |
+| API-05 | Filtro por fecha de ingreso (`fechaIngresoDesde`) en `GET /api/staff/buscar` | Facundo D'Addese | [PR](https://github.com/facudaddese/TPGrupalOO2Hito2Grupo05/pull/48) |
 
 ## Controladores:
 
 | Controlador | Responsable | Detalle |
 | :--- | :--- | :--- |
-| `StaffRestController` (`/api/staff`) | Facundo D'Addese | Gestiona el alta (`POST`), la búsqueda filtrada (`GET /buscar`) y la consulta por ID (`GET /{id}`) del módulo de Staff (Cocineros y Cajeros), exponiendo respuestas desacopladas mediante DTOs (`StaffCreateRequestDTO`, `StaffResponseDTO`), documentación OpenAPI/Swagger y manejo global de errores (`ApiExceptionHandler`). |
+| `StaffRestController` (`/api/staff`) | Facundo D'Addese | Gestiona el alta (`POST`), la búsqueda filtrada (`GET /buscar` por nombre, apellido, tipo, unidad de venta, estado activo y fecha de ingreso desde) y la consulta por ID (`GET /{id}`) del módulo de Staff (Cocineros y Cajeros), exponiendo respuestas desacopladas mediante DTOs (`StaffCreateRequestDTO`, `StaffResponseDTO`), documentación OpenAPI/Swagger y manejo global de errores (`ApiExceptionHandler`). |
